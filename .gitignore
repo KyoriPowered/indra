@@ -1,0 +1,4 @@
+/.gradle/
+/.idea/
+/indra-common/build/
+/*.iml
