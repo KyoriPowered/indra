@@ -17,32 +17,30 @@ class IndraPlugin : Plugin<Project> {
         apply(JavaLibraryPlugin::class.java)
       }
 
-      afterEvaluate {
-        tasks.withType<JavaCompile>().configureEach {
-          it.options.apply {
-            encoding = StandardCharsets.UTF_8.name()
-            compilerArgs.addAll(
-              listOf(
-                "-parameters",
-                "-Xlint:all"
-              )
+      tasks.withType<JavaCompile>().configureEach {
+        it.options.apply {
+          encoding = StandardCharsets.UTF_8.name()
+          compilerArgs.addAll(
+            listOf(
+              "-parameters",
+              "-Xlint:all"
             )
+          )
+        }
+      }
+
+      tasks.withType<Javadoc>().configureEach {
+        with(it.options) {
+          encoding = StandardCharsets.UTF_8.name()
+
+          if(this is StandardJavadocDocletOptions) {
+            charSet = StandardCharsets.UTF_8.name()
           }
         }
+      }
 
-        tasks.withType<Javadoc>().configureEach {
-          with(it.options) {
-            encoding = StandardCharsets.UTF_8.name()
-
-            if(this is StandardJavadocDocletOptions) {
-              charSet = StandardCharsets.UTF_8.name()
-            }
-          }
-        }
-
-        tasks.withType<Test>().configureEach {
-          it.useJUnitPlatform()
-        }
+      tasks.withType<Test>().configureEach {
+        it.useJUnitPlatform()
       }
     }
   }
