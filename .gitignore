@@ -1,4 +1,8 @@
 /.gradle/
 /.idea/
-/indra-common/build/
+/buildSrc/.gradle/
+/buildSrc/build/
+/indra-*/build/
+/indra-*/out/
+/build/
 /*.iml
