@@ -26,25 +26,38 @@ package net.kyori.indra
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaLibraryPlugin
+import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.api.tasks.testing.Test
 import org.gradle.external.javadoc.StandardJavadocDocletOptions
 import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.withType
-import java.nio.charset.StandardCharsets
 
 class IndraPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     with(project) {
+      val extension = extensions.findByType(IndraExtension::class) ?: extensions.create(EXTENSION_NAME, IndraExtension::class)
+
       apply<JavaLibraryPlugin>()
+
+      extensions.configure<JavaPluginExtension> {
+        sourceCompatibility = extension.java
+        targetCompatibility = extension.java
+      }
 
       tasks.withType<JavaCompile>().configureEach {
         it.options.apply {
-          encoding = StandardCharsets.UTF_8.name()
+          encoding = Charsets.UTF_8.name()
+          release.set(versionNumber(extension.java))
           compilerArgs.addAll(
             listOf(
+              // Generate metadata for reflection on method parameters
               "-parameters",
+              // Enable all warnings
               "-Xlint:all"
             )
           )
@@ -57,6 +70,7 @@ class IndraPlugin : Plugin<Project> {
 
           if(this is StandardJavadocDocletOptions) {
             charSet = Charsets.UTF_8.name()
+            source = versionString(extension.java)
           }
         }
       }
