@@ -46,14 +46,14 @@ class IndraPlugin : Plugin<Project> {
       apply<JavaLibraryPlugin>()
 
       extensions.configure<JavaPluginExtension> {
-        sourceCompatibility = extension.java
-        targetCompatibility = extension.java
+        sourceCompatibility = extension.java.get()
+        targetCompatibility = extension.java.get()
       }
 
       tasks.withType<JavaCompile>().configureEach {
         it.options.apply {
           encoding = Charsets.UTF_8.name()
-          release.set(versionNumber(extension.java))
+          release.set(versionNumber(extension.java.get()))
           compilerArgs.addAll(
             listOf(
               // Generate metadata for reflection on method parameters
@@ -82,7 +82,7 @@ class IndraPlugin : Plugin<Project> {
 
           if(this is StandardJavadocDocletOptions) {
             charSet = Charsets.UTF_8.name()
-            source = versionString(extension.java)
+            source = versionString(extension.java.get())
 
             if(version(it.toolChain).isJava9Compatible) {
               addBooleanOption("html5", true)
@@ -95,7 +95,7 @@ class IndraPlugin : Plugin<Project> {
         it.useJUnitPlatform()
       }
 
-      if(extension.reproducibleBuilds) {
+      if(extension.reproducibleBuilds.get()) {
         tasks.withType<AbstractArchiveTask>().configureEach {
           it.isPreserveFileTimestamps = false
           it.isReproducibleFileOrder = true

@@ -24,8 +24,11 @@
 package net.kyori.indra
 
 import org.gradle.api.JavaVersion
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.Property
+import org.gradle.kotlin.dsl.property
 
-open class IndraExtension {
-  var java: JavaVersion = JavaVersion.VERSION_1_8
-  var reproducibleBuilds: Boolean = true
+open class IndraExtension(objects: ObjectFactory) {
+  var java: Property<JavaVersion> = objects.property(JavaVersion::class).convention(JavaVersion.VERSION_1_8)
+  var reproducibleBuilds: Property<Boolean> = objects.property(Boolean::class).convention(true)
 }
