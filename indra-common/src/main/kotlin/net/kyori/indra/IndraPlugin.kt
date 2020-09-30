@@ -107,6 +107,7 @@ class IndraPlugin : Plugin<Project> {
           with (it.options) {
             if (this is StandardJavadocDocletOptions) {
               source = versionString(extension.java.get())
+              links(jdkApiDocs(extension.java.get()))
             }
           }
         }

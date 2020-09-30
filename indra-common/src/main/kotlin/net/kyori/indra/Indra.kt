@@ -43,3 +43,14 @@ fun versionString(version: JavaVersion): String {
     else -> version.toString()
   }
 }
+
+/**
+ * Link to the API documentation for a specific java version.
+ */
+fun jdkApiDocs(version: JavaVersion): String {
+  return if (version.isJava11Compatible) {
+    "https://docs.oracle.com/en/java/javase/${version.majorVersion}/docs/api"
+  } else {
+    "https://docs.oracle.com/javase/${version.majorVersion}/docs/api"
+  }
+}
