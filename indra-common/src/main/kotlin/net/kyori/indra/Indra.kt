@@ -24,8 +24,13 @@
 package net.kyori.indra
 
 import org.gradle.api.JavaVersion
+import org.gradle.jvm.toolchain.JavaToolChain
 
 internal const val EXTENSION_NAME = "indra"
+
+fun version(tc: JavaToolChain): JavaVersion {
+  return JavaVersion.toVersion(tc.version)
+}
 
 fun versionNumber(version: JavaVersion): Int {
   return version.ordinal + 1

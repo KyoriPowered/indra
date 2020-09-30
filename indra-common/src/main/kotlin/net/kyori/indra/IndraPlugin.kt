@@ -27,6 +27,7 @@ import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.JavaLibraryPlugin
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.api.tasks.testing.Test
@@ -61,6 +62,17 @@ class IndraPlugin : Plugin<Project> {
               "-Xlint:all"
             )
           )
+          if(version(it.toolChain).isJava9Compatible) {
+            compilerArgs.addAll(
+              listOf(
+                "-Xdoclint",
+                // Only warn for missing javadocs for things with public access
+                "-Xdoclint:-missing/package",
+                "-Xdoclint:-missing/protected",
+                "-Xdoclint:-missing/private"
+              )
+            )
+          }
         }
       }
 
@@ -71,12 +83,23 @@ class IndraPlugin : Plugin<Project> {
           if(this is StandardJavadocDocletOptions) {
             charSet = Charsets.UTF_8.name()
             source = versionString(extension.java)
+
+            if(version(it.toolChain).isJava9Compatible) {
+              addBooleanOption("html5", true)
+            }
           }
         }
       }
 
       tasks.withType<Test>().configureEach {
         it.useJUnitPlatform()
+      }
+
+      if(extension.reproducibleBuilds) {
+        tasks.withType<AbstractArchiveTask>().configureEach {
+          it.isPreserveFileTimestamps = false
+          it.isReproducibleFileOrder = true
+        }
       }
     }
   }

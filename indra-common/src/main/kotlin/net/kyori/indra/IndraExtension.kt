@@ -27,4 +27,5 @@ import org.gradle.api.JavaVersion
 
 open class IndraExtension {
   var java: JavaVersion = JavaVersion.VERSION_1_8
+  var reproducibleBuilds: Boolean = true
 }
