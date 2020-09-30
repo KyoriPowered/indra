@@ -45,15 +45,10 @@ class IndraPlugin : Plugin<Project> {
 
       apply<JavaLibraryPlugin>()
 
-      extensions.configure<JavaPluginExtension> {
-        sourceCompatibility = extension.java.get()
-        targetCompatibility = extension.java.get()
-      }
-
       tasks.withType<JavaCompile>().configureEach {
         it.options.apply {
           encoding = Charsets.UTF_8.name()
-          release.set(versionNumber(extension.java.get()))
+          release.set(extension.java.map(::versionNumber))
           compilerArgs.addAll(
             listOf(
               // Generate metadata for reflection on method parameters
@@ -82,7 +77,6 @@ class IndraPlugin : Plugin<Project> {
 
           if(this is StandardJavadocDocletOptions) {
             charSet = Charsets.UTF_8.name()
-            source = versionString(extension.java.get())
 
             if(version(it.toolChain).isJava9Compatible) {
               addBooleanOption("html5", true)
@@ -95,11 +89,28 @@ class IndraPlugin : Plugin<Project> {
         it.useJUnitPlatform()
       }
 
-      if(extension.reproducibleBuilds.get()) {
-        tasks.withType<AbstractArchiveTask>().configureEach {
-          it.isPreserveFileTimestamps = false
-          it.isReproducibleFileOrder = true
+      // For things that are eagerly applied (field accesses, anything where you need to `get()`)
+      afterEvaluate {
+        extensions.configure<JavaPluginExtension> {
+          sourceCompatibility = extension.java.get()
+          targetCompatibility = extension.java.get()
         }
+
+        if(extension.reproducibleBuilds.get()) {
+          tasks.withType<AbstractArchiveTask>().configureEach {
+            it.isPreserveFileTimestamps = false
+            it.isReproducibleFileOrder = true
+          }
+        }
+
+        tasks.withType<Javadoc>().configureEach {
+          with (it.options) {
+            if (this is StandardJavadocDocletOptions) {
+              source = versionString(extension.java.get())
+            }
+          }
+        }
+
       }
     }
   }
