@@ -23,4 +23,7 @@
  */
 package net.kyori.indra.data
 
-data class Issues(val system: String, val url: String)
+data class Issues(
+  val system: String,
+  val url: String
+)

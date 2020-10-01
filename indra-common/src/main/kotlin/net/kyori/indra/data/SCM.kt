@@ -23,4 +23,8 @@
  */
 package net.kyori.indra.data
 
-data class SCM(val connection: String, val developerConnection: String, val url: String)
+data class SCM(
+  val connection: String,
+  val developerConnection: String,
+  val url: String
+)

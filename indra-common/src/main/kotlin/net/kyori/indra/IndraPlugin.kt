@@ -102,8 +102,8 @@ class IndraPlugin : Plugin<Project> {
         }
 
         tasks.withType<Javadoc>().configureEach {
-          with (it.options) {
-            if (this is StandardJavadocDocletOptions) {
+          with(it.options) {
+            if(this is StandardJavadocDocletOptions) {
               source = versionString(extension.java.get())
               links(jdkApiDocs(extension.java.get()))
             }
