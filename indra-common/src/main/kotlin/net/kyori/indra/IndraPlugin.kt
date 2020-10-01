@@ -34,14 +34,12 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.external.javadoc.StandardJavadocDocletOptions
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.findByType
 import org.gradle.kotlin.dsl.withType
 
 class IndraPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     with(project) {
-      val extension = extensions.findByType(IndraExtension::class) ?: extensions.create(EXTENSION_NAME, IndraExtension::class)
+      val extension = extension(project)
 
       apply<JavaLibraryPlugin>()
 
@@ -111,7 +109,6 @@ class IndraPlugin : Plugin<Project> {
             }
           }
         }
-
       }
     }
   }
