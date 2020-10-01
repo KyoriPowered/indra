@@ -23,6 +23,7 @@
  */
 package net.kyori.indra
 
+import java.net.URI
 import net.kyori.indra.data.Issues
 import net.kyori.indra.data.License
 import net.kyori.indra.data.SCM
@@ -38,6 +39,9 @@ open class IndraExtension(objects: ObjectFactory) {
   var issues: Property<Issues> = objects.property(Issues::class)
   var license: Property<License> = objects.property(License::class)
   var scm: Property<SCM> = objects.property(SCM::class)
+
+  internal val releaseRepositories: MutableList<RepositorySpec> = mutableListOf()
+  internal val snapshotRepositories: MutableList<RepositorySpec> = mutableListOf()
 
   fun github(user: String, repo: String) {
     this.issues.set(Issues("GitHub", "https://github.com/$user/$repo/issues"))
@@ -60,4 +64,12 @@ open class IndraExtension(objects: ObjectFactory) {
     name = "The MIT License",
     url = "https://opensource.org/licenses/MIT"
   ))
+
+  fun publishReleasesTo(id: String, url: String) = this.releaseRepositories.add(RepositorySpec(id, URI(url)))
+  fun publishSnapshotsTo(id: String, url: String) = this.snapshotRepositories.add(RepositorySpec(id, URI(url)))
 }
+
+internal data class RepositorySpec(
+  val id: String,
+  val url: URI
+)

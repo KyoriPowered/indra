@@ -28,11 +28,15 @@ import net.kyori.indra.data.License
 import net.kyori.indra.data.SCM
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.artifacts.repositories.MavenRepositoryContentDescriptor
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.plugins.PublishingPlugin
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.getByType
+import org.gradle.plugins.signing.SigningExtension
+import org.gradle.plugins.signing.SigningPlugin
 
 class IndraPublishingPlugin : Plugin<Project> {
   override fun apply(project: Project) {
@@ -40,6 +44,7 @@ class IndraPublishingPlugin : Plugin<Project> {
       val extension = extension(project)
 
       apply<PublishingPlugin>()
+      apply<SigningPlugin>()
 
       extensions.configure<PublishingExtension> {
         publications.register(PUBLICATION_NAME, MavenPublication::class.java) {
@@ -69,6 +74,42 @@ class IndraPublishingPlugin : Plugin<Project> {
             }
           }
         }
+
+        extension.releaseRepositories.forEach {
+          val username = "${it.id}RepositoryUsername"
+          val password = "${it.id}RepositoryPassword"
+          // TODO: releases only
+          if(project.hasProperty(username) && project.hasProperty(password)) {
+            repositories.maven { repository ->
+              repository.name = it.id
+              repository.url = it.url
+              repository.credentials { credentials ->
+                credentials.username = project.property(username) as String
+                credentials.password = project.property(password) as String
+              }
+            }
+          }
+        }
+        extension.snapshotRepositories.forEach {
+          val username = "${it.id}RepositoryUsername"
+          val password = "${it.id}RepositoryPassword"
+          // TODO: snapshots only
+          if(project.hasProperty(username) && project.hasProperty(password)) {
+            repositories.maven { repository ->
+              repository.name = it.id
+              repository.url = it.url
+              repository.credentials { credentials ->
+                credentials.username = project.property(username) as String
+                credentials.password = project.property(password) as String
+              }
+            }
+          }
+        }
+      }
+
+      extensions.configure<SigningExtension> {
+        sign(extensions.getByType<PublishingExtension>().publications)
+        useGpgCmd()
       }
     }
   }
