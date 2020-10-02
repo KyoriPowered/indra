@@ -29,11 +29,14 @@ import net.kyori.indra.data.SCM
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.repositories.MavenRepositoryContentDescriptor
+import org.gradle.api.artifacts.repositories.PasswordCredentials
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
 import org.gradle.api.publish.plugins.PublishingPlugin
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.credentials
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.plugins.signing.SigningExtension
 import org.gradle.plugins.signing.SigningPlugin
@@ -43,7 +46,7 @@ class IndraPublishingPlugin : Plugin<Project> {
     with(project) {
       val extension = extension(project)
 
-      apply<PublishingPlugin>()
+      apply<MavenPublishPlugin>()
       apply<SigningPlugin>()
 
       extensions.configure<PublishingExtension> {
@@ -76,32 +79,30 @@ class IndraPublishingPlugin : Plugin<Project> {
         }
 
         extension.releaseRepositories.forEach {
-          val username = "${it.id}RepositoryUsername"
-          val password = "${it.id}RepositoryPassword"
+          val username = "${it.id}Username"
+          val password = "${it.id}Password"
           // TODO: releases only
           if(project.hasProperty(username) && project.hasProperty(password)) {
             repositories.maven { repository ->
               repository.name = it.id
               repository.url = it.url
-              repository.credentials { credentials ->
-                credentials.username = project.property(username) as String
-                credentials.password = project.property(password) as String
-              }
+              // ${id}Username + ${id}Password properties
+              repository.credentials(PasswordCredentials::class)
+              repository.mavenContent(MavenRepositoryContentDescriptor::releasesOnly)
             }
           }
         }
+
         extension.snapshotRepositories.forEach {
-          val username = "${it.id}RepositoryUsername"
-          val password = "${it.id}RepositoryPassword"
+          val username = "${it.id}Username"
+          val password = "${it.id}Password"
           // TODO: snapshots only
           if(project.hasProperty(username) && project.hasProperty(password)) {
             repositories.maven { repository ->
               repository.name = it.id
               repository.url = it.url
-              repository.credentials { credentials ->
-                credentials.username = project.property(username) as String
-                credentials.password = project.property(password) as String
-              }
+              // ${id}Username + ${id}Password properties
+              repository.credentials(PasswordCredentials::class)
             }
           }
         }

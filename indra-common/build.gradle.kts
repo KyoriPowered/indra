@@ -6,3 +6,10 @@ declarePlugin(
   displayName = "Indra",
   description = "Sensible configuration for JVM projects"
 )
+
+declarePlugin(
+  id = "indra.publishing",
+  mainClass = "IndraPublishingPlugin",
+  displayName = "Indra Publishing",
+  description = "Reasonable publishing configuration"
+)
