@@ -25,6 +25,7 @@ package net.kyori.indra
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.BasePluginConvention
 import org.gradle.api.plugins.JavaLibraryPlugin
 import org.gradle.api.plugins.JavaPluginExtension
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
@@ -34,6 +35,7 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.external.javadoc.StandardJavadocDocletOptions
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.getPlugin
 import org.gradle.kotlin.dsl.withType
 
 class IndraPlugin : Plugin<Project> {
@@ -42,6 +44,14 @@ class IndraPlugin : Plugin<Project> {
       val extension = extension(project)
 
       apply<JavaLibraryPlugin>()
+
+      // Inherit options from root project
+      if (this != rootProject) {
+        group = rootProject.group
+        version = rootProject.version
+        description = rootProject.description
+      }
+      convention.getPlugin<BasePluginConvention>().archivesBaseName = project.name.toLowerCase()
 
       tasks.withType<JavaCompile>().configureEach {
         it.options.apply {
