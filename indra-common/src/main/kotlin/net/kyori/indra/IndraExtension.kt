@@ -23,34 +23,47 @@
  */
 package net.kyori.indra
 
+import net.kyori.indra.data.ApplyTo
 import java.net.URI
 import net.kyori.indra.data.Issues
 import net.kyori.indra.data.License
 import net.kyori.indra.data.SCM
+import org.gradle.api.Action
 import org.gradle.api.JavaVersion
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.property
 
-open class IndraExtension(objects: ObjectFactory) {
-  var java: Property<JavaVersion> = objects.property(JavaVersion::class).convention(JavaVersion.VERSION_1_8)
-  var reproducibleBuilds: Property<Boolean> = objects.property(Boolean::class).convention(true)
 
-  var issues: Property<Issues> = objects.property(Issues::class)
-  var license: Property<License> = objects.property(License::class)
-  var scm: Property<SCM> = objects.property(SCM::class)
+open class IndraExtension(objects: ObjectFactory) {
+  val java: Property<JavaVersion> = objects.property(JavaVersion::class).convention(JavaVersion.VERSION_1_8)
+  val reproducibleBuilds: Property<Boolean> = objects.property(Boolean::class).convention(true)
+
+  val issues: Property<Issues> = objects.property(Issues::class)
+  val license: Property<License> = objects.property(License::class)
+  val scm: Property<SCM> = objects.property(SCM::class)
 
   internal val releaseRepositories: MutableList<RepositorySpec> = mutableListOf()
   internal val snapshotRepositories: MutableList<RepositorySpec> = mutableListOf()
 
-  fun github(user: String, repo: String) {
-    this.issues.set(Issues("GitHub", "https://github.com/$user/$repo/issues"))
-    this.scm.set(SCM("scm:git:https://github.com/$user/$repo.git", "scm:git:ssh://git@github.com/$user/$repo.git", "https://github.com/$user/$repo"))
+  fun github(user: String, repo: String, applicable: Action<ApplyTo>? = null) {
+    val options = ApplyTo().also { applicable?.execute(it) }
+    if(options.issues) {
+      this.issues.set(Issues("GitHub", "https://github.com/$user/$repo/issues"))
+    }
+    if(options.scm) {
+      this.scm.set(SCM("scm:git:https://github.com/$user/$repo.git", "scm:git:ssh://git@github.com/$user/$repo.git", "https://github.com/$user/$repo"))
+    }
   }
 
-  fun gitlab(user: String, repo: String) {
-    this.issues.set(Issues("GitLab", "https://gitlab.com/$user/$repo/-/issues"))
-    this.scm.set(SCM("scm:git:https://gitlab.com/$user/$repo.git", "scm:git:ssh://git@gitlab.com/$user/$repo.git", "https://gitlab.com/$user/$repo"))
+  fun gitlab(user: String, repo: String, applicable: Action<ApplyTo>? = null) {
+    val options = ApplyTo().also { applicable?.execute(it) }
+    if(options.issues) {
+      this.issues.set(Issues("GitLab", "https://gitlab.com/$user/$repo/-/issues"))
+    }
+    if(options.scm) {
+      this.scm.set(SCM("scm:git:https://gitlab.com/$user/$repo.git", "scm:git:ssh://git@gitlab.com/$user/$repo.git", "https://gitlab.com/$user/$repo"))
+    }
   }
 
   fun apache2License() = this.license.set(License(

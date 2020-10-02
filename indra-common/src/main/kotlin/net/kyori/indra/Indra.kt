@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+@file:JvmName("Indra")
 package net.kyori.indra
 
 import org.gradle.api.JavaVersion
