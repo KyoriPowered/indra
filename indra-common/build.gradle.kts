@@ -1,5 +1,9 @@
 import net.kyori.indra.self.declarePlugin
 
+dependencies {
+  implementation("gradle.plugin.org.cadixdev.gradle:licenser:0.5.0")
+}
+
 declarePlugin(
   id = "indra",
   mainClass = "IndraPlugin",
@@ -12,6 +16,13 @@ declarePlugin(
   mainClass = "IndraCheckstylePlugin",
   displayName = "Indra Checkstyle",
   description = "Reasonable checkstyle configuration"
+)
+
+declarePlugin(
+  id = "indra.license-header",
+  mainClass = "IndraLicenseHeaderPlugin",
+  displayName = "Indra License Header",
+  description = "Reasonable license-header configuration"
 )
 
 declarePlugin(

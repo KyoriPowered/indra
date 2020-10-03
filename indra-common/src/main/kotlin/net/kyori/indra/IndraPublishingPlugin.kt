@@ -28,7 +28,6 @@ import net.kyori.indra.data.License
 import net.kyori.indra.data.SCM
 import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.api.artifacts.repositories.MavenRepositoryContentDescriptor
 import org.gradle.api.artifacts.repositories.PasswordCredentials
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication

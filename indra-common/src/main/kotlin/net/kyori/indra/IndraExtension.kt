@@ -23,8 +23,8 @@
  */
 package net.kyori.indra
 
-import net.kyori.indra.data.ApplyTo
 import java.net.URI
+import net.kyori.indra.data.ApplyTo
 import net.kyori.indra.data.Issues
 import net.kyori.indra.data.License
 import net.kyori.indra.data.SCM
