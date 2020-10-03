@@ -21,40 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-@file:JvmName("Indra")
 package net.kyori.indra
 
-import org.gradle.api.JavaVersion
+import org.cadixdev.gradle.licenser.LicenseExtension
+import org.cadixdev.gradle.licenser.Licenser
+import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.jvm.toolchain.JavaToolChain
-import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.findByType
+import org.gradle.kotlin.dsl.apply
+import org.gradle.kotlin.dsl.configure
 
-internal const val EXTENSION_NAME = "indra"
-internal const val PUBLICATION_NAME = "maven"
-internal val SOURCE_FILES = listOf(
-  "**/*.groovy",
-  "**/*.java",
-  "**/*.kt",
-  "**/*.scala"
-)
+class IndraLicenseHeaderPlugin : Plugin<Project> {
+  override fun apply(project: Project) {
+    with(project) {
+      apply<Licenser>()
 
-fun extension(project: Project): IndraExtension = project.extensions.findByType(IndraExtension::class)
-  ?: project.extensions.create(EXTENSION_NAME, IndraExtension::class)
-
-fun version(tc: JavaToolChain): JavaVersion = JavaVersion.toVersion(tc.version)
-fun versionNumber(version: JavaVersion): Int = version.ordinal + 1
-fun versionString(version: JavaVersion): String = when(version) {
-  JavaVersion.VERSION_1_9 -> "9"
-  JavaVersion.VERSION_1_10 -> "10"
-  else -> version.toString()
-}
-
-/**
- * Link to the API documentation for a specific java version.
- */
-fun jdkApiDocs(version: JavaVersion): String = if(version.isJava11Compatible) {
-  "https://docs.oracle.com/en/java/javase/${version.majorVersion}/docs/api"
-} else {
-  "https://docs.oracle.com/javase/${version.majorVersion}/docs/api"
+      extensions.configure<LicenseExtension> {
+        header = rootProject.file("license_header.txt")
+        include(SOURCE_FILES)
+        newLine = false
+      }
+    }
+  }
 }
