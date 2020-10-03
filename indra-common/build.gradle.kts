@@ -8,6 +8,13 @@ declarePlugin(
 )
 
 declarePlugin(
+  id = "indra.checkstyle",
+  mainClass = "IndraCheckstylePlugin",
+  displayName = "Indra Checkstyle",
+  description = "Reasonable checkstyle configuration"
+)
+
+declarePlugin(
   id = "indra.publishing",
   mainClass = "IndraPublishingPlugin",
   displayName = "Indra Publishing",
