@@ -43,9 +43,6 @@ open class IndraExtension(objects: ObjectFactory) {
   val license: Property<License> = objects.property(License::class)
   val scm: Property<SCM> = objects.property(SCM::class)
 
-  internal val releaseRepositories: MutableList<RepositorySpec> = mutableListOf()
-  internal val snapshotRepositories: MutableList<RepositorySpec> = mutableListOf()
-
   fun github(user: String, repo: String, applicable: Action<ApplyTo>? = null) {
     val options = ApplyTo().also { applicable?.execute(it) }
     if(options.issues) {
@@ -77,6 +74,15 @@ open class IndraExtension(objects: ObjectFactory) {
     name = "The MIT License",
     url = "https://opensource.org/licenses/MIT"
   ))
+
+  // Checkstyle
+
+  val checkstyle: Property<String> = objects.property(String::class).convention("8.36.2")
+
+  // Publishing
+
+  internal val releaseRepositories: MutableList<RepositorySpec> = mutableListOf()
+  internal val snapshotRepositories: MutableList<RepositorySpec> = mutableListOf()
 
   fun publishReleasesTo(id: String, url: String) = this.releaseRepositories.add(RepositorySpec(id, URI(url)))
   fun publishSnapshotsTo(id: String, url: String) = this.snapshotRepositories.add(RepositorySpec(id, URI(url)))
