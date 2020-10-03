@@ -34,7 +34,6 @@ import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.property
 
-
 open class IndraExtension(objects: ObjectFactory) {
   val java: Property<JavaVersion> = objects.property(JavaVersion::class).convention(JavaVersion.VERSION_1_8)
   val reproducibleBuilds: Property<Boolean> = objects.property(Boolean::class).convention(true)

@@ -33,7 +33,6 @@ import org.gradle.api.artifacts.repositories.PasswordCredentials
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
-import org.gradle.api.publish.plugins.PublishingPlugin
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.credentials
@@ -81,14 +80,12 @@ class IndraPublishingPlugin : Plugin<Project> {
         extension.releaseRepositories.forEach {
           val username = "${it.id}Username"
           val password = "${it.id}Password"
-          // TODO: releases only
-          if(project.hasProperty(username) && project.hasProperty(password)) {
+          if(project.hasProperty(username) && project.hasProperty(password) && isRelease(project)) {
             repositories.maven { repository ->
               repository.name = it.id
               repository.url = it.url
               // ${id}Username + ${id}Password properties
               repository.credentials(PasswordCredentials::class)
-              repository.mavenContent(MavenRepositoryContentDescriptor::releasesOnly)
             }
           }
         }
@@ -96,8 +93,7 @@ class IndraPublishingPlugin : Plugin<Project> {
         extension.snapshotRepositories.forEach {
           val username = "${it.id}Username"
           val password = "${it.id}Password"
-          // TODO: snapshots only
-          if(project.hasProperty(username) && project.hasProperty(password)) {
+          if(project.hasProperty(username) && project.hasProperty(password) && isSnapshot(project)) {
             repositories.maven { repository ->
               repository.name = it.id
               repository.url = it.url
@@ -114,4 +110,8 @@ class IndraPublishingPlugin : Plugin<Project> {
       }
     }
   }
+
+  private fun isSnapshot(project: Project) = project.version.toString().endsWith("-SNAPSHOT")
+  // TODO: better check
+  private fun isRelease(project: Project) = !this.isSnapshot(project)
 }
