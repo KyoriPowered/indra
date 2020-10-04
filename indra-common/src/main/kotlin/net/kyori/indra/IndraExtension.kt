@@ -43,7 +43,7 @@ open class IndraExtension(objects: ObjectFactory) {
   val license: Property<License> = objects.property(License::class)
   val scm: Property<SCM> = objects.property(SCM::class)
 
-  fun github(user: String, repo: String) = this.github(user, repo, null) // for groovy buildscript support
+  @JvmOverloads
   fun github(user: String, repo: String, applicable: Action<ApplyTo>? = null) {
     val options = ApplyTo().also { applicable?.execute(it) }
     if(options.issues) {
@@ -54,7 +54,7 @@ open class IndraExtension(objects: ObjectFactory) {
     }
   }
 
-  fun gitlab(user: String, repo: String) = this.gitlab(user, repo, null) // for groovy buildscript support
+  @JvmOverloads
   fun gitlab(user: String, repo: String, applicable: Action<ApplyTo>? = null) {
     val options = ApplyTo().also { applicable?.execute(it) }
     if(options.issues) {
