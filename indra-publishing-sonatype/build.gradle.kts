@@ -9,5 +9,6 @@ declarePlugin(
   id = "indra.publishing.sonatype",
   mainClass = "sonatype.IndraSonatypePublishingPlugin",
   displayName = "Indra Sonatype Publishing",
-  description = "Reasonable sonatype publishing configuration"
+  description = "Reasonable sonatype publishing configuration",
+  tags = listOf("boilerplate", "publishing", "nexus", "sonatype")
 )
