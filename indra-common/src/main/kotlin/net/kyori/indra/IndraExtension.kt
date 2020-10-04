@@ -32,6 +32,7 @@ import org.gradle.api.Action
 import org.gradle.api.JavaVersion
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
+import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.domainObjectSet
 
@@ -85,9 +86,16 @@ open class IndraExtension(objects: ObjectFactory) {
 
   internal val repositories = objects.domainObjectSet(RepositorySpec::class)
 
+  @Transient
+  internal val publishingActions = mutableSetOf<Action<MavenPublication>>()
+
   fun publishAllTo(id: String, url: String) = this.repositories.add(RepositorySpec(id, URI(url), releases = true, snapshots = true))
   fun publishReleasesTo(id: String, url: String) = this.repositories.add(RepositorySpec(id, URI(url), releases = true, snapshots = false))
   fun publishSnapshotsTo(id: String, url: String) = this.repositories.add(RepositorySpec(id, URI(url), releases = false, snapshots = true))
+
+  fun configurePublications(action: Action<MavenPublication>) {
+    this.publishingActions.add(action)
+  }
 }
 
 internal data class RepositorySpec(

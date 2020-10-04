@@ -36,6 +36,8 @@ import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.credentials
 import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.invoke
+import org.gradle.kotlin.dsl.named
 import org.gradle.plugins.signing.SigningExtension
 import org.gradle.plugins.signing.SigningPlugin
 
@@ -96,6 +98,12 @@ class IndraPublishingPlugin : Plugin<Project> {
       extensions.configure<SigningExtension> {
         sign(extensions.getByType<PublishingExtension>().publications)
         useGpgCmd()
+      }
+
+      afterEvaluate {
+        extensions.getByType<PublishingExtension>().publications.named<MavenPublication>(PUBLICATION_NAME).configure { pub ->
+          extension.publishingActions.forEach { it(pub) }
+        }
       }
     }
   }
