@@ -25,6 +25,7 @@ package net.kyori.indra.sonatype
 
 import de.marcphilipp.gradle.nexus.NexusPublishExtension
 import de.marcphilipp.gradle.nexus.NexusPublishPlugin
+import net.kyori.indra.IndraPublishingPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.kotlin.dsl.apply
@@ -33,6 +34,7 @@ import org.gradle.kotlin.dsl.configure
 class IndraSonatypePublishingPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     with(project) {
+      apply<IndraPublishingPlugin>()
       apply<NexusPublishPlugin>()
 
       extensions.configure<NexusPublishExtension> {
