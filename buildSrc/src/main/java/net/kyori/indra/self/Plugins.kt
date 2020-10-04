@@ -28,5 +28,7 @@ fun Project.declarePlugin(id: String, mainClass: String, displayName: String, de
     if (it.tags.isEmpty()) {
       it.tags = tags
     }
+
+    it.vcsUrl = "https://github.com/KyoriPowered/indra"
   }
 }
