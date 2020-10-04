@@ -33,6 +33,7 @@ import org.gradle.api.JavaVersion
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.kotlin.dsl.property
+import org.gradle.kotlin.dsl.domainObjectSet
 
 open class IndraExtension(objects: ObjectFactory) {
   val java: Property<JavaVersion> = objects.property(JavaVersion::class).convention(JavaVersion.VERSION_1_8)
@@ -82,14 +83,16 @@ open class IndraExtension(objects: ObjectFactory) {
 
   // Publishing
 
-  internal val releaseRepositories: MutableList<RepositorySpec> = mutableListOf()
-  internal val snapshotRepositories: MutableList<RepositorySpec> = mutableListOf()
+  internal val repositories = objects.domainObjectSet(RepositorySpec::class)
 
-  fun publishReleasesTo(id: String, url: String) = this.releaseRepositories.add(RepositorySpec(id, URI(url)))
-  fun publishSnapshotsTo(id: String, url: String) = this.snapshotRepositories.add(RepositorySpec(id, URI(url)))
+  fun publishAllTo(id: String, url: String) = this.repositories.add(RepositorySpec(id, URI(url), releases = true, snapshots = true))
+  fun publishReleasesTo(id: String, url: String) = this.repositories.add(RepositorySpec(id, URI(url), releases = true, snapshots = false))
+  fun publishSnapshotsTo(id: String, url: String) = this.repositories.add(RepositorySpec(id, URI(url), releases = false, snapshots = true))
 }
 
 internal data class RepositorySpec(
   val id: String,
-  val url: URI
+  val url: URI,
+  val releases: Boolean,
+  val snapshots: Boolean
 )

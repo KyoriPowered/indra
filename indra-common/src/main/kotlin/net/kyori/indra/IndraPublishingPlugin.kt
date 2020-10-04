@@ -76,28 +76,18 @@ class IndraPublishingPlugin : Plugin<Project> {
           }
         }
 
-        extension.releaseRepositories.forEach {
+        extension.repositories.all { // will be applied to repositories as they're added
           val username = "${it.id}Username"
           val password = "${it.id}Password"
-          if(project.hasProperty(username) && project.hasProperty(password) && isRelease(project)) {
-            repositories.maven { repository ->
-              repository.name = it.id
-              repository.url = it.url
-              // ${id}Username + ${id}Password properties
-              repository.credentials(PasswordCredentials::class)
-            }
-          }
-        }
-
-        extension.snapshotRepositories.forEach {
-          val username = "${it.id}Username"
-          val password = "${it.id}Password"
-          if(project.hasProperty(username) && project.hasProperty(password) && isSnapshot(project)) {
-            repositories.maven { repository ->
-              repository.name = it.id
-              repository.url = it.url
-              // ${id}Username + ${id}Password properties
-              repository.credentials(PasswordCredentials::class)
+          if((it.releases && isRelease(project))
+              || (it.snapshots && isSnapshot(project))) {
+            if(project.hasProperty(username) && project.hasProperty(password)) {
+              repositories.maven { repository ->
+                repository.name = it.id
+                repository.url = it.url
+                // ${id}Username + ${id}Password properties
+                repository.credentials(PasswordCredentials::class)
+              }
             }
           }
         }
