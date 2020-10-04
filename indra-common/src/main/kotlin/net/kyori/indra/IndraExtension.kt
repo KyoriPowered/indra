@@ -29,9 +29,11 @@ import net.kyori.indra.data.Issues
 import net.kyori.indra.data.License
 import net.kyori.indra.data.SCM
 import org.gradle.api.Action
+import org.gradle.api.GradleException
 import org.gradle.api.JavaVersion
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
+import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.domainObjectSet
 
@@ -52,6 +54,9 @@ open class IndraExtension(objects: ObjectFactory) {
     if(options.scm) {
       this.scm.set(SCM("scm:git:https://github.com/$user/$repo.git", "scm:git:ssh://git@github.com/$user/$repo.git", "https://github.com/$user/$repo"))
     }
+    if(options.publishing) {
+      this.publishReleasesTo("githubPackages", "https://maven.pkg.github.com/$user/$repo")
+    }
   }
 
   @JvmOverloads
@@ -62,6 +67,10 @@ open class IndraExtension(objects: ObjectFactory) {
     }
     if(options.scm) {
       this.scm.set(SCM("scm:git:https://gitlab.com/$user/$repo.git", "scm:git:ssh://git@gitlab.com/$user/$repo.git", "https://gitlab.com/$user/$repo"))
+    }
+    if(options.publishing) {
+      // TODO: needs project ID, which is separate from user/repo and uses HTTP header-based auth
+      throw GradleException("Publishing cannot yet be automatically configured for GitLab projects")
     }
   }
 
@@ -85,9 +94,16 @@ open class IndraExtension(objects: ObjectFactory) {
 
   internal val repositories = objects.domainObjectSet(RepositorySpec::class)
 
+  @Transient
+  internal val publishingActions = mutableSetOf<Action<MavenPublication>>()
+
   fun publishAllTo(id: String, url: String) = this.repositories.add(RepositorySpec(id, URI(url), releases = true, snapshots = true))
   fun publishReleasesTo(id: String, url: String) = this.repositories.add(RepositorySpec(id, URI(url), releases = true, snapshots = false))
   fun publishSnapshotsTo(id: String, url: String) = this.repositories.add(RepositorySpec(id, URI(url), releases = false, snapshots = true))
+
+  fun configurePublications(action: Action<MavenPublication>) {
+    this.publishingActions.add(action)
+  }
 }
 
 internal data class RepositorySpec(

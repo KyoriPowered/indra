@@ -23,6 +23,7 @@
  */
 package net.kyori.indra
 
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.BasePluginConvention
@@ -35,6 +36,7 @@ import org.gradle.api.tasks.testing.Test
 import org.gradle.external.javadoc.StandardJavadocDocletOptions
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getPlugin
 import org.gradle.kotlin.dsl.withType
 
@@ -99,6 +101,11 @@ class IndraPlugin : Plugin<Project> {
       tasks.withType<Test>().configureEach {
         it.useJUnitPlatform()
       }
+
+      // If we are publishing, publish java
+      extension.configurePublications( Action {
+        it.from(components["java"])
+      })
 
       // For things that are eagerly applied (field accesses, anything where you need to `get()`)
       afterEvaluate {
