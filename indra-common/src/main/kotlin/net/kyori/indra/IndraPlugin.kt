@@ -69,10 +69,7 @@ class IndraPlugin : Plugin<Project> {
             compilerArgs.addAll(
               listOf(
                 "-Xdoclint",
-                // Only warn for missing javadocs for things with public access
-                "-Xdoclint:-missing/package",
-                "-Xdoclint:-missing/protected",
-                "-Xdoclint:-missing/private"
+                "-Xdoclint:-missing"
               )
             )
           }
