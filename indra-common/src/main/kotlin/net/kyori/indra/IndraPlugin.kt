@@ -94,6 +94,11 @@ class IndraPlugin : Plugin<Project> {
         }
       }
 
+      extensions.configure<JavaPluginExtension>() {
+        withJavadocJar()
+        withSourcesJar()
+      }
+
       tasks.withType<Test>().configureEach {
         it.useJUnitPlatform()
       }
