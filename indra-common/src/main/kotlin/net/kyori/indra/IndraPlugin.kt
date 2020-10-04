@@ -58,7 +58,9 @@ class IndraPlugin : Plugin<Project> {
       tasks.withType<JavaCompile>().configureEach {
         it.options.apply {
           encoding = Charsets.UTF_8.name()
-          release.set(extension.java.map(::versionNumber))
+          if(version(it.toolChain).isJava9Compatible) {
+            release.set(extension.java.map(::versionNumber))
+          }
           compilerArgs.addAll(
             listOf(
               // Generate metadata for reflection on method parameters
