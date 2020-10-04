@@ -38,6 +38,10 @@ subprojects {
     }
   }
 
+  extensions.getByType<JavaPluginExtension>().apply {
+    sourceCompatibility = JavaVersion.VERSION_1_8 // make gradle metadata happy?
+  }
+
   dependencies {
     // DSL stubs are generated per-project but only for what's applied in the `plugins` block.
     // Since this root project doesn't have anything applied, we don't get DSL extensions for the
