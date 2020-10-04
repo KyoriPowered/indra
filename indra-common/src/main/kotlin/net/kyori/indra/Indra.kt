@@ -24,6 +24,8 @@
 @file:JvmName("Indra")
 package net.kyori.indra
 
+import org.ajoberstar.grgit.Grgit
+import org.ajoberstar.grgit.Tag
 import org.gradle.api.JavaVersion
 import org.gradle.api.Project
 import org.gradle.jvm.toolchain.JavaToolChain
@@ -57,4 +59,17 @@ fun jdkApiDocs(version: JavaVersion): String = if(version.isJava11Compatible) {
   "https://docs.oracle.com/en/java/javase/${version.majorVersion}/docs/api"
 } else {
   "https://docs.oracle.com/javase/${version.majorVersion}/docs/api"
+}
+
+fun grgit(project: Project): Grgit? {
+  return project.extensions.findByType(Grgit::class)
+}
+
+/**
+ * Find a tag, if any, that corresponds with the current checked out commit
+ */
+fun headTag(project: Project): Tag? {
+  val grgit = grgit(project) ?: return null
+  val headCommit = grgit.head()
+  return grgit.tag.list().find { it.commit == headCommit }
 }
