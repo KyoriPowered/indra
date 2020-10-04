@@ -55,6 +55,8 @@ class IndraPlugin : Plugin<Project> {
       }
       convention.getPlugin<BasePluginConvention>().archivesBaseName = project.name.toLowerCase()
 
+      registerRepositoryExtensions(repositories, DEFAULT_REPOSITORIES)
+
       tasks.withType<JavaCompile>().configureEach {
         it.options.apply {
           encoding = Charsets.UTF_8.name()
