@@ -87,7 +87,7 @@ class IndraPlugin : Plugin<Project> {
             charSet = Charsets.UTF_8.name()
 
             if(version(it.toolChain).isJava9Compatible) {
-              addBooleanOption("-Xdoclint:-missing", true)
+              addBooleanOption("Xdoclint:-missing", true)
               addBooleanOption("html5", true)
             }
           }
