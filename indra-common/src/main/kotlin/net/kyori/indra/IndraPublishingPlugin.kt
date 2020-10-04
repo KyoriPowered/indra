@@ -26,18 +26,24 @@ package net.kyori.indra
 import net.kyori.indra.data.Issues
 import net.kyori.indra.data.License
 import net.kyori.indra.data.SCM
+import net.kyori.indra.task.RequireClean
+import org.ajoberstar.grgit.gradle.GrgitPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.artifacts.repositories.PasswordCredentials
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
+import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
+import org.gradle.api.publish.maven.tasks.PublishToMavenLocal
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.credentials
 import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.invoke
 import org.gradle.kotlin.dsl.named
+import org.gradle.kotlin.dsl.register
+import org.gradle.kotlin.dsl.withType
 import org.gradle.plugins.signing.SigningExtension
 import org.gradle.plugins.signing.SigningPlugin
 
@@ -48,6 +54,7 @@ class IndraPublishingPlugin : Plugin<Project> {
 
       apply<MavenPublishPlugin>()
       apply<SigningPlugin>()
+      apply<GrgitPlugin>()
 
       extensions.configure<PublishingExtension> {
         publications.register(PUBLICATION_NAME, MavenPublication::class.java) {
@@ -100,6 +107,13 @@ class IndraPublishingPlugin : Plugin<Project> {
         useGpgCmd()
       }
 
+      val requireClean = tasks.register("requireClean", RequireClean::class)
+      tasks.withType<AbstractPublishToMaven>().configureEach {
+        if(it !is PublishToMavenLocal) {
+          it.dependsOn(requireClean)
+        }
+      }
+
       afterEvaluate {
         extensions.getByType<PublishingExtension>().publications.named<MavenPublication>(PUBLICATION_NAME).configure { pub ->
           extension.publishingActions.forEach { it(pub) }
@@ -109,6 +123,16 @@ class IndraPublishingPlugin : Plugin<Project> {
   }
 
   private fun isSnapshot(project: Project) = project.version.toString().endsWith("-SNAPSHOT")
-  // TODO: better check
-  private fun isRelease(project: Project) = !this.isSnapshot(project)
+
+  /**
+   * Verify that this project is checked out to a release version, meaning that:
+   *
+   * - The version does not contain SNAPSHOT
+   * - The project is managed within a Git repository
+   * - the current head commit is tagged
+   */
+  private fun isRelease(project: Project): Boolean {
+    val tag = headTag(project)
+    return (tag != null || grgit(project) == null) && !this.isSnapshot(project)
+  }
 }
