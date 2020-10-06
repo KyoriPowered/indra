@@ -47,12 +47,6 @@ class IndraPlugin : Plugin<Project> {
 
       apply<JavaLibraryPlugin>()
 
-      // Inherit options from root project
-      if(this != rootProject) {
-        group = rootProject.group
-        version = rootProject.version
-        description = rootProject.description
-      }
       convention.getPlugin<BasePluginConvention>().archivesBaseName = project.name.toLowerCase()
 
       registerRepositoryExtensions(repositories, DEFAULT_REPOSITORIES)

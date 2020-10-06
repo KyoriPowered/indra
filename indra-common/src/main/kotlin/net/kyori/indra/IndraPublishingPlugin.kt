@@ -56,6 +56,13 @@ class IndraPublishingPlugin : Plugin<Project> {
       apply<SigningPlugin>()
       apply<GrgitPlugin>()
 
+      // Inherit options from root project
+      if(this != rootProject) {
+        group = rootProject.group
+        version = rootProject.version
+        description = rootProject.description
+      }
+
       extensions.configure<PublishingExtension> {
         publications.register(PUBLICATION_NAME, MavenPublication::class.java) {
           it.apply {
