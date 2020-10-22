@@ -1,16 +1,15 @@
 import com.gradle.publish.PluginBundleExtension
-import net.minecrell.gradle.licenser.LicenseExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+  id("net.kyori.indra") version "1.0.2" apply false
   kotlin("jvm") version embeddedKotlinVersion apply false
 
-  id("net.minecrell.licenser") version "0.4.1"
   id("com.github.ben-manes.versions") version "0.33.0"
 }
 
 group = "net.kyori"
-version = "1.0.2"
+version = "1.1.0-SNAPSHOT"
 
 allprojects {
   repositories {
@@ -22,11 +21,13 @@ allprojects {
 }
 
 subprojects {
+
   apply(plugin = "java-gradle-plugin")
   apply(plugin = "com.gradle.plugin-publish")
   apply(plugin = "maven-publish")
   apply(plugin = "org.jetbrains.kotlin.jvm")
-  apply(plugin = "net.minecrell.licenser")
+  apply(plugin = "net.kyori.indra")
+  apply(plugin = "net.kyori.indra.license-header")
 
   group = rootProject.group
   version = rootProject.version
@@ -36,10 +37,6 @@ subprojects {
     kotlinOptions {
       jvmTarget = "1.8" // Why is this not the default version? D:
     }
-  }
-
-  extensions.getByType<JavaPluginExtension>().apply {
-    sourceCompatibility = JavaVersion.VERSION_1_8 // make gradle metadata happy?
   }
 
   dependencies {
@@ -54,16 +51,6 @@ subprojects {
     "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.7.0")
   }
 
-  tasks.withType<Test>().configureEach {
-    useJUnitPlatform()
-  }
-
-  extensions.configure<LicenseExtension> {
-    header = rootProject.file("header.txt")
-
-    newLine = false
-  }
-
   val pluginBundle = extensions.getByType<PluginBundleExtension>().apply {
     website = "https://github.com/KyoriPowered/indra"
     vcsUrl = "https://github.com/KyoriPowered/indra.git"
@@ -71,6 +58,7 @@ subprojects {
     tags = listOf("kyori", "standard")
   }
 
+  // Plugin publishing is a bit weird, so we can't use standard Indra for it
   extensions.getByType<PublishingExtension>().publications.withType<MavenPublication>().configureEach {
     pom {
       name.set(project.name)
