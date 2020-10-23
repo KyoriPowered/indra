@@ -21,6 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+@file:JvmName("IndraPublishing")
 package net.kyori.indra
 
 import net.kyori.indra.data.Issues
@@ -130,18 +131,18 @@ class IndraPublishingPlugin : Plugin<Project> {
       }
     }
   }
+}
 
-  private fun isSnapshot(project: Project) = project.version.toString().endsWith("-SNAPSHOT")
+fun isSnapshot(project: Project) = project.version.toString().endsWith("-SNAPSHOT")
 
-  /**
-   * Verify that this project is checked out to a release version, meaning that:
-   *
-   * - The version does not contain SNAPSHOT
-   * - The project is managed within a Git repository
-   * - the current head commit is tagged
-   */
-  private fun isRelease(project: Project): Boolean {
-    val tag = headTag(project)
-    return (tag != null || grgit(project) == null) && !this.isSnapshot(project)
-  }
+/**
+ * Verify that this project is checked out to a release version, meaning that:
+ *
+ * - The version does not contain SNAPSHOT
+ * - The project is managed within a Git repository
+ * - the current head commit is tagged
+ */
+fun isRelease(project: Project): Boolean {
+  val tag = headTag(project)
+  return (tag != null || grgit(project) == null) && !isSnapshot(project)
 }
