@@ -4,6 +4,7 @@
 
 A set of gradle plugins to apply common organization build settings.
 
+Take a look at [our wiki](https://github.com/KyoriPowered/indra/wiki) for a list of included plugins and what each one does.
 
 ### Contributing
 
