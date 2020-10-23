@@ -27,6 +27,7 @@ import net.kyori.indra.grgit
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 /**
  * Require that the project has no files that are uncommitted to SCM,
@@ -35,7 +36,7 @@ import org.gradle.api.tasks.TaskAction
  */
 open class RequireClean : DefaultTask() {
   init {
-    group = "verification"
+    group = LifecycleBasePlugin.VERIFICATION_GROUP
   }
 
   @TaskAction
