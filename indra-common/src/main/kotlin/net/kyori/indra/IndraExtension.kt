@@ -41,6 +41,13 @@ open class IndraExtension(objects: ObjectFactory) {
   val java: Property<JavaVersion> = objects.property(JavaVersion::class).convention(JavaVersion.VERSION_1_8)
   val reproducibleBuilds: Property<Boolean> = objects.property(Boolean::class).convention(true)
 
+  /**
+   * Whether the `java` [org.gradle.api.component.SoftwareComponent] should be automatically included in publications.
+   *
+   * This property does not usually need to be changed, unless working with Gradle plugins that publish in a non-standard way.
+   */
+  val includeJavaSoftwareComponentInPublications: Property<Boolean> = objects.property(Boolean::class).convention(true)
+
   val issues: Property<Issues> = objects.property(Issues::class)
   val license: Property<License> = objects.property(License::class)
   val scm: Property<SCM> = objects.property(SCM::class)

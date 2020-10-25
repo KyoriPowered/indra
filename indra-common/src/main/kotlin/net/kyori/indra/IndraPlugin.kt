@@ -91,7 +91,7 @@ class IndraPlugin : Plugin<Project> {
         }
       }
 
-      extensions.configure<JavaPluginExtension>() {
+      extensions.configure<JavaPluginExtension> {
         withJavadocJar()
         withSourcesJar()
       }
@@ -100,13 +100,16 @@ class IndraPlugin : Plugin<Project> {
         it.useJUnitPlatform()
       }
 
-      // If we are publishing, publish java
-      extension.configurePublications( Action {
-        it.from(components["java"])
-      })
 
       // For things that are eagerly applied (field accesses, anything where you need to `get()`)
       afterEvaluate {
+        if(extension.includeJavaSoftwareComponentInPublications.get()) {
+          // If we are publishing, publish java
+          extension.configurePublications(Action {
+            it.from(components["java"])
+          })
+        }
+
         extensions.configure<JavaPluginExtension> {
           sourceCompatibility = extension.java.get()
           targetCompatibility = extension.java.get()
