@@ -25,11 +25,11 @@
 package net.kyori.indra
 
 import groovy.lang.Closure
+import java.net.URI
 import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.artifacts.repositories.MavenRepositoryContentDescriptor
 import org.gradle.api.plugins.ExtensionAware
-import java.net.URI
 
 fun RepositoryHandler.sonatypeSnapshots() = sonatypeSnapshots.addTo(this)
 private val sonatypeSnapshots = RemoteRepository("sonatypeSnapshots", "https://oss.sonatype.org/content/repositories/snapshots/", releases = false)
@@ -61,9 +61,8 @@ data class RemoteRepository @JvmOverloads constructor(val name: String, val url:
 }
 
 fun registerRepositoryExtensions(handler: RepositoryHandler, repositories: Iterable<RemoteRepository>) {
-  val extensions = handler as ExtensionAware
   repositories.forEach {
-    extensions.extensions.add(it.name, object : Closure<Unit>(null, handler) {
+    (handler as ExtensionAware).extensions.add(it.name, object : Closure<Unit>(null, handler) {
       fun doCall() {
         it.addTo(this.thisObject as RepositoryHandler)
       }

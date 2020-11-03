@@ -21,22 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-@file:JvmName("Indra")
-package net.kyori.indra
+@file:JvmName("VersionControl")
+package net.kyori.indra.util
 
+import org.ajoberstar.grgit.Grgit
+import org.ajoberstar.grgit.Tag
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.create
 import org.gradle.kotlin.dsl.findByType
 
-internal const val EXTENSION_NAME = "indra"
-internal const val PUBLICATION_NAME = "maven"
+fun grgit(project: Project): Grgit? {
+  return project.extensions.findByType(Grgit::class)
+}
 
-internal val SOURCE_FILES = listOf(
-  "**/*.groovy",
-  "**/*.java",
-  "**/*.kt",
-  "**/*.scala"
-)
-
-fun extension(project: Project): IndraExtension = project.extensions.findByType(IndraExtension::class)
-  ?: project.extensions.create(EXTENSION_NAME, IndraExtension::class)
+/**
+ * Find a tag, if any, that corresponds with the current checked out commit
+ */
+fun headTag(project: Project): Tag? {
+  val grgit = grgit(project) ?: return null
+  val headCommit = grgit.head()
+  return grgit.tag.list().find { it.commit == headCommit }
+}

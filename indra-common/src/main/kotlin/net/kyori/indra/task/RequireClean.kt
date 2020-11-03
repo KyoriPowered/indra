@@ -23,7 +23,7 @@
  */
 package net.kyori.indra.task
 
-import net.kyori.indra.grgit
+import net.kyori.indra.util.grgit
 import org.gradle.api.DefaultTask
 import org.gradle.api.GradleException
 import org.gradle.api.tasks.TaskAction
@@ -45,7 +45,7 @@ open class RequireClean : DefaultTask() {
 
   @TaskAction
   fun check() {
-    if (grgit(project)?.status()?.isClean == false) {
+    if(grgit(project)?.status()?.isClean == false) {
       throw GradleException("Source root must be clean! Make sure your changes are committed")
     }
   }

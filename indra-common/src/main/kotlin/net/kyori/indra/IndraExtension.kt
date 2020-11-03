@@ -43,8 +43,6 @@ import org.gradle.kotlin.dsl.property
 import org.gradle.process.CommandLineArgumentProvider
 
 open class IndraExtension @Inject constructor(objects: ObjectFactory) {
-  @Deprecated("Moved into 'versions'", replaceWith = ReplaceWith("javaVersions.target"))
-  val java: Property<JavaVersion> = objects.property(JavaVersion::class).convention(JavaVersion.VERSION_1_8)
   val reproducibleBuilds: Property<Boolean> = objects.property(Boolean::class).convention(true)
 
   /**
@@ -64,11 +62,6 @@ open class IndraExtension @Inject constructor(objects: ObjectFactory) {
    */
   fun javaVersions(action: Action<JavaToolchainVersions>) {
     action(javaVersions)
-  }
-
-  init {
-    @Suppress("DEPRECATION") // graceful transition
-    javaVersions.target.convention(java.map { versionNumber(it) })
   }
 
   internal fun previewFeatureArgumentProvider(): CommandLineArgumentProvider = CommandLineArgumentProvider {
@@ -144,20 +137,24 @@ open class IndraExtension @Inject constructor(objects: ObjectFactory) {
     url = url
   ))
 
-  // Checkstyle
+  // --------------------
+  // ---- Checkstyle ----
+  // --------------------
 
   val checkstyle: Property<String> = objects.property(String::class).convention("8.37")
 
-  // Publishing
+  // --------------------
+  // ---- Publishing ----
+  // --------------------
 
   internal val repositories = objects.domainObjectSet(RepositorySpec::class)
 
   @Transient
   internal val publishingActions = mutableSetOf<Action<MavenPublication>>()
 
-  fun publishAllTo(id: String, url: String) = this.repositories.add(RepositorySpec(id, URI(url), releases = true, snapshots = true))
-  fun publishReleasesTo(id: String, url: String) = this.repositories.add(RepositorySpec(id, URI(url), releases = true, snapshots = false))
-  fun publishSnapshotsTo(id: String, url: String) = this.repositories.add(RepositorySpec(id, URI(url), releases = false, snapshots = true))
+  fun publishAllTo(id: String, url: String) = this.repositories.add(RepositorySpec(id, url, releases = true, snapshots = true))
+  fun publishReleasesTo(id: String, url: String) = this.repositories.add(RepositorySpec(id, url, releases = true, snapshots = false))
+  fun publishSnapshotsTo(id: String, url: String) = this.repositories.add(RepositorySpec(id, url, releases = false, snapshots = true))
 
   fun configurePublications(action: Action<MavenPublication>) {
     this.publishingActions.add(action)
@@ -169,4 +166,6 @@ internal data class RepositorySpec(
   val url: URI,
   val releases: Boolean,
   val snapshots: Boolean
-)
+) {
+  constructor(name: String, url: String, releases: Boolean, snapshots: Boolean) : this(name, URI(url), releases, snapshots)
+}

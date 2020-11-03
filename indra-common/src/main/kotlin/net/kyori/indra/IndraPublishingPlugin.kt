@@ -29,6 +29,8 @@ import net.kyori.indra.data.Issues
 import net.kyori.indra.data.License
 import net.kyori.indra.data.SCM
 import net.kyori.indra.task.RequireClean
+import net.kyori.indra.util.grgit
+import net.kyori.indra.util.headTag
 import org.ajoberstar.grgit.gradle.GrgitPlugin
 import org.gradle.api.Plugin
 import org.gradle.api.Project

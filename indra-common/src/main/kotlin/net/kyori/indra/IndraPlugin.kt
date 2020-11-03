@@ -23,6 +23,7 @@
  */
 package net.kyori.indra
 
+import net.kyori.indra.util.javaVersionString
 import org.gradle.api.Action
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
@@ -167,7 +168,7 @@ class IndraPlugin : Plugin<Project> {
                   html5.value = true
                   enablePreview.value = extension.javaVersions.enablePreviewFeatures.get()
                 } else {
-                  source = versionString(target)
+                  source = javaVersionString(target)
                 }
               }
             }
@@ -195,6 +196,17 @@ class IndraPlugin : Plugin<Project> {
           tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME) { it.dependsOn(versionedTest) }
         }
       }
+
+      registerRepositoryExtensions(repositories, DEFAULT_REPOSITORIES)
     }
+  }
+
+  /**
+   * Link to the API documentation for a specific java version.
+   */
+  private fun jdkApiDocs(javaVersion: Int): String = if(javaVersion >= 11) {
+    "https://docs.oracle.com/en/java/javase/$javaVersion/docs/api"
+  } else {
+    "https://docs.oracle.com/javase/$javaVersion/docs/api"
   }
 }

@@ -21,22 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-@file:JvmName("Indra")
-package net.kyori.indra
+@file:JvmName("Versioning")
+package net.kyori.indra.util
 
-import org.gradle.api.Project
-import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.findByType
-
-internal const val EXTENSION_NAME = "indra"
-internal const val PUBLICATION_NAME = "maven"
-
-internal val SOURCE_FILES = listOf(
-  "**/*.groovy",
-  "**/*.java",
-  "**/*.kt",
-  "**/*.scala"
-)
-
-fun extension(project: Project): IndraExtension = project.extensions.findByType(IndraExtension::class)
-  ?: project.extensions.create(EXTENSION_NAME, IndraExtension::class)
+fun javaVersionString(version: Int): String = when(version) {
+  in 1..8 -> "1.$version"
+  else -> version.toString()
+}
