@@ -32,7 +32,7 @@ import org.gradle.api.plugins.ExtensionAware
 import java.net.URI
 
 fun RepositoryHandler.sonatypeSnapshots() = sonatypeSnapshots.addTo(this)
-private val sonatypeSnapshots = RemoteRepository("sonatypeSnapshots", "https://oss.sonatype.org/content/groups/public/", releases = false)
+private val sonatypeSnapshots = RemoteRepository("sonatypeSnapshots", "https://oss.sonatype.org/content/repositories/snapshots/", releases = false)
 
 internal val DEFAULT_REPOSITORIES = listOf(
   sonatypeSnapshots
