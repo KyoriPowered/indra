@@ -34,9 +34,9 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
  * to prevent accidentally publishing content that does not match the
  * published source.
  */
-open class RequireClean : DefaultTask() {
+open class RequireCleanVCS : DefaultTask() {
   companion object {
-    const val NAME = "requireClean"
+    const val NAME = "requireCleanVCS"
   }
 
   init {

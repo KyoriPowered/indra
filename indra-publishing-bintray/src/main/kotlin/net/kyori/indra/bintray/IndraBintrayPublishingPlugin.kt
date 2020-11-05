@@ -29,7 +29,7 @@ import java.time.format.DateTimeFormatter
 import net.kyori.indra.IndraPublishingPlugin
 import net.kyori.indra.extension
 import net.kyori.indra.isRelease
-import net.kyori.indra.task.RequireClean
+import net.kyori.indra.task.RequireCleanVCS
 import net.kyori.indra.util.headTag
 import org.ajoberstar.grgit.Tag
 import org.gradle.api.Plugin
@@ -44,6 +44,7 @@ class IndraBintrayPublishingPlugin : Plugin<Project> {
   override fun apply(project: Project) {
     with(project) {
       val extension = extension(project)
+
       apply<IndraPublishingPlugin>()
       apply<BintrayPlugin>()
 
@@ -66,7 +67,7 @@ class IndraBintrayPublishingPlugin : Plugin<Project> {
       }
 
       tasks.named("bintrayUpload").configure {
-        it.dependsOn(tasks.named(RequireClean.NAME))
+        it.dependsOn(tasks.named(RequireCleanVCS.NAME))
         it.onlyIf {
           isRelease(project)
         }
