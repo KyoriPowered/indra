@@ -36,6 +36,7 @@ import org.gradle.api.provider.Property
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.domainObjectSet
+import org.gradle.process.CommandLineArgumentProvider
 
 open class IndraExtension(objects: ObjectFactory) {
   val java: Property<JavaVersion> = objects.property(JavaVersion::class).convention(JavaVersion.VERSION_1_8)
@@ -47,6 +48,20 @@ open class IndraExtension(objects: ObjectFactory) {
    * This property does not usually need to be changed, unless working with Gradle plugins that publish in a non-standard way.
    */
   val includeJavaSoftwareComponentInPublications: Property<Boolean> = objects.property(Boolean::class).convention(true)
+
+  /**
+   * If preview features should be enabled. This will be applied to all compile and JavaExec tasks
+   */
+  val enableJavaPreviewFeatures: Property<Boolean> = objects.property(Boolean::class).convention(false)
+
+  internal fun previewFeatureArgumentProvider(): CommandLineArgumentProvider = CommandLineArgumentProvider {
+    enableJavaPreviewFeatures.finalizeValue()
+    if(enableJavaPreviewFeatures.get()) {
+      listOf("--enable-preview")
+    } else {
+      listOf()
+    }
+  }
 
   val issues: Property<Issues> = objects.property(Issues::class)
   val license: Property<License> = objects.property(License::class)

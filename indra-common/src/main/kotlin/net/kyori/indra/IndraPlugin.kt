@@ -29,6 +29,7 @@ import org.gradle.api.Project
 import org.gradle.api.plugins.BasePluginConvention
 import org.gradle.api.plugins.JavaLibraryPlugin
 import org.gradle.api.plugins.JavaPluginExtension
+import org.gradle.api.tasks.JavaExec
 import org.gradle.api.tasks.bundling.AbstractArchiveTask
 import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.javadoc.Javadoc
@@ -39,6 +40,7 @@ import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.get
 import org.gradle.kotlin.dsl.getPlugin
 import org.gradle.kotlin.dsl.withType
+import org.gradle.process.CommandLineArgumentProvider
 
 class IndraPlugin : Plugin<Project> {
   override fun apply(project: Project) {
@@ -73,7 +75,15 @@ class IndraPlugin : Plugin<Project> {
               )
             )
           }
+
+          // Enable preview features if option is set in extension
+          compilerArgumentProviders += extension.previewFeatureArgumentProvider()
         }
+      }
+
+      tasks.withType(JavaExec::class).configureEach {
+        // Enable preview features if option is set in extension
+        it.jvmArgumentProviders += extension.previewFeatureArgumentProvider()
       }
 
       tasks.withType<Javadoc>().configureEach {
@@ -86,6 +96,10 @@ class IndraPlugin : Plugin<Project> {
             if(version(it.toolChain).isJava9Compatible) {
               addBooleanOption("Xdoclint:-missing", true)
               addBooleanOption("html5", true)
+              extension.enableJavaPreviewFeatures.finalizeValue()
+              if(extension.enableJavaPreviewFeatures.get()) {
+                addBooleanOption("-enable-preview", true)
+              }
             }
           }
         }
