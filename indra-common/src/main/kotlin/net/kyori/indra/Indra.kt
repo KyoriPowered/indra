@@ -51,14 +51,28 @@ fun versionString(version: JavaVersion): String = when(version) {
   JavaVersion.VERSION_1_10 -> "10"
   else -> version.toString()
 }
+fun versionString(version: Int): String = when(version) {
+  in 1..8 -> "1.$version"
+  else -> version.toString()
+}
 
 /**
  * Link to the API documentation for a specific java version.
  */
+@Deprecated("Use the variant with an integer version instead", replaceWith = ReplaceWith("jdkApiDocs(versionNumber(version))"))
 fun jdkApiDocs(version: JavaVersion): String = if(version.isJava11Compatible) {
   "https://docs.oracle.com/en/java/javase/${version.majorVersion}/docs/api"
 } else {
   "https://docs.oracle.com/javase/${version.majorVersion}/docs/api"
+}
+
+/**
+ * Link to the API documentation for a specific java version.
+ */
+fun jdkApiDocs(javaVersion: Int): String = if(javaVersion >= 11) {
+  "https://docs.oracle.com/en/java/javase/$javaVersion/docs/api"
+} else {
+  "https://docs.oracle.com/javase/$javaVersion/docs/api"
 }
 
 fun grgit(project: Project): Grgit? {
