@@ -110,7 +110,7 @@ open class IndraExtension(objects: ObjectFactory) {
 
   // Checkstyle
 
-  val checkstyle: Property<String> = objects.property(String::class).convention("8.36.2")
+  val checkstyle: Property<String> = objects.property(String::class).convention("8.37")
 
   // Publishing
 
