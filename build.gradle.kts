@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "net.kyori"
-version = "1.1.0"
+version = "1.1.1-SNAPSHOT"
 
 allprojects {
   repositories {
@@ -54,7 +54,7 @@ subprojects {
   val pluginBundle = extensions.getByType<PluginBundleExtension>().apply {
     website = "https://github.com/KyoriPowered/indra"
     vcsUrl = "https://github.com/KyoriPowered/indra.git"
-    description = ":gronk:"
+    description = "KyoriPowered organizational build standards and utilities"
     tags = listOf("kyori", "standard")
   }
 

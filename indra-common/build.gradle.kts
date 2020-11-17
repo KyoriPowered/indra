@@ -9,7 +9,7 @@ declarePlugin(
   id = "indra",
   mainClass = "IndraPlugin",
   displayName = "Indra",
-  description = "Sensible configuration for JVM projects",
+  description = "Simplified tools for configuring modern JVM projects",
   tags = listOf("boilerplate", "java", "jvm")
 )
 
@@ -17,7 +17,7 @@ declarePlugin(
   id = "indra.checkstyle",
   mainClass = "IndraCheckstylePlugin",
   displayName = "Indra Checkstyle",
-  description = "Reasonable checkstyle configuration",
+  description = "Checkstyle configuration in line with the Indra file layout",
   tags = listOf("boilerplate", "checkstyle")
 )
 
@@ -25,7 +25,7 @@ declarePlugin(
   id = "indra.license-header",
   mainClass = "IndraLicenseHeaderPlugin",
   displayName = "Indra License Header",
-  description = "Reasonable license-header configuration",
+  description = "License header configuration in line with the Indra file layout",
   tags = listOf("boilerplate", "license", "license-header", "licensing")
 )
 
@@ -33,6 +33,6 @@ declarePlugin(
   id = "indra.publishing",
   mainClass = "IndraPublishingPlugin",
   displayName = "Indra Publishing",
-  description = "Reasonable publishing configuration",
+  description = "Reasonable publishing configuration and repository aliases",
   tags = listOf("boilerplate", "publishing", "nexus")
 )
