@@ -24,6 +24,7 @@
 package net.kyori.indra
 
 import org.gradle.api.Action
+import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.BasePluginConvention
@@ -35,11 +36,15 @@ import org.gradle.api.tasks.compile.JavaCompile
 import org.gradle.api.tasks.javadoc.Javadoc
 import org.gradle.api.tasks.testing.Test
 import org.gradle.external.javadoc.StandardJavadocDocletOptions
+import org.gradle.jvm.toolchain.JavaLanguageVersion
+import org.gradle.jvm.toolchain.JavaToolchainService
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.configure
 import org.gradle.kotlin.dsl.get
+import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.getPlugin
 import org.gradle.kotlin.dsl.withType
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 import org.gradle.process.CommandLineArgumentProvider
 
 class IndraPlugin : Plugin<Project> {
@@ -53,12 +58,14 @@ class IndraPlugin : Plugin<Project> {
 
       registerRepositoryExtensions(repositories, DEFAULT_REPOSITORIES)
 
-      tasks.withType<JavaCompile>().configureEach {
-        it.options.apply {
+      extensions.getByType(JavaPluginExtension::class).apply {
+        // Ensure that we're only running the latest version
+        this.toolchain.languageVersion.set(extension.javaVersions.actualVersion.map { JavaLanguageVersion.of(it) })
+      }
+
+      tasks.withType<JavaCompile>().configureEach {compile ->
+        compile.options.apply {
           encoding = Charsets.UTF_8.name()
-          if(version(it.toolChain).isJava9Compatible) {
-            release.set(extension.java.map(::versionNumber))
-          }
           compilerArgs.addAll(
             listOf(
               // Generate metadata for reflection on method parameters
@@ -67,13 +74,17 @@ class IndraPlugin : Plugin<Project> {
               "-Xlint:all"
             )
           )
-          if(version(it.toolChain).isJava9Compatible) {
-            compilerArgs.addAll(
+
+          // JDK 9+ only arguments
+          compilerArgumentProviders += CommandLineArgumentProvider {
+            if(extension.javaVersions.actualVersion.get() >= 9) {
               listOf(
                 "-Xdoclint",
                 "-Xdoclint:-missing"
               )
-            )
+            } else {
+              emptyList()
+            }
           }
 
           // Enable preview features if option is set in extension
@@ -92,15 +103,6 @@ class IndraPlugin : Plugin<Project> {
 
           if(this is StandardJavadocDocletOptions) {
             charSet = Charsets.UTF_8.name()
-
-            if(version(it.toolChain).isJava9Compatible) {
-              addBooleanOption("Xdoclint:-missing", true)
-              addBooleanOption("html5", true)
-              extension.enableJavaPreviewFeatures.finalizeValue()
-              if(extension.enableJavaPreviewFeatures.get()) {
-                addBooleanOption("-enable-preview", true)
-              }
-            }
           }
         }
       }
@@ -117,6 +119,7 @@ class IndraPlugin : Plugin<Project> {
 
       // For things that are eagerly applied (field accesses, anything where you need to `get()`)
       afterEvaluate {
+        extension.includeJavaSoftwareComponentInPublications.finalizeValue()
         if(extension.includeJavaSoftwareComponentInPublications.get()) {
           // If we are publishing, publish java
           extension.configurePublications(Action {
@@ -125,8 +128,18 @@ class IndraPlugin : Plugin<Project> {
         }
 
         extensions.configure<JavaPluginExtension> {
-          sourceCompatibility = extension.java.get()
-          targetCompatibility = extension.java.get()
+          val versionProp = extension.javaVersions.target
+          versionProp.finalizeValue()
+          sourceCompatibility = JavaVersion.toVersion(versionProp.get())
+          targetCompatibility = JavaVersion.toVersion(versionProp.get())
+        }
+
+        tasks.withType(JavaCompile::class).configureEach {
+          with(it.options) {
+            if (!release.isPresent && extension.javaVersions.minimumToolchain.get() >= 9) {
+              release.set(extension.javaVersions.target)
+            }
+          }
         }
 
         if(extension.reproducibleBuilds.get()) {
@@ -136,13 +149,51 @@ class IndraPlugin : Plugin<Project> {
           }
         }
 
-        tasks.withType<Javadoc>().configureEach {
-          with(it.options) {
+        tasks.withType<Javadoc>().configureEach { jd ->
+          with(jd.options) {
             if(this is StandardJavadocDocletOptions) {
-              source = versionString(extension.java.get())
-              links(jdkApiDocs(extension.java.get()))
+              val doclintMissing = addBooleanOption("Xdoclint:-missing")
+              val html5 = addBooleanOption("html5")
+              val release = addStringOption("-release")
+              val enablePreview = addBooleanOption("-enable-preview")
+
+              jd.doFirst {
+                val versions = extension.javaVersions
+                val target = versions.target.get()
+                links(jdkApiDocs(target))
+
+                if(jd.javadocTool.get().metadata.languageVersion.canCompileOrRun(9)) {
+                  release.value = target.toString()
+                  doclintMissing.value = true
+                  html5.value = true
+                  enablePreview.value = extension.javaVersions.enablePreviewFeatures.get()
+                } else {
+                  source = versionString(target)
+                }
+              }
             }
           }
+        }
+
+        // Set up testing on the selected Java versions
+        val toolchains = extensions.getByType(JavaToolchainService::class)
+        val testWithProp = extension.javaVersions.testWith
+        testWithProp.finalizeValue()
+        testWithProp.get().forEach { targetRuntime ->
+          // Create task that will use that version
+          val versionedTest = tasks.register("testJava$targetRuntime", Test::class.java) {
+            it.description = "Runs tests on Java $targetRuntime if necessary based on build settings"
+            it.group = LifecycleBasePlugin.VERIFICATION_GROUP
+            // Appropriate classpath and test class source information is set on all test tasks by JavaPlugin
+
+            it.onlyIf {
+              // Only run if our runtime is not the standard runtime, and we're doing strict versions.
+              extension.javaVersions.strictVersions.get() && targetRuntime != extension.javaVersions.actualVersion.get()
+            }
+            it.javaLauncher.set(toolchains.launcherFor { it.languageVersion.set(JavaLanguageVersion.of(targetRuntime)) })
+          }
+
+          tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME) { it.dependsOn(versionedTest) }
         }
       }
     }

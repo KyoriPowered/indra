@@ -36,9 +36,12 @@ import org.gradle.api.provider.Property
 import org.gradle.api.publish.maven.MavenPublication
 import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.domainObjectSet
+import org.gradle.kotlin.dsl.invoke
 import org.gradle.process.CommandLineArgumentProvider
+import javax.inject.Inject
 
-open class IndraExtension(objects: ObjectFactory) {
+open class IndraExtension @Inject constructor(objects: ObjectFactory) {
+  @Deprecated("Moved into 'versions'", replaceWith = ReplaceWith("javaVersions.target"))
   val java: Property<JavaVersion> = objects.property(JavaVersion::class).convention(JavaVersion.VERSION_1_8)
   val reproducibleBuilds: Property<Boolean> = objects.property(Boolean::class).convention(true)
 
@@ -50,13 +53,25 @@ open class IndraExtension(objects: ObjectFactory) {
   val includeJavaSoftwareComponentInPublications: Property<Boolean> = objects.property(Boolean::class).convention(true)
 
   /**
-   * If preview features should be enabled. This will be applied to all compile and JavaExec tasks
+   * Options controlling Java toolchain versions
    */
-  val enableJavaPreviewFeatures: Property<Boolean> = objects.property(Boolean::class).convention(false)
+  val javaVersions: JavaToolchainVersions = objects.newInstance(JavaToolchainVersions::class.java)
+
+  /**
+   * Configure the versioning configuration.
+   */
+  fun javaVersions(action: Action<JavaToolchainVersions>) {
+    action(javaVersions)
+  }
+
+  init {
+    @Suppress("DEPRECATION") // graceful transition
+    javaVersions.target.convention(java.map { versionNumber(it) })
+  }
 
   internal fun previewFeatureArgumentProvider(): CommandLineArgumentProvider = CommandLineArgumentProvider {
-    enableJavaPreviewFeatures.finalizeValue()
-    if(enableJavaPreviewFeatures.get()) {
+    javaVersions.enablePreviewFeatures.finalizeValue()
+    if(javaVersions.enablePreviewFeatures.get()) {
       listOf("--enable-preview")
     } else {
       listOf()
