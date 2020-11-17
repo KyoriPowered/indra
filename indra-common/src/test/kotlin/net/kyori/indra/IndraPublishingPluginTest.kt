@@ -24,7 +24,7 @@
 package net.kyori.indra
 
 import org.gradle.testfixtures.ProjectBuilder
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
 
 class IndraPublishingPluginTest {
   @Test

@@ -32,7 +32,6 @@ import net.kyori.indra.data.License
 import net.kyori.indra.data.SCM
 import org.gradle.api.Action
 import org.gradle.api.GradleException
-import org.gradle.api.JavaVersion
 import org.gradle.api.component.SoftwareComponent
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property

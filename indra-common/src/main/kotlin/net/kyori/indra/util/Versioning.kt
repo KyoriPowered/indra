@@ -24,7 +24,10 @@
 @file:JvmName("Versioning")
 package net.kyori.indra.util
 
-fun javaVersionString(version: Int): String = when(version) {
+import org.gradle.api.JavaVersion
+
+fun versionNumber(version: JavaVersion): Int = version.ordinal + 1
+fun versionString(version: Int): String = when(version) {
   in 1..8 -> "1.$version"
   else -> version.toString()
 }

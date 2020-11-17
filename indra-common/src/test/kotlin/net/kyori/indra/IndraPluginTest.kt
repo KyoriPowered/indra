@@ -24,18 +24,13 @@
 package net.kyori.indra
 
 import org.gradle.testfixtures.ProjectBuilder
-import kotlin.test.Test
+import org.junit.jupiter.api.Test
 
 class IndraPluginTest {
-
-  /**
-   * Test that the plugin applies without any errors
-   */
   @Test
   fun testEmptyBuild() {
     val project = ProjectBuilder.builder().build()
 
     project.pluginManager.apply("net.kyori.indra")
   }
-
 }

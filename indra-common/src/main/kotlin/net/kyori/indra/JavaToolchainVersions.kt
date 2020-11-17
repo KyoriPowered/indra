@@ -23,6 +23,9 @@
  */
 package net.kyori.indra
 
+import javax.inject.Inject
+import kotlin.math.max
+import net.kyori.indra.util.versionNumber
 import org.gradle.api.JavaVersion
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
@@ -31,8 +34,6 @@ import org.gradle.api.provider.ProviderFactory
 import org.gradle.api.provider.SetProperty
 import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.setProperty
-import javax.inject.Inject
-import kotlin.math.max
 
 /**
  * Options configuring the toolchain versioning

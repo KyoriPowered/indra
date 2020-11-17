@@ -23,7 +23,7 @@
  */
 package net.kyori.indra
 
-import net.kyori.indra.util.javaVersionString
+import net.kyori.indra.util.versionString
 import org.gradle.api.Action
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
@@ -168,7 +168,7 @@ class IndraPlugin : Plugin<Project> {
                   html5.value = true
                   enablePreview.value = extension.javaVersions.enablePreviewFeatures.get()
                 } else {
-                  source = javaVersionString(target)
+                  source = versionString(target)
                 }
               }
             }
