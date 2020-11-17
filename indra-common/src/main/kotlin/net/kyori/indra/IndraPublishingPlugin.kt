@@ -64,12 +64,13 @@ class IndraPublishingPlugin : Plugin<Project> {
         description = rootProject.description
       }
 
+      val descriptionProvider = project.provider { project.description }
       extensions.configure<PublishingExtension> {
         publications.register(PUBLICATION_NAME, MavenPublication::class.java) {
           it.apply {
             pom.apply {
               name.set(project.name)
-              description.set(project.description)
+              description.set(descriptionProvider)
               url.set(extension.scm.map(SCM::url))
 
               issueManagement { issues ->
