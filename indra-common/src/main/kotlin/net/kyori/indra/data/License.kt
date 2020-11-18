@@ -23,7 +23,7 @@
  */
 package net.kyori.indra.data
 
-data class License(
+data class License @JvmOverloads constructor(
   val spdx: String?,
   val name: String,
   val url: String,
