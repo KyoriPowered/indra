@@ -39,6 +39,7 @@ import org.gradle.kotlin.dsl.domainObjectSet
 import org.gradle.kotlin.dsl.invoke
 import org.gradle.process.CommandLineArgumentProvider
 import javax.inject.Inject
+import net.kyori.indra.data.ContinuousIntegration
 
 open class IndraExtension @Inject constructor(objects: ObjectFactory) {
   @Deprecated("Moved into 'versions'", replaceWith = ReplaceWith("javaVersions.target"))
@@ -78,6 +79,7 @@ open class IndraExtension @Inject constructor(objects: ObjectFactory) {
     }
   }
 
+  val continuousIntegration: Property<ContinuousIntegration> = objects.property(ContinuousIntegration::class)
   val issues: Property<Issues> = objects.property(Issues::class)
   val license: Property<License> = objects.property(License::class)
   val scm: Property<SCM> = objects.property(SCM::class)
@@ -121,6 +123,11 @@ open class IndraExtension @Inject constructor(objects: ObjectFactory) {
     spdx = "MIT",
     name = "The MIT License",
     url = "https://opensource.org/licenses/MIT"
+  ))
+
+  fun jenkins(url: String) = this.continuousIntegration.set(ContinuousIntegration(
+    system = "Jenkins",
+    url = url
   ))
 
   // Checkstyle
