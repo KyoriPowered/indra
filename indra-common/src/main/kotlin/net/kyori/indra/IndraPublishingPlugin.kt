@@ -45,6 +45,7 @@ import org.gradle.kotlin.dsl.invoke
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 import org.gradle.kotlin.dsl.withType
+import org.gradle.plugins.signing.Sign
 import org.gradle.plugins.signing.SigningExtension
 import org.gradle.plugins.signing.SigningPlugin
 
@@ -98,6 +99,12 @@ class IndraPublishingPlugin : Plugin<Project> {
       extensions.configure<SigningExtension> {
         sign(extensions.getByType<PublishingExtension>().publications)
         useGpgCmd()
+      }
+
+      tasks.withType<Sign>().configureEach {
+        it.onlyIf {
+          project.hasProperty("forceSign") || isRelease(project)
+        }
       }
 
       val requireClean = tasks.register("requireClean", RequireClean::class)
