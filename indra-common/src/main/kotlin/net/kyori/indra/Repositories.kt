@@ -60,9 +60,9 @@ data class RemoteRepository @JvmOverloads constructor(val name: String, val url:
   }
 }
 
-fun registerRepositoryExtensions(handler: RepositoryHandler, repos: Iterable<RemoteRepository>) {
+fun registerRepositoryExtensions(handler: RepositoryHandler, repositories: Iterable<RemoteRepository>) {
   val extensions = handler as ExtensionAware
-  repos.forEach {
+  repositories.forEach {
     extensions.extensions.add(it.name, object : Closure<Unit>(null, handler) {
       fun doCall() {
         it.addTo(this.thisObject as RepositoryHandler)

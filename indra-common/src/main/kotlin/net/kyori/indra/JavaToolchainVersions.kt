@@ -38,7 +38,6 @@ import kotlin.math.max
  * Options configuring the toolchain versioning
  */
 open class JavaToolchainVersions @Inject constructor(objects: ObjectFactory, providers: ProviderFactory) {
-
   /**
    * The target Java version to compile for.
    *
@@ -101,5 +100,4 @@ open class JavaToolchainVersions @Inject constructor(objects: ObjectFactory, pro
   fun testWith(vararg testVersions: Int) {
     testWith.addAll(testVersions.toList())
   }
-
 }

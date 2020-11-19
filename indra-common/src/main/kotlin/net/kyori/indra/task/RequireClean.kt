@@ -35,6 +35,10 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin
  * published source.
  */
 open class RequireClean : DefaultTask() {
+  companion object {
+    const val NAME = "requireClean"
+  }
+
   init {
     group = LifecycleBasePlugin.VERIFICATION_GROUP
   }

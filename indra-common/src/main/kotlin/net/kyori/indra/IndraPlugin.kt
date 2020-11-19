@@ -56,8 +56,6 @@ class IndraPlugin : Plugin<Project> {
 
       convention.getPlugin<BasePluginConvention>().archivesBaseName = project.name.toLowerCase()
 
-      registerRepositoryExtensions(repositories, DEFAULT_REPOSITORIES)
-
       extensions.getByType(JavaPluginExtension::class).apply {
         // Ensure that we're only running the latest version
         this.toolchain.languageVersion.set(extension.javaVersions.actualVersion.map { JavaLanguageVersion.of(it) })
@@ -116,6 +114,7 @@ class IndraPlugin : Plugin<Project> {
         it.useJUnitPlatform()
       }
 
+      registerRepositoryExtensions(repositories, DEFAULT_REPOSITORIES)
 
       // For things that are eagerly applied (field accesses, anything where you need to `get()`)
       afterEvaluate {

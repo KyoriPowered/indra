@@ -33,6 +33,7 @@ import net.kyori.indra.data.SCM
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.JavaVersion
+import org.gradle.api.component.SoftwareComponent
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.publish.maven.MavenPublication
@@ -47,7 +48,7 @@ open class IndraExtension @Inject constructor(objects: ObjectFactory) {
   val reproducibleBuilds: Property<Boolean> = objects.property(Boolean::class).convention(true)
 
   /**
-   * Whether the `java` [org.gradle.api.component.SoftwareComponent] should be automatically included in publications.
+   * Whether the `java` [SoftwareComponent] should be automatically included in publications.
    *
    * This property does not usually need to be changed, unless working with Gradle plugins that publish in a non-standard way.
    */

@@ -36,6 +36,7 @@ import org.gradle.api.publish.PublishingExtension
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.getByType
 import java.time.format.DateTimeFormatter
+import net.kyori.indra.task.RequireClean
 
 private val DATE_FORMAT_BINTRAY = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 
@@ -65,7 +66,7 @@ class IndraBintrayPublishingPlugin : Plugin<Project> {
       }
 
       tasks.named("bintrayUpload").configure {
-        it.dependsOn(tasks.named("requireClean"))
+        it.dependsOn(tasks.named(RequireClean.NAME))
         it.onlyIf {
           isRelease(project)
         }

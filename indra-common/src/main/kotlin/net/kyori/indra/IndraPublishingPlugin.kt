@@ -113,7 +113,7 @@ class IndraPublishingPlugin : Plugin<Project> {
         }
       }
 
-      val requireClean = tasks.register("requireClean", RequireClean::class)
+      val requireClean = tasks.register(RequireClean.NAME, RequireClean::class)
       tasks.withType<AbstractPublishToMaven>().configureEach {
         if(it !is PublishToMavenLocal) {
           it.dependsOn(requireClean)
