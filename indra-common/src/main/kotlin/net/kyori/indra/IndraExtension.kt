@@ -79,7 +79,7 @@ open class IndraExtension @Inject constructor(objects: ObjectFactory) {
     }
   }
 
-  val continuousIntegration: Property<ContinuousIntegration> = objects.property(ContinuousIntegration::class)
+  val ci: Property<ContinuousIntegration> = objects.property(ContinuousIntegration::class)
   val issues: Property<Issues> = objects.property(Issues::class)
   val license: Property<License> = objects.property(License::class)
   val scm: Property<SCM> = objects.property(SCM::class)
@@ -87,6 +87,9 @@ open class IndraExtension @Inject constructor(objects: ObjectFactory) {
   @JvmOverloads
   fun github(user: String, repo: String, applicable: Action<ApplyTo>? = null) {
     val options = ApplyTo().also { applicable?.execute(it) }
+    if(options.ci) {
+      this.ci.set(ContinuousIntegration("GitHub Actions", "https://github.com/$user/$repo/actions"))
+    }
     if(options.issues) {
       this.issues.set(Issues("GitHub", "https://github.com/$user/$repo/issues"))
     }
@@ -101,6 +104,9 @@ open class IndraExtension @Inject constructor(objects: ObjectFactory) {
   @JvmOverloads
   fun gitlab(user: String, repo: String, applicable: Action<ApplyTo>? = null) {
     val options = ApplyTo().also { applicable?.execute(it) }
+    if(options.ci) {
+      this.ci.set(ContinuousIntegration("GitLab CI", "https://gitlab.com/$user/$repo/-/pipelines"))
+    }
     if(options.issues) {
       this.issues.set(Issues("GitLab", "https://gitlab.com/$user/$repo/-/issues"))
     }
@@ -125,7 +131,7 @@ open class IndraExtension @Inject constructor(objects: ObjectFactory) {
     url = "https://opensource.org/licenses/MIT"
   ))
 
-  fun jenkins(url: String) = this.continuousIntegration.set(ContinuousIntegration(
+  fun jenkins(url: String) = this.ci.set(ContinuousIntegration(
     system = "Jenkins",
     url = url
   ))

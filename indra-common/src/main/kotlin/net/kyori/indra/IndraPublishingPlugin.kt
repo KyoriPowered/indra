@@ -75,8 +75,8 @@ class IndraPublishingPlugin : Plugin<Project> {
               url.set(extension.scm.map(SCM::url))
 
               ciManagement { ci ->
-                ci.system.set(extension.continuousIntegration.map(ContinuousIntegration::system))
-                ci.url.set(extension.continuousIntegration.map(ContinuousIntegration::url))
+                ci.system.set(extension.ci.map(ContinuousIntegration::system))
+                ci.url.set(extension.ci.map(ContinuousIntegration::url))
               }
 
               issueManagement { issues ->

@@ -24,6 +24,7 @@
 package net.kyori.indra.data
 
 data class ApplyTo(
+  var ci: Boolean = false,
   var issues: Boolean = true,
   var scm: Boolean = true,
   var publishing: Boolean = false
