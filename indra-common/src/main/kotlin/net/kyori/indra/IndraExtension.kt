@@ -24,7 +24,9 @@
 package net.kyori.indra
 
 import java.net.URI
+import javax.inject.Inject
 import net.kyori.indra.data.ApplyTo
+import net.kyori.indra.data.ContinuousIntegration
 import net.kyori.indra.data.Issues
 import net.kyori.indra.data.License
 import net.kyori.indra.data.SCM
@@ -34,12 +36,10 @@ import org.gradle.api.JavaVersion
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.domainObjectSet
 import org.gradle.kotlin.dsl.invoke
+import org.gradle.kotlin.dsl.property
 import org.gradle.process.CommandLineArgumentProvider
-import javax.inject.Inject
-import net.kyori.indra.data.ContinuousIntegration
 
 open class IndraExtension @Inject constructor(objects: ObjectFactory) {
   @Deprecated("Moved into 'versions'", replaceWith = ReplaceWith("javaVersions.target"))
