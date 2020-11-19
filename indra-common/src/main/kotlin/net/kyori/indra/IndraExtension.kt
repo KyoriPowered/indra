@@ -24,7 +24,9 @@
 package net.kyori.indra
 
 import java.net.URI
+import javax.inject.Inject
 import net.kyori.indra.data.ApplyTo
+import net.kyori.indra.data.ContinuousIntegration
 import net.kyori.indra.data.Issues
 import net.kyori.indra.data.License
 import net.kyori.indra.data.SCM
@@ -34,11 +36,10 @@ import org.gradle.api.JavaVersion
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.kotlin.dsl.property
 import org.gradle.kotlin.dsl.domainObjectSet
 import org.gradle.kotlin.dsl.invoke
+import org.gradle.kotlin.dsl.property
 import org.gradle.process.CommandLineArgumentProvider
-import javax.inject.Inject
 
 open class IndraExtension @Inject constructor(objects: ObjectFactory) {
   @Deprecated("Moved into 'versions'", replaceWith = ReplaceWith("javaVersions.target"))
@@ -78,6 +79,7 @@ open class IndraExtension @Inject constructor(objects: ObjectFactory) {
     }
   }
 
+  val ci: Property<ContinuousIntegration> = objects.property(ContinuousIntegration::class)
   val issues: Property<Issues> = objects.property(Issues::class)
   val license: Property<License> = objects.property(License::class)
   val scm: Property<SCM> = objects.property(SCM::class)
@@ -85,6 +87,9 @@ open class IndraExtension @Inject constructor(objects: ObjectFactory) {
   @JvmOverloads
   fun github(user: String, repo: String, applicable: Action<ApplyTo>? = null) {
     val options = ApplyTo().also { applicable?.execute(it) }
+    if(options.ci) {
+      this.ci.set(ContinuousIntegration("GitHub Actions", "https://github.com/$user/$repo/actions"))
+    }
     if(options.issues) {
       this.issues.set(Issues("GitHub", "https://github.com/$user/$repo/issues"))
     }
@@ -99,6 +104,9 @@ open class IndraExtension @Inject constructor(objects: ObjectFactory) {
   @JvmOverloads
   fun gitlab(user: String, repo: String, applicable: Action<ApplyTo>? = null) {
     val options = ApplyTo().also { applicable?.execute(it) }
+    if(options.ci) {
+      this.ci.set(ContinuousIntegration("GitLab CI", "https://gitlab.com/$user/$repo/-/pipelines"))
+    }
     if(options.issues) {
       this.issues.set(Issues("GitLab", "https://gitlab.com/$user/$repo/-/issues"))
     }
@@ -128,6 +136,11 @@ open class IndraExtension @Inject constructor(objects: ObjectFactory) {
     spdx = "MIT",
     name = "The MIT License",
     url = "https://opensource.org/licenses/MIT"
+  ))
+
+  fun jenkins(url: String) = this.ci.set(ContinuousIntegration(
+    system = "Jenkins",
+    url = url
   ))
 
   // Checkstyle

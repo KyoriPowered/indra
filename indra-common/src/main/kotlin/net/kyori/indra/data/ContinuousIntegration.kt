@@ -23,9 +23,7 @@
  */
 package net.kyori.indra.data
 
-data class ApplyTo internal constructor(
-  var ci: Boolean = false,
-  var issues: Boolean = true,
-  var scm: Boolean = true,
-  var publishing: Boolean = false
+data class ContinuousIntegration(
+  val system: String,
+  val url: String
 )

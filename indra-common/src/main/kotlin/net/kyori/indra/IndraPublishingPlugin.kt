@@ -24,6 +24,7 @@
 @file:JvmName("IndraPublishing")
 package net.kyori.indra
 
+import net.kyori.indra.data.ContinuousIntegration
 import net.kyori.indra.data.Issues
 import net.kyori.indra.data.License
 import net.kyori.indra.data.SCM
@@ -74,9 +75,14 @@ class IndraPublishingPlugin : Plugin<Project> {
               description.set(descriptionProvider)
               url.set(extension.scm.map(SCM::url))
 
+              ciManagement { ci ->
+                ci.system.set(extension.ci.map(ContinuousIntegration::system))
+                ci.url.set(extension.ci.map(ContinuousIntegration::url))
+              }
+
               issueManagement { issues ->
-                issues.url.set(extension.issues.map(Issues::url))
                 issues.system.set(extension.issues.map(Issues::system))
+                issues.url.set(extension.issues.map(Issues::url))
               }
 
               licenses { licenses ->
