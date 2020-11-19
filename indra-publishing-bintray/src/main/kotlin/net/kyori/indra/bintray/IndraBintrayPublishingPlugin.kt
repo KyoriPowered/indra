@@ -80,7 +80,7 @@ class IndraBintrayPublishingPlugin : Plugin<Project> {
             issueTrackerUrl = extension.issues.orNull?.url
             version.name = project.version as String
             extension.license.orNull?.apply {
-              setLicenses(spdx)
+              setLicenses(bintray)
             }
           }
         }

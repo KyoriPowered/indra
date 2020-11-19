@@ -117,6 +117,13 @@ open class IndraExtension @Inject constructor(objects: ObjectFactory) {
     url = "https://opensource.org/licenses/Apache-2.0"
   ))
 
+  fun gpl3OnlyLicense() = this.license.set(License(
+    spdx = "GPL-3.0-only",
+    name = "GNU General Public License version 3",
+    url = "https://opensource.org/licenses/GPL-3.0",
+    bintray = "GPL-3.0"
+  ))
+
   fun mitLicense() = this.license.set(License(
     spdx = "MIT",
     name = "The MIT License",
