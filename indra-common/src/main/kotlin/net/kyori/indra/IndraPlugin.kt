@@ -75,7 +75,7 @@ class IndraPlugin : Plugin<Project> {
 
           // JDK 9+ only arguments
           compilerArgumentProviders += CommandLineArgumentProvider {
-            if(extension.javaVersions.actualVersion.get() >= 9) {
+            if(extension.javaVersions.minimumToolchain.get() >= 9) {
               listOf(
                 "-Xdoclint",
                 "-Xdoclint:-missing"
