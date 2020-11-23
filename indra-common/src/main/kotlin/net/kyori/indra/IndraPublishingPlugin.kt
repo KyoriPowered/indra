@@ -147,7 +147,7 @@ class IndraPublishingPlugin : Plugin<Project> {
   }
 }
 
-fun isSnapshot(project: Project) = project.version.toString().endsWith("-SNAPSHOT")
+fun isSnapshot(project: Project) = project.version.toString().contains("-SNAPSHOT")
 
 /**
  * Verify that this project is checked out to a release version, meaning that:
