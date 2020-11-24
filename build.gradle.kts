@@ -9,7 +9,7 @@ plugins {
 }
 
 group = "net.kyori"
-version = "1.3.0-SNAPSHOT"
+version = "1.2.1"
 
 allprojects {
   repositories {
