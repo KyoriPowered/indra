@@ -161,11 +161,11 @@ class IndraPlugin : Plugin<Project> {
                 val target = versions.target.get()
                 links(jdkApiDocs(target))
 
-                if(jd.javadocTool.get().metadata.languageVersion.canCompileOrRun(9)) {
+                if(versions.minimumToolchain.get() >= 9) {
                   release.value = target.toString()
                   doclintMissing.value = true
                   html5.value = true
-                  enablePreview.value = extension.javaVersions.enablePreviewFeatures.get()
+                  enablePreview.value = versions.enablePreviewFeatures.get()
                 } else {
                   source = versionString(target)
                 }
