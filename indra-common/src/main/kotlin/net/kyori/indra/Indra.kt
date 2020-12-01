@@ -44,17 +44,14 @@ internal val SOURCE_FILES = listOf(
 fun extension(project: Project): IndraExtension = project.extensions.findByType(IndraExtension::class)
   ?: project.extensions.create(EXTENSION_NAME, IndraExtension::class)
 
+@Deprecated(message = "This method uses components of Gradle that have been deprecated.")
 fun version(tc: JavaToolChain): JavaVersion = JavaVersion.toVersion(tc.version)
-fun versionNumber(version: JavaVersion): Int = version.ordinal + 1
-fun versionString(version: JavaVersion): String = when(version) {
-  JavaVersion.VERSION_1_9 -> "9"
-  JavaVersion.VERSION_1_10 -> "10"
-  else -> version.toString()
-}
-fun versionString(version: Int): String = when(version) {
-  in 1..8 -> "1.$version"
-  else -> version.toString()
-}
+@Deprecated(message = "This method has moved - use the one in the 'util' package.", replaceWith = ReplaceWith(imports = arrayOf("net.kyori.indra.util.versionNumber"), expression = "versionNumber(version)"))
+fun versionNumber(version: JavaVersion): Int = net.kyori.indra.util.versionNumber(version)
+@Deprecated(message = "This method has moved - use the one in the 'util' package.", replaceWith = ReplaceWith(imports = arrayOf("net.kyori.indra.util.versionString"), expression = "versionString(version)"))
+fun versionString(version: JavaVersion): String = net.kyori.indra.util.versionString(version)
+@Deprecated(message = "This method has moved - use the one in the 'util' package.", replaceWith = ReplaceWith(imports = arrayOf("net.kyori.indra.util.versionString"), expression = "versionString(version)"))
+fun versionString(version: Int): String = net.kyori.indra.util.versionString(version)
 
 /**
  * Link to the API documentation for a specific java version.
@@ -69,21 +66,18 @@ fun jdkApiDocs(version: JavaVersion): String = if(version.isJava11Compatible) {
 /**
  * Link to the API documentation for a specific java version.
  */
+@Deprecated("No replacement.")
 fun jdkApiDocs(javaVersion: Int): String = if(javaVersion >= 11) {
   "https://docs.oracle.com/en/java/javase/$javaVersion/docs/api"
 } else {
   "https://docs.oracle.com/javase/$javaVersion/docs/api"
 }
 
-fun grgit(project: Project): Grgit? {
-  return project.extensions.findByType(Grgit::class)
-}
+@Deprecated(message = "This method has moved - use the one in the 'util' package.", replaceWith = ReplaceWith(imports = arrayOf("net.kyori.indra.util.grgit"), expression = "grgit(project)"))
+fun grgit(project: Project): Grgit? = net.kyori.indra.util.grgit(project)
 
 /**
  * Find a tag, if any, that corresponds with the current checked out commit
  */
-fun headTag(project: Project): Tag? {
-  val grgit = grgit(project) ?: return null
-  val headCommit = grgit.head()
-  return grgit.tag.list().find { it.commit == headCommit }
-}
+@Deprecated(message = "This method has moved - use the one in the 'util' package.", replaceWith = ReplaceWith(imports = arrayOf("net.kyori.indra.util.headTag"), expression = "headTag(project)"))
+fun headTag(project: Project): Tag? = net.kyori.indra.util.headTag(project)

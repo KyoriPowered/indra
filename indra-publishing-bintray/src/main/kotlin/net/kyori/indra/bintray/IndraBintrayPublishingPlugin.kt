@@ -25,18 +25,18 @@ package net.kyori.indra.bintray
 
 import com.jfrog.bintray.gradle.BintrayExtension
 import com.jfrog.bintray.gradle.BintrayPlugin
+import java.time.format.DateTimeFormatter
 import net.kyori.indra.IndraPublishingPlugin
 import net.kyori.indra.extension
-import net.kyori.indra.headTag
 import net.kyori.indra.isRelease
+import net.kyori.indra.task.RequireClean
+import net.kyori.indra.util.headTag
 import org.ajoberstar.grgit.Tag
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.kotlin.dsl.apply
 import org.gradle.kotlin.dsl.getByType
-import java.time.format.DateTimeFormatter
-import net.kyori.indra.task.RequireClean
 
 private val DATE_FORMAT_BINTRAY = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ")
 

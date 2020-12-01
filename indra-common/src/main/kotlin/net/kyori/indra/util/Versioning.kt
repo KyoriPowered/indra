@@ -21,32 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra.task
+@file:JvmName("Versioning")
+package net.kyori.indra.util
 
-import net.kyori.indra.util.grgit
-import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
-import org.gradle.api.tasks.TaskAction
-import org.gradle.language.base.plugins.LifecycleBasePlugin
+import org.gradle.api.JavaVersion
 
-/**
- * Require that the project has no files that are uncommitted to SCM,
- * to prevent accidentally publishing content that does not match the
- * published source.
- */
-open class RequireClean : DefaultTask() {
-  companion object {
-    const val NAME = "requireClean"
-  }
+fun versionNumber(version: JavaVersion): Int = version.ordinal + 1
 
-  init {
-    group = LifecycleBasePlugin.VERIFICATION_GROUP
-  }
+fun versionString(version: Int): String = when(version) {
+  in 1..8 -> "1.$version"
+  else -> version.toString()
+}
 
-  @TaskAction
-  fun check() {
-    if (grgit(project)?.status()?.isClean == false) {
-      throw GradleException("Source root must be clean! Make sure your changes are committed")
-    }
-  }
+fun versionString(version: JavaVersion): String = when(version) {
+  JavaVersion.VERSION_1_9 -> "9"
+  JavaVersion.VERSION_1_10 -> "10"
+  else -> version.toString()
 }
