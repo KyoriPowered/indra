@@ -30,6 +30,7 @@ import net.kyori.indra.data.ContinuousIntegration
 import net.kyori.indra.data.Issues
 import net.kyori.indra.data.License
 import net.kyori.indra.data.SCM
+import net.kyori.indra.util.versionNumber
 import org.gradle.api.Action
 import org.gradle.api.GradleException
 import org.gradle.api.JavaVersion

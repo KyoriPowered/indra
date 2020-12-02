@@ -21,32 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra.task
+@file:JvmName("VersionControl")
+package net.kyori.indra.util
 
-import net.kyori.indra.util.grgit
-import org.gradle.api.DefaultTask
-import org.gradle.api.GradleException
-import org.gradle.api.tasks.TaskAction
-import org.gradle.language.base.plugins.LifecycleBasePlugin
+import org.ajoberstar.grgit.Grgit
+import org.ajoberstar.grgit.Tag
+import org.gradle.api.Project
+import org.gradle.kotlin.dsl.findByType
+
+fun grgit(project: Project): Grgit? {
+  return project.extensions.findByType(Grgit::class)
+}
 
 /**
- * Require that the project has no files that are uncommitted to SCM,
- * to prevent accidentally publishing content that does not match the
- * published source.
+ * Find a tag, if any, that corresponds with the current checked out commit
  */
-open class RequireClean : DefaultTask() {
-  companion object {
-    const val NAME = "requireClean"
-  }
-
-  init {
-    group = LifecycleBasePlugin.VERIFICATION_GROUP
-  }
-
-  @TaskAction
-  fun check() {
-    if (grgit(project)?.status()?.isClean == false) {
-      throw GradleException("Source root must be clean! Make sure your changes are committed")
-    }
-  }
+fun headTag(project: Project): Tag? {
+  val grgit = grgit(project) ?: return null
+  val headCommit = grgit.head()
+  return grgit.tag.list().find { it.commit == headCommit }
 }

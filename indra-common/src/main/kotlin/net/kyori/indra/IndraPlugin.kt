@@ -23,6 +23,7 @@
  */
 package net.kyori.indra
 
+import net.kyori.indra.util.versionString
 import org.gradle.api.Action
 import org.gradle.api.JavaVersion
 import org.gradle.api.Plugin
@@ -196,5 +197,14 @@ class IndraPlugin : Plugin<Project> {
         }
       }
     }
+  }
+
+  /**
+   * Link to the API documentation for a specific java version.
+   */
+  private fun jdkApiDocs(javaVersion: Int): String = if(javaVersion >= 11) {
+    "https://docs.oracle.com/en/java/javase/$javaVersion/docs/api"
+  } else {
+    "https://docs.oracle.com/javase/$javaVersion/docs/api"
   }
 }
