@@ -156,6 +156,7 @@ class IndraPlugin : Plugin<Project> {
               val html5 = addBooleanOption("html5")
               val release = addStringOption("-release")
               val enablePreview = addBooleanOption("-enable-preview")
+              val noModuleDirectories = addBooleanOption("-no-module-directories")
 
               jd.doFirst {
                 val versions = extension.javaVersions
@@ -163,6 +164,12 @@ class IndraPlugin : Plugin<Project> {
                 links(jdkApiDocs(target))
 
                 if(versions.minimumToolchain.get() >= 9) {
+                  if(versions.actualVersion.get() < 12) {
+                    // Apply workaround for https://bugs.openjdk.java.net/browse/JDK-8215291
+                    // Hopefully this gets backported some day... (JDK-8215291)
+                    noModuleDirectories.value = true
+                  }
+
                   release.value = target.toString()
                   doclintMissing.value = true
                   html5.value = true
