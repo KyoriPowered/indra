@@ -36,6 +36,7 @@ subprojects {
   tasks.withType<KotlinCompile>().configureEach {
     kotlinOptions {
       jvmTarget = "1.8" // Why is this not the default version? D:
+      kotlinOptions.languageVersion = "1.3"
     }
   }
 
@@ -43,7 +44,6 @@ subprojects {
     // DSL stubs are generated per-project but only for what's applied in the `plugins` block.
     // Since this root project doesn't have anything applied, we don't get DSL extensions for the
     // java configurations so we have to refer to them with strings.
-    "implementation"(kotlin("stdlib-jdk8"))
     "implementation"(gradleKotlinDsl())
 
     "testImplementation"(kotlin("test-junit5"))

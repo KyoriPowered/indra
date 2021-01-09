@@ -117,16 +117,16 @@ class IndraPlugin : Plugin<Project> {
 
       registerRepositoryExtensions(repositories, DEFAULT_REPOSITORIES)
 
-      // For things that are eagerly applied (field accesses, anything where you need to `get()`)
-      afterEvaluate {
+      // If we are publishing, publish java
+      extension.configurePublications(Action {
         extension.includeJavaSoftwareComponentInPublications.finalizeValue()
         if(extension.includeJavaSoftwareComponentInPublications.get()) {
-          // If we are publishing, publish java
-          extension.configurePublications(Action {
-            it.from(components["java"])
-          })
+          it.from(components["java"])
         }
+      })
 
+      // For things that are eagerly applied (field accesses, anything where you need to `get()`)
+      afterEvaluate {
         extensions.configure<JavaPluginExtension> {
           val versionProp = extension.javaVersions.target
           versionProp.finalizeValue()
