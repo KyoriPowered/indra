@@ -25,9 +25,12 @@ package net.kyori.indra
 
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.quality.Checkstyle
 import org.gradle.api.plugins.quality.CheckstyleExtension
 import org.gradle.api.plugins.quality.CheckstylePlugin
 import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.withType
+import org.gradle.language.base.plugins.LifecycleBasePlugin
 
 class IndraCheckstylePlugin : Plugin<Project> {
   override fun apply(project: Project) {
@@ -35,6 +38,13 @@ class IndraCheckstylePlugin : Plugin<Project> {
       val extension = extension(project)
 
       pluginManager.apply(CheckstylePlugin::class.java)
+
+      // Create task for executing all checkstyle tasks
+      tasks.register("checkstyleAll") {
+        group = LifecycleBasePlugin.VERIFICATION_GROUP
+        it.description = "Execute checkstyle checks for all source sets"
+        it.dependsOn(tasks.withType(Checkstyle::class))
+      }
 
       afterEvaluate {
         extensions.configure<CheckstyleExtension> {
