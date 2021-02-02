@@ -21,24 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-@file:JvmName("IndraPublishing")
-package net.kyori.indra
+package net.kyori.gradle.api;
 
-import org.gradle.api.Action
-import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.kotlin.dsl.invoke
-import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.register
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.gradle.api.Plugin;
+import org.gradle.api.Project;
+import org.gradle.api.plugins.Convention;
+import org.gradle.api.plugins.ExtensionContainer;
+import org.gradle.api.plugins.PluginContainer;
+import org.gradle.api.tasks.TaskContainer;
 
-class IndraPublishingPlugin : AbstractIndraPublishingPlugin() {
-  override fun applyPublishingActions(publishing: PublishingExtension, actions: Set<Action<MavenPublication>>) {
-    publishing.publications.named(Indra.PUBLICATION_NAME, MavenPublication::class) {
-      actions.forEach { it(this) }
-    }
+// todo(kashike): promote to own project if this package (net.kyori.gradle) becomes useful for others to use
+
+/**
+ * A more friendly interface for creating a {@link Plugin} that operates on a {@link Project}.
+ */
+public interface ProjectPlugin extends Plugin<Project> {
+  @Override
+  default void apply(final @NonNull Project project) {
+    this.apply(
+      project,
+      project.getPlugins(),
+      project.getExtensions(),
+      project.getConvention(),
+      project.getTasks()
+    );
   }
 
-  override fun configurePublications(publishing: PublishingExtension, configuration: Action<MavenPublication>) {
-    publishing.publications.register(Indra.PUBLICATION_NAME, MavenPublication::class, configuration)
-  }
+  void apply(
+    final @NonNull Project project,
+    final @NonNull PluginContainer plugins,
+    final @NonNull ExtensionContainer extensions,
+    final @NonNull Convention convention,
+    final @NonNull TaskContainer tasks
+  );
 }

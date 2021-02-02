@@ -21,25 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
+@file:JvmName("IndraKt")
 package net.kyori.indra
 
-import org.cadixdev.gradle.licenser.LicenseExtension
-import org.cadixdev.gradle.licenser.Licenser
-import org.gradle.api.Plugin
 import org.gradle.api.Project
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.findByType
 
-class IndraLicenseHeaderPlugin : Plugin<Project> {
-  override fun apply(project: Project) {
-    with(project) {
-      apply<Licenser>()
-
-      extensions.configure<LicenseExtension> {
-        header = rootProject.file("license_header.txt")
-        include(SOURCE_FILES)
-        newLine = false
-      }
-    }
-  }
-}
+fun extension(project: Project): IndraExtension = project.extensions.findByType(IndraExtension::class)
+  ?: project.extensions.create(Indra.EXTENSION_NAME, IndraExtension::class)

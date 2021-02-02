@@ -21,21 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-@file:JvmName("Indra")
-package net.kyori.indra
+package net.kyori.indra;
 
-import org.gradle.api.Project
-import org.gradle.kotlin.dsl.create
-import org.gradle.kotlin.dsl.findByType
+import net.kyori.gradle.api.ProjectPlugin;
+import org.cadixdev.gradle.licenser.LicenseExtension;
+import org.cadixdev.gradle.licenser.Licenser;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.gradle.api.Project;
+import org.gradle.api.plugins.Convention;
+import org.gradle.api.plugins.ExtensionContainer;
+import org.gradle.api.plugins.PluginContainer;
+import org.gradle.api.tasks.TaskContainer;
 
-internal const val EXTENSION_NAME = "indra"
-internal const val PUBLICATION_NAME = "maven"
-internal val SOURCE_FILES = listOf(
-  "**/*.groovy",
-  "**/*.java",
-  "**/*.kt",
-  "**/*.scala"
-)
+public class IndraLicenseHeaderPlugin implements ProjectPlugin {
+  private static final String HEADER_FILE_NAME = "license_header.txt";
 
-fun extension(project: Project): IndraExtension = project.extensions.findByType(IndraExtension::class)
-  ?: project.extensions.create(EXTENSION_NAME, IndraExtension::class)
+  @Override
+  public void apply(final @NonNull Project project, final @NonNull PluginContainer plugins, final @NonNull ExtensionContainer extensions, final @NonNull Convention convention, final @NonNull TaskContainer tasks) {
+    plugins.apply(Licenser.class);
+
+    extensions.configure(LicenseExtension.class, extension -> {
+      extension.setHeader(project.getRootProject().file(HEADER_FILE_NAME));
+      extension.include(Indra.SOURCE_FILES);
+      extension.setNewLine(false);
+    });
+  }
+}
