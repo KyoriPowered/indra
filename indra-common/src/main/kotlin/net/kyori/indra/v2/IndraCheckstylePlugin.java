@@ -21,23 +21,30 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra;
+package net.kyori.indra.v2;
 
-import java.util.HashSet;
-import java.util.Set;
+import net.kyori.gradle.api.ProjectPlugin;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.gradle.api.Project;
+import org.gradle.api.plugins.Convention;
+import org.gradle.api.plugins.ExtensionContainer;
+import org.gradle.api.plugins.PluginContainer;
+import org.gradle.api.plugins.quality.Checkstyle;
+import org.gradle.api.plugins.quality.CheckstylePlugin;
+import org.gradle.api.tasks.TaskContainer;
+import org.gradle.language.base.plugins.LifecycleBasePlugin;
 
-public class Indra {
-  public static final String EXTENSION_NAME = "indra";
-  public static final String PUBLICATION_NAME = "maven";
+public class IndraCheckstylePlugin implements ProjectPlugin {
+  public static final String CHECKSTYLE_ALL_TASK = "checkstyleAll";
 
-  public static final Set<String> SOURCE_FILES = sourceFiles();
+  @Override
+  public void apply(final @NonNull Project project, final @NonNull PluginContainer plugins, final @NonNull ExtensionContainer extensions, final @NonNull Convention convention, final @NonNull TaskContainer tasks) {
+    plugins.apply(CheckstylePlugin.class);
 
-  private static Set<String> sourceFiles() {
-    final Set<String> sourceFiles = new HashSet<>();
-    sourceFiles.add( "**/*.groovy");
-    sourceFiles.add( "**/*.java");
-    sourceFiles.add( "**/*.kt");
-    sourceFiles.add( "**/*.scala");
-    return sourceFiles;
+    tasks.register(CHECKSTYLE_ALL_TASK, task -> {
+      task.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
+      task.setDescription("Execute checkstyle checks for all source sets");
+      task.dependsOn(tasks.withType(Checkstyle.class));
+    });
   }
 }
