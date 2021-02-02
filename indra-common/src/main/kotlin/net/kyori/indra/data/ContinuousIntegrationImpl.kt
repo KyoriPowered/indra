@@ -21,23 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-@file:JvmName("Versioning")
-package net.kyori.indra.util
+package net.kyori.indra.data
 
-import org.gradle.api.JavaVersion
-import org.gradle.api.Project
+import net.kyori.indra.api.model.ContinuousIntegration
 
-fun isSnapshot(project: Project) = project.version.toString().contains("-SNAPSHOT")
-
-fun versionNumber(version: JavaVersion): Int = version.ordinal + 1
-
-fun versionString(version: Int): String = when(version) {
-  in 1..8 -> "1.$version"
-  else -> version.toString()
-}
-
-fun versionString(version: JavaVersion): String = when(version) {
-  JavaVersion.VERSION_1_9 -> "9"
-  JavaVersion.VERSION_1_10 -> "10"
-  else -> version.toString()
+data class ContinuousIntegrationImpl(
+  private val system: String,
+  private val url: String
+) : ContinuousIntegration {
+  override fun system(): String = this.system
+  override fun url(): String = this.url
 }

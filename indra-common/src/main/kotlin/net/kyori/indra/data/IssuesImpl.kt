@@ -23,7 +23,12 @@
  */
 package net.kyori.indra.data
 
-data class Issues(
-  val system: String,
-  val url: String
-)
+import net.kyori.indra.api.model.Issues
+
+data class IssuesImpl(
+  private val system: String,
+  private val url: String
+): Issues {
+  override fun system(): String = this.system
+  override fun url(): String = this.url
+}

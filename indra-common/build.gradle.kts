@@ -1,6 +1,7 @@
 import net.kyori.indra.self.declarePlugin
 
 dependencies {
+  compileOnlyApi("org.checkerframework:checker-qual:3.9.1")
   api("org.ajoberstar.grgit:grgit-gradle:4.1.0")
   implementation("gradle.plugin.org.cadixdev.gradle:licenser:0.5.0")
 }

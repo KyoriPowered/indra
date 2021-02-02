@@ -23,6 +23,7 @@
  */
 package net.kyori.indra
 
+import net.kyori.indra.data.RemoteRepository
 import net.kyori.indra.util.versionString
 import org.gradle.api.Action
 import org.gradle.api.JavaVersion
@@ -115,7 +116,9 @@ class IndraPlugin : Plugin<Project> {
         it.useJUnitPlatform()
       }
 
-      registerRepositoryExtensions(repositories, DEFAULT_REPOSITORIES)
+      registerRepositoryExtensions(repositories, arrayListOf(
+        RemoteRepository.SONATYPE_SNAPSHOTS
+      ))
 
       // If we are publishing, publish java
       extension.configurePublications(Action {

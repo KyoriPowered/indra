@@ -45,7 +45,7 @@ open class RequireClean : DefaultTask() {
 
   @TaskAction
   fun check() {
-    if (grgit(project)?.status()?.isClean == false) {
+    if(grgit(project)?.status()?.isClean == false) {
       throw GradleException("Source root must be clean! Make sure your changes are committed")
     }
   }

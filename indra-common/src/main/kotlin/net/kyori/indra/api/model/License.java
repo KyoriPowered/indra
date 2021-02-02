@@ -21,11 +21,20 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra.data
+package net.kyori.indra.api.model;
 
-data class License @JvmOverloads constructor(
-  val spdx: String?,
-  val name: String,
-  val url: String,
-  val bintray: String? = spdx
-)
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
+
+public interface License {
+  @SuppressWarnings("SpellCheckingInspection")
+  @Nullable String spdx();
+
+  @NonNull String name();
+
+  @NonNull String url();
+
+  default @Nullable String bintray() {
+    return this.spdx();
+  }
+}

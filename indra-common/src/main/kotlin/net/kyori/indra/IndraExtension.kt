@@ -25,15 +25,17 @@ package net.kyori.indra
 
 import java.net.URI
 import javax.inject.Inject
+import net.kyori.indra.api.model.ContinuousIntegration
+import net.kyori.indra.api.model.Issues
+import net.kyori.indra.api.model.License
+import net.kyori.indra.api.model.SourceCodeManagement
 import net.kyori.indra.data.ApplyTo
-import net.kyori.indra.data.ContinuousIntegration
-import net.kyori.indra.data.Issues
-import net.kyori.indra.data.License
-import net.kyori.indra.data.SCM
-import net.kyori.indra.util.versionNumber
+import net.kyori.indra.data.ContinuousIntegrationImpl
+import net.kyori.indra.data.IssuesImpl
+import net.kyori.indra.data.LicenseImpl
+import net.kyori.indra.data.SourceCodeManagementImpl
 import org.gradle.api.Action
 import org.gradle.api.GradleException
-import org.gradle.api.JavaVersion
 import org.gradle.api.component.SoftwareComponent
 import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
@@ -44,8 +46,6 @@ import org.gradle.kotlin.dsl.property
 import org.gradle.process.CommandLineArgumentProvider
 
 open class IndraExtension @Inject constructor(objects: ObjectFactory) {
-  @Deprecated("Moved into 'versions'", replaceWith = ReplaceWith("javaVersions.target"))
-  val java: Property<JavaVersion> = objects.property(JavaVersion::class).convention(JavaVersion.VERSION_1_8)
   val reproducibleBuilds: Property<Boolean> = objects.property(Boolean::class).convention(true)
 
   /**
@@ -67,11 +67,6 @@ open class IndraExtension @Inject constructor(objects: ObjectFactory) {
     action(javaVersions)
   }
 
-  init {
-    @Suppress("DEPRECATION") // graceful transition
-    javaVersions.target.convention(java.map { versionNumber(it) })
-  }
-
   internal fun previewFeatureArgumentProvider(): CommandLineArgumentProvider = CommandLineArgumentProvider {
     javaVersions.enablePreviewFeatures.finalizeValue()
     if(javaVersions.enablePreviewFeatures.get()) {
@@ -84,19 +79,19 @@ open class IndraExtension @Inject constructor(objects: ObjectFactory) {
   val ci: Property<ContinuousIntegration> = objects.property(ContinuousIntegration::class)
   val issues: Property<Issues> = objects.property(Issues::class)
   val license: Property<License> = objects.property(License::class)
-  val scm: Property<SCM> = objects.property(SCM::class)
+  val scm: Property<SourceCodeManagement> = objects.property(SourceCodeManagement::class)
 
   @JvmOverloads
   fun github(user: String, repo: String, applicable: Action<ApplyTo>? = null) {
     val options = ApplyTo().also { applicable?.execute(it) }
     if(options.ci) {
-      this.ci.set(ContinuousIntegration("GitHub Actions", "https://github.com/$user/$repo/actions"))
+      this.ci.set(ContinuousIntegrationImpl("GitHub Actions", "https://github.com/$user/$repo/actions"))
     }
     if(options.issues) {
-      this.issues.set(Issues("GitHub", "https://github.com/$user/$repo/issues"))
+      this.issues.set(IssuesImpl("GitHub", "https://github.com/$user/$repo/issues"))
     }
     if(options.scm) {
-      this.scm.set(SCM("scm:git:https://github.com/$user/$repo.git", "scm:git:ssh://git@github.com/$user/$repo.git", "https://github.com/$user/$repo"))
+      this.scm.set(SourceCodeManagementImpl("scm:git:https://github.com/$user/$repo.git", "scm:git:ssh://git@github.com/$user/$repo.git", "https://github.com/$user/$repo"))
     }
     if(options.publishing) {
       this.publishReleasesTo("githubPackages", "https://maven.pkg.github.com/$user/$repo")
@@ -107,13 +102,13 @@ open class IndraExtension @Inject constructor(objects: ObjectFactory) {
   fun gitlab(user: String, repo: String, applicable: Action<ApplyTo>? = null) {
     val options = ApplyTo().also { applicable?.execute(it) }
     if(options.ci) {
-      this.ci.set(ContinuousIntegration("GitLab CI", "https://gitlab.com/$user/$repo/-/pipelines"))
+      this.ci.set(ContinuousIntegrationImpl("GitLab CI", "https://gitlab.com/$user/$repo/-/pipelines"))
     }
     if(options.issues) {
-      this.issues.set(Issues("GitLab", "https://gitlab.com/$user/$repo/-/issues"))
+      this.issues.set(IssuesImpl("GitLab", "https://gitlab.com/$user/$repo/-/issues"))
     }
     if(options.scm) {
-      this.scm.set(SCM("scm:git:https://gitlab.com/$user/$repo.git", "scm:git:ssh://git@gitlab.com/$user/$repo.git", "https://gitlab.com/$user/$repo"))
+      this.scm.set(SourceCodeManagementImpl("scm:git:https://gitlab.com/$user/$repo.git", "scm:git:ssh://git@gitlab.com/$user/$repo.git", "https://gitlab.com/$user/$repo"))
     }
     if(options.publishing) {
       // TODO: needs project ID, which is separate from user/repo and uses HTTP header-based auth
@@ -121,26 +116,26 @@ open class IndraExtension @Inject constructor(objects: ObjectFactory) {
     }
   }
 
-  fun apache2License() = this.license.set(License(
+  fun apache2License() = this.license.set(LicenseImpl(
     spdx = "Apache-2.0",
     name = "Apache License, Version 2.0",
     url = "https://opensource.org/licenses/Apache-2.0"
   ))
 
-  fun gpl3OnlyLicense() = this.license.set(License(
+  fun gpl3OnlyLicense() = this.license.set(LicenseImpl(
     spdx = "GPL-3.0-only",
     name = "GNU General Public License version 3",
     url = "https://opensource.org/licenses/GPL-3.0",
     bintray = "GPL-3.0"
   ))
 
-  fun mitLicense() = this.license.set(License(
+  fun mitLicense() = this.license.set(LicenseImpl(
     spdx = "MIT",
     name = "The MIT License",
     url = "https://opensource.org/licenses/MIT"
   ))
 
-  fun jenkins(url: String) = this.ci.set(ContinuousIntegration(
+  fun jenkins(url: String) = this.ci.set(ContinuousIntegrationImpl(
     system = "Jenkins",
     url = url
   ))

@@ -23,7 +23,17 @@
  */
 package net.kyori.indra.data
 
-data class ContinuousIntegration(
-  val system: String,
-  val url: String
-)
+import net.kyori.indra.api.model.License
+
+data class LicenseImpl @JvmOverloads constructor(
+  @Suppress("SpellCheckingInspection")
+  private val spdx: String?,
+  private val name: String,
+  private val url: String,
+  private val bintray: String? = spdx
+) : License {
+  override fun spdx(): String? = this.spdx
+  override fun name(): String = this.name
+  override fun url(): String = this.url
+  override fun bintray(): String? = this.bintray
+}

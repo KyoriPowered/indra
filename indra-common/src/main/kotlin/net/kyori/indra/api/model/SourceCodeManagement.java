@@ -21,10 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra.data
+package net.kyori.indra.api.model;
 
-data class SCM(
-  val connection: String,
-  val developerConnection: String,
-  val url: String
-)
+import org.checkerframework.checker.nullness.qual.NonNull;
+
+public interface SourceCodeManagement {
+  @NonNull String connection();
+
+  @NonNull String developerConnection();
+
+  @NonNull String url();
+}

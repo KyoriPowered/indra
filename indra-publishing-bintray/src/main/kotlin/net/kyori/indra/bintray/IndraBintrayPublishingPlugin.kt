@@ -55,7 +55,7 @@ class IndraBintrayPublishingPlugin : Plugin<Project> {
         pkg.apply {
           repo = findProperty("bintrayRepo") as String?
           name = project.name
-          vcsUrl = extension.scm.orNull?.connection
+          vcsUrl = extension.scm.orNull?.connection()
           version.apply {
             val tag: Tag? = headTag(project)
             vcsTag = tag?.name
@@ -77,11 +77,11 @@ class IndraBintrayPublishingPlugin : Plugin<Project> {
           setPublications(*extensions.getByType(PublishingExtension::class).publications.names.toTypedArray())
 
           pkg.apply {
-            vcsUrl = extension.scm.orNull?.connection
-            issueTrackerUrl = extension.issues.orNull?.url
+            vcsUrl = extension.scm.orNull?.connection()
+            issueTrackerUrl = extension.issues.orNull?.url()
             version.name = project.version as String
             extension.license.orNull?.apply {
-              setLicenses(bintray)
+              setLicenses(bintray())
             }
           }
         }

@@ -32,7 +32,6 @@ import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
 
 class IndraPublishingPlugin : AbstractIndraPublishingPlugin() {
-
   override fun applyPublishingActions(publishing: PublishingExtension, actions: Set<Action<MavenPublication>>) {
     publishing.publications.named(PUBLICATION_NAME, MavenPublication::class) {
       actions.forEach { it(this) }
@@ -43,4 +42,3 @@ class IndraPublishingPlugin : AbstractIndraPublishingPlugin() {
     publishing.publications.register(PUBLICATION_NAME, MavenPublication::class, configuration)
   }
 }
-

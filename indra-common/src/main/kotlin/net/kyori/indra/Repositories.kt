@@ -29,43 +29,28 @@ import org.gradle.api.artifacts.dsl.RepositoryHandler
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 import org.gradle.api.artifacts.repositories.MavenRepositoryContentDescriptor
 import org.gradle.api.plugins.ExtensionAware
-import java.net.URI
+import net.kyori.indra.data.RemoteRepository
 
-fun RepositoryHandler.sonatypeSnapshots() = sonatypeSnapshots.addTo(this)
-private val sonatypeSnapshots = RemoteRepository("sonatypeSnapshots", "https://oss.sonatype.org/content/repositories/snapshots/", releases = false)
+fun RepositoryHandler.sonatypeSnapshots() = addRepository(this, RemoteRepository.SONATYPE_SNAPSHOTS)
 
-internal val DEFAULT_REPOSITORIES = listOf(
-  sonatypeSnapshots
-)
-
-/**
- * A specification for a maven repository
- */
-data class RemoteRepository @JvmOverloads constructor(val name: String, val url: URI, val releases: Boolean = true, val snapshots: Boolean = true) {
-  // helper constructor
-  @JvmOverloads
-  constructor(name: String, url: String, releases: Boolean = true, snapshots: Boolean = true) : this(name, URI(url), releases, snapshots)
-
-  fun addTo(handler: RepositoryHandler): MavenArtifactRepository {
-    return handler.maven {
-      it.name = name
-      it.url = url
-      when {
-        this.releases && this.snapshots -> {}
-        this.releases -> it.mavenContent(MavenRepositoryContentDescriptor::releasesOnly)
-        this.snapshots -> it.mavenContent(MavenRepositoryContentDescriptor::snapshotsOnly)
-        else -> {} // no-op
-      }
+private fun addRepository(handler: RepositoryHandler, repository: RemoteRepository): MavenArtifactRepository {
+  return handler.maven {
+    it.name = repository.name
+    it.url = repository.url
+    when {
+      repository.releases && repository.snapshots -> {}
+      repository.releases -> it.mavenContent(MavenRepositoryContentDescriptor::releasesOnly)
+      repository.snapshots -> it.mavenContent(MavenRepositoryContentDescriptor::snapshotsOnly)
+      else -> {} // no-op
     }
   }
 }
 
 fun registerRepositoryExtensions(handler: RepositoryHandler, repositories: Iterable<RemoteRepository>) {
-  val extensions = handler as ExtensionAware
   repositories.forEach {
-    extensions.extensions.add(it.name, object : Closure<Unit>(null, handler) {
+    (handler as ExtensionAware).extensions.add(it.name, object : Closure<Unit>(null, handler) {
       fun doCall() {
-        it.addTo(this.thisObject as RepositoryHandler)
+        addRepository(this.thisObject as RepositoryHandler, it)
       }
     })
   }

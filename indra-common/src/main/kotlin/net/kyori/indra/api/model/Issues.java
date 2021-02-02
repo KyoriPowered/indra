@@ -21,23 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-@file:JvmName("Versioning")
-package net.kyori.indra.util
+package net.kyori.indra.api.model;
 
-import org.gradle.api.JavaVersion
-import org.gradle.api.Project
+import org.checkerframework.checker.nullness.qual.NonNull;
 
-fun isSnapshot(project: Project) = project.version.toString().contains("-SNAPSHOT")
+public interface Issues {
+  @NonNull String system();
 
-fun versionNumber(version: JavaVersion): Int = version.ordinal + 1
-
-fun versionString(version: Int): String = when(version) {
-  in 1..8 -> "1.$version"
-  else -> version.toString()
-}
-
-fun versionString(version: JavaVersion): String = when(version) {
-  JavaVersion.VERSION_1_9 -> "9"
-  JavaVersion.VERSION_1_10 -> "10"
-  else -> version.toString()
+  @NonNull String url();
 }
