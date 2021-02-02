@@ -62,8 +62,8 @@ open class JavaToolchainVersions @Inject constructor(objects: ObjectFactory, pro
    */
   val strictVersions: Property<Boolean> = objects.property<Boolean>()
     .convention(
-      providers.gradleProperty("strictMultireleaseVersions")
-        .orElse(providers.environmentVariable("CI")) // set by GH Actions and Travis
+      providers.gradleProperty("strictMultireleaseVersions").forUseAtConfigurationTime()
+        .orElse(providers.environmentVariable("CI").forUseAtConfigurationTime()) // set by GH Actions and Travis
         .map(String::toBoolean)
         .orElse(false)
     )
