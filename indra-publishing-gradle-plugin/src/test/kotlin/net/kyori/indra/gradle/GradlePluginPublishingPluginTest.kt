@@ -25,6 +25,8 @@ package net.kyori.indra.gradle
 
 import org.gradle.testfixtures.ProjectBuilder
 import kotlin.test.Test
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
 class GradlePluginPublishingPluginTest {
   @Test
@@ -32,5 +34,12 @@ class GradlePluginPublishingPluginTest {
     val project = ProjectBuilder.builder().build()
 
     project.pluginManager.apply("net.kyori.indra.publishing.gradle-plugin")
+
+    assertNull(project.extensions.findByName("indraPluginPublishing"))
+
+    project.pluginManager.apply("java-gradle-plugin")
+    project.pluginManager.apply("com.gradle.plugin-publish")
+
+    assertNotNull(project.extensions.findByName("indraPluginPublishing"))
   }
 }

@@ -2,6 +2,7 @@ import net.kyori.indra.self.declarePlugin
 
 dependencies {
   implementation(project(":indra-common"))
+  implementation("com.gradle.publish:plugin-publish-plugin:0.12.0")
 }
 
 declarePlugin(

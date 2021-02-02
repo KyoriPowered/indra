@@ -24,141 +24,23 @@
 @file:JvmName("IndraPublishing")
 package net.kyori.indra
 
-import net.kyori.indra.data.ContinuousIntegration
-import net.kyori.indra.data.Issues
-import net.kyori.indra.data.License
-import net.kyori.indra.data.SCM
-import net.kyori.indra.task.RequireClean
-import net.kyori.indra.util.grgit
-import net.kyori.indra.util.headTag
-import org.ajoberstar.grgit.gradle.GrgitPlugin
-import org.gradle.api.Plugin
-import org.gradle.api.Project
-import org.gradle.api.artifacts.repositories.PasswordCredentials
+import org.gradle.api.Action
 import org.gradle.api.publish.PublishingExtension
 import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.api.publish.maven.plugins.MavenPublishPlugin
-import org.gradle.api.publish.maven.tasks.AbstractPublishToMaven
-import org.gradle.api.publish.maven.tasks.PublishToMavenLocal
-import org.gradle.kotlin.dsl.apply
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.credentials
-import org.gradle.kotlin.dsl.getByType
 import org.gradle.kotlin.dsl.invoke
 import org.gradle.kotlin.dsl.named
 import org.gradle.kotlin.dsl.register
-import org.gradle.kotlin.dsl.withType
-import org.gradle.plugins.signing.Sign
-import org.gradle.plugins.signing.SigningExtension
-import org.gradle.plugins.signing.SigningPlugin
 
-class IndraPublishingPlugin : Plugin<Project> {
-  override fun apply(project: Project) {
-    with(project) {
-      val extension = extension(project)
+class IndraPublishingPlugin : AbstractIndraPublishingPlugin() {
 
-      apply<MavenPublishPlugin>()
-      apply<SigningPlugin>()
-      apply<GrgitPlugin>()
-
-      // Inherit options from root project
-      if(this != rootProject) {
-        group = rootProject.group
-        version = rootProject.version
-        description = rootProject.description
-      }
-
-      val descriptionProvider = project.provider { project.description }
-      extensions.configure<PublishingExtension> {
-        publications.register(PUBLICATION_NAME, MavenPublication::class.java) {
-          it.apply {
-            pom.apply {
-              name.set(project.name)
-              description.set(descriptionProvider)
-              url.set(extension.scm.map(SCM::url))
-
-              ciManagement { ci ->
-                ci.system.set(extension.ci.map(ContinuousIntegration::system))
-                ci.url.set(extension.ci.map(ContinuousIntegration::url))
-              }
-
-              issueManagement { issues ->
-                issues.system.set(extension.issues.map(Issues::system))
-                issues.url.set(extension.issues.map(Issues::url))
-              }
-
-              licenses { licenses ->
-                licenses.license { license ->
-                  license.name.set(extension.license.map(License::name))
-                  license.url.set(extension.license.map(License::url))
-                }
-              }
-
-              scm { scm ->
-                scm.connection.set(extension.scm.map(SCM::connection))
-                scm.developerConnection.set(extension.scm.map(SCM::developerConnection))
-                scm.url.set(extension.scm.map(SCM::url))
-              }
-            }
-          }
-        }
-      }
-
-      extensions.configure<SigningExtension> {
-        sign(extensions.getByType<PublishingExtension>().publications)
-        useGpgCmd()
-      }
-
-      tasks.withType<Sign>().configureEach {
-        it.onlyIf {
-          project.hasProperty("forceSign") || isRelease(project)
-        }
-      }
-
-      val requireClean = tasks.register(RequireClean.NAME, RequireClean::class)
-      tasks.withType<AbstractPublishToMaven>().configureEach {
-        if(it !is PublishToMavenLocal) {
-          it.dependsOn(requireClean)
-        }
-      }
-
-      afterEvaluate {
-        extensions.getByType<PublishingExtension>().apply {
-          publications.named<MavenPublication>(PUBLICATION_NAME).configure { pub ->
-            extension.publishingActions.forEach { it(pub) }
-          }
-
-          extension.repositories.all { // will be applied to repositories as they're added
-            val username = "${it.id}Username"
-            val password = "${it.id}Password"
-            if(((it.releases && isRelease(project))
-                  || (it.snapshots && isSnapshot(project)))
-                && project.hasProperty(username)
-                && project.hasProperty(password)) {
-                repositories.maven { repository ->
-                  repository.name = it.id
-                  repository.url = it.url
-                  // ${id}Username + ${id}Password properties
-                  repository.credentials(PasswordCredentials::class)
-                }
-              }
-          }
-        }
-      }
+  override fun applyPublishingActions(publishing: PublishingExtension, actions: Set<Action<MavenPublication>>) {
+    publishing.publications.named(PUBLICATION_NAME, MavenPublication::class) {
+      actions.forEach { it(this) }
     }
+  }
+
+  override fun configurePublications(publishing: PublishingExtension, configuration: Action<MavenPublication>) {
+    publishing.publications.register(PUBLICATION_NAME, MavenPublication::class, configuration)
   }
 }
 
-fun isSnapshot(project: Project) = project.version.toString().contains("-SNAPSHOT")
-
-/**
- * Verify that this project is checked out to a release version, meaning that:
- *
- * - The version does not contain SNAPSHOT
- * - The project is managed within a Git repository
- * - the current head commit is tagged
- */
-fun isRelease(project: Project): Boolean {
-  val tag = headTag(project)
-  return (tag != null || grgit(project) == null) && !isSnapshot(project)
-}

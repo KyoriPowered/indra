@@ -23,12 +23,61 @@
  */
 package net.kyori.indra.gradle
 
-import org.gradle.api.Plugin
+import com.gradle.publish.PluginBundleExtension
+import com.gradle.publish.PublishPlugin
+import net.kyori.indra.AbstractIndraPublishingPlugin
+import net.kyori.indra.extension
+import org.gradle.api.Action
 import org.gradle.api.Project
+import org.gradle.api.publish.PublishingExtension
+import org.gradle.api.publish.maven.MavenPublication
+import org.gradle.kotlin.dsl.create
+import org.gradle.kotlin.dsl.getByType
+import org.gradle.kotlin.dsl.withType
+import org.gradle.plugin.devel.GradlePluginDevelopmentExtension
+import org.gradle.plugin.devel.plugins.JavaGradlePluginPlugin
 
-class GradlePluginPublishingPlugin : Plugin<Project> {
-  override fun apply(project: Project) {
-    with(project) {
+/**
+ * An indra publishing plugin for Gradle plugin publications
+ */
+class GradlePluginPublishingPlugin : AbstractIndraPublishingPlugin() {
+
+  override fun extraApplySteps(target: Project) {
+    // TODO: do we want to apply these plugins ourselves instead of only acting when the user chooses to do so?
+    target.plugins.withType(PublishPlugin::class.java) {
+      val pluginBundleExtension = target.extensions.getByType(PluginBundleExtension::class)
+      target.plugins.withType(JavaGradlePluginPlugin::class.java) {
+        val extension = target.extensions.create(
+          "indraPluginPublishing",
+          IndraPluginPublishingExtension::class,
+          target.extensions.getByType(GradlePluginDevelopmentExtension::class),
+          pluginBundleExtension
+        )
+
+        extension.pluginIdBase.convention(target.provider { target.group as String })
+      }
+
+      target.afterEvaluate {
+        val indraExtension = extension(it)
+        if(indraExtension.scm.isPresent && pluginBundleExtension.vcsUrl == null) {
+          pluginBundleExtension.vcsUrl = indraExtension.scm.get().url
+        }
+
+        if(it.description != null && pluginBundleExtension.description == null) {
+          pluginBundleExtension.description = it.description
+        }
+      }
     }
+  }
+
+
+  override fun applyPublishingActions(publishing: PublishingExtension, actions: Set<Action<MavenPublication>>) {
+    publishing.publications.withType(MavenPublication::class).configureEach { publication ->
+      actions.forEach { it.execute(publication) }
+    }
+  }
+
+  override fun configurePublications(publishing: PublishingExtension, configuration: Action<MavenPublication>) {
+    publishing.publications.withType(MavenPublication::class).configureEach(configuration)
   }
 }
