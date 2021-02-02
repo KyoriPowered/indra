@@ -79,7 +79,7 @@ open class JavaToolchainVersions @Inject constructor(objects: ObjectFactory, pro
   val enablePreviewFeatures: Property<Boolean> = objects.property(Boolean::class).convention(false)
 
   /** The version that should be used to run compile tasks, taking into account strict version and current JVM */
-  internal val actualVersion: Provider<Int> = this.strictVersions.map { strict ->
+  val actualVersion: Provider<Int> = this.strictVersions.map { strict ->
     val running = versionNumber(JavaVersion.current())
     target.finalizeValue()
     minimumToolchain.finalizeValue()
