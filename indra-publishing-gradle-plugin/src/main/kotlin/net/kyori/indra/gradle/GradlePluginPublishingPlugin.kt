@@ -26,6 +26,7 @@ package net.kyori.indra.gradle
 import com.gradle.publish.PluginBundleExtension
 import com.gradle.publish.PublishPlugin
 import net.kyori.indra.AbstractIndraPublishingPlugin
+import net.kyori.indra.IndraPlugin
 import net.kyori.indra.extension
 import org.gradle.api.Action
 import org.gradle.api.Project
@@ -46,7 +47,22 @@ class GradlePluginPublishingPlugin : AbstractIndraPublishingPlugin() {
     // TODO: do we want to apply these plugins ourselves instead of only acting when the user chooses to do so?
     target.plugins.withType(PublishPlugin::class.java) {
       val pluginBundleExtension = target.extensions.getByType(PluginBundleExtension::class)
+
+      // Needed to publish plugins using GH actions secrets, which can only be specified in environment variables.
+      // Unfortunately, the plugin we are forced to use to publish to the plugin portal does not
+      // support customizing these properties, so instead we just have to copy from original properties
+      // to the ones that plugin expects.
+      fun copyProperty(definedProperty: String, originalProperty: String) {
+        val property = target.findProperty(definedProperty)
+        if(property != null) {
+          target.extensions.extraProperties[originalProperty] = property
+        }
+      }
+      copyProperty("pluginPortalApiKey", "gradle.publish.key")
+      copyProperty("pluginPortalApiSecret", "gradle.publish.secret")
+
       target.plugins.withType(JavaGradlePluginPlugin::class.java) {
+        // When we have both plugins, we can create an extension
         val extension = target.extensions.create(
           "indraPluginPublishing",
           IndraPluginPublishingExtension::class,
@@ -58,6 +74,7 @@ class GradlePluginPublishingPlugin : AbstractIndraPublishingPlugin() {
       }
 
       target.afterEvaluate {
+        // Inherit properties from plugin and project
         val indraExtension = extension(it)
         if(indraExtension.scm.isPresent && pluginBundleExtension.vcsUrl == null) {
           pluginBundleExtension.vcsUrl = indraExtension.scm.get().url
@@ -67,6 +84,10 @@ class GradlePluginPublishingPlugin : AbstractIndraPublishingPlugin() {
           pluginBundleExtension.description = it.description
         }
       }
+    }
+
+    target.plugins.withType(IndraPlugin::class.java) {
+      extension(target).includeJavaSoftwareComponentInPublications.set(false)
     }
   }
 

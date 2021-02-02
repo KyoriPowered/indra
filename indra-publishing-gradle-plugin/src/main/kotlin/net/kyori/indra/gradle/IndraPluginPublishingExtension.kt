@@ -46,11 +46,16 @@ open class IndraPluginPublishingExtension @Inject constructor(
    *
    * If no tags are set on the global plugin bundle, then the first provided set of tags will be applied.
    */
+  @JvmOverloads
   fun plugin(id: String, mainClass: String, displayName: String, description: String? = null, tags: List<String> = listOf()) {
     val qualifiedId = "${pluginIdBase.get()}.$id"
     publishingExtension.plugins.create(id) {
       it.id = qualifiedId
       it.implementationClass = mainClass
+      if(description != null) {
+        it.description
+      }
+      it.displayName = displayName
     }
 
     pluginBundleExtension.apply {
@@ -65,7 +70,7 @@ open class IndraPluginPublishingExtension @Inject constructor(
         }
       }
 
-      if(tags.isEmpty()) {
+      if(this.tags.isEmpty()) {
         this.tags = tags
       }
     }
