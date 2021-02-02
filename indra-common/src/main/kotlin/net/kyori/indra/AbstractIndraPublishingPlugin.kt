@@ -23,6 +23,10 @@
  */
 package net.kyori.indra
 
+import net.kyori.indra.api.model.ContinuousIntegration
+import net.kyori.indra.api.model.Issues
+import net.kyori.indra.api.model.License
+import net.kyori.indra.api.model.SourceCodeManagement
 import net.kyori.indra.task.RequireClean
 import org.ajoberstar.grgit.gradle.GrgitPlugin
 import org.gradle.api.Action
@@ -67,29 +71,29 @@ abstract class AbstractIndraPublishingPlugin : Plugin<Project> {
         it.pom.apply {
           name.set(project.name)
           description.set(descriptionProvider)
-          url.set(extension.scm.map(net.kyori.indra.data.SCM::url))
+          url.set(extension.scm.map(SourceCodeManagement::url))
 
           ciManagement { ci ->
-            ci.system.set(extension.ci.map(net.kyori.indra.data.ContinuousIntegration::system))
-            ci.url.set(extension.ci.map(net.kyori.indra.data.ContinuousIntegration::url))
+            ci.system.set(extension.ci.map(ContinuousIntegration::system))
+            ci.url.set(extension.ci.map(ContinuousIntegration::url))
           }
 
           issueManagement { issues ->
-            issues.system.set(extension.issues.map(net.kyori.indra.data.Issues::system))
-            issues.url.set(extension.issues.map(net.kyori.indra.data.Issues::url))
+            issues.system.set(extension.issues.map(Issues::system))
+            issues.url.set(extension.issues.map(Issues::url))
           }
 
           licenses { licenses ->
             licenses.license { license ->
-              license.name.set(extension.license.map(net.kyori.indra.data.License::name))
-              license.url.set(extension.license.map(net.kyori.indra.data.License::url))
+              license.name.set(extension.license.map(License::name))
+              license.url.set(extension.license.map(License::url))
             }
           }
 
           scm { scm ->
-            scm.connection.set(extension.scm.map(net.kyori.indra.data.SCM::connection))
-            scm.developerConnection.set(extension.scm.map(net.kyori.indra.data.SCM::developerConnection))
-            scm.url.set(extension.scm.map(net.kyori.indra.data.SCM::url))
+            scm.connection.set(extension.scm.map(SourceCodeManagement::connection))
+            scm.developerConnection.set(extension.scm.map(SourceCodeManagement::developerConnection))
+            scm.url.set(extension.scm.map(SourceCodeManagement::url))
           }
         }
       })

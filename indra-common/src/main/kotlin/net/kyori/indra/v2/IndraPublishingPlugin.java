@@ -21,30 +21,16 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra;
+package net.kyori.indra.v2;
 
-import java.util.HashSet;
-import java.util.Set;
-import net.kyori.gradle.api.Extensions;
-import net.kyori.indra.v2.IndraExtension;
-import org.gradle.api.plugins.ExtensionContainer;
+import net.kyori.indra.Indra;
+import org.gradle.api.Action;
+import org.gradle.api.publish.PublishingExtension;
+import org.gradle.api.publish.maven.MavenPublication;
 
-public class Indra {
-  public static final String EXTENSION_NAME = "indra";
-  public static final String PUBLICATION_NAME = "maven";
-
-  public static final Set<String> SOURCE_FILES = sourceFiles();
-
-  private static Set<String> sourceFiles() {
-    final Set<String> sourceFiles = new HashSet<>();
-    sourceFiles.add( "**/*.groovy");
-    sourceFiles.add( "**/*.java");
-    sourceFiles.add( "**/*.kt");
-    sourceFiles.add( "**/*.scala");
-    return sourceFiles;
-  }
-
-  public static IndraExtension extension(final ExtensionContainer extensions) {
-    return Extensions.findOrCreate(extensions, EXTENSION_NAME, IndraExtension.class);
+public class IndraPublishingPlugin extends AbstractIndraPublishingPlugin {
+  @Override
+  protected void configurePublications(final PublishingExtension extension, final Action<MavenPublication> action) {
+    extension.getPublications().register(Indra.PUBLICATION_NAME, MavenPublication.class, action);
   }
 }

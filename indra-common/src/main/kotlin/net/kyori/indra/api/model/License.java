@@ -28,7 +28,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 
 public interface License {
   @SuppressWarnings("SpellCheckingInspection")
-  @Nullable String spdx();
+  @Nullable String spdx(); // https://spdx.org/licenses/
 
   @NonNull String name();
 

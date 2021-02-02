@@ -21,30 +21,35 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra;
+package net.kyori.indra.v2;
 
-import java.util.HashSet;
-import java.util.Set;
-import net.kyori.gradle.api.Extensions;
-import net.kyori.indra.v2.IndraExtension;
-import org.gradle.api.plugins.ExtensionContainer;
+import javax.inject.Inject;
+import net.kyori.indra.api.model.ContinuousIntegration;
+import net.kyori.indra.api.model.Issues;
+import net.kyori.indra.api.model.License;
+import net.kyori.indra.api.model.SourceCodeManagement;
+import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.Property;
 
-public class Indra {
-  public static final String EXTENSION_NAME = "indra";
-  public static final String PUBLICATION_NAME = "maven";
+public class IndraExtension {
+  public final Property<ContinuousIntegration> ci;
+  public final Property<Issues> issues;
+  public final Property<License> license;
+  public final Property<SourceCodeManagement> scm;
 
-  public static final Set<String> SOURCE_FILES = sourceFiles();
+  public final Property<Boolean> reproducibleBuilds;
 
-  private static Set<String> sourceFiles() {
-    final Set<String> sourceFiles = new HashSet<>();
-    sourceFiles.add( "**/*.groovy");
-    sourceFiles.add( "**/*.java");
-    sourceFiles.add( "**/*.kt");
-    sourceFiles.add( "**/*.scala");
-    return sourceFiles;
-  }
+  public final Property<String> checkstyle;
 
-  public static IndraExtension extension(final ExtensionContainer extensions) {
-    return Extensions.findOrCreate(extensions, EXTENSION_NAME, IndraExtension.class);
+  @Inject
+  public IndraExtension(final ObjectFactory objects) {
+    this.ci = objects.property(ContinuousIntegration.class);
+    this.issues = objects.property(Issues.class);
+    this.license = objects.property(License.class);
+    this.scm = objects.property(SourceCodeManagement.class);
+
+    this.reproducibleBuilds = objects.property(Boolean.class).convention(true);
+
+    this.checkstyle = objects.property(String.class).convention("8.37");
   }
 }
