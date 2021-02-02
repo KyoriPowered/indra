@@ -21,26 +21,25 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-@file:JvmName("IndraPublishing")
-package net.kyori.indra
+package net.kyori.indra.gradle
 
-import org.gradle.api.Action
-import org.gradle.api.publish.PublishingExtension
-import org.gradle.api.publish.maven.MavenPublication
-import org.gradle.kotlin.dsl.invoke
-import org.gradle.kotlin.dsl.named
-import org.gradle.kotlin.dsl.register
+import org.gradle.testfixtures.ProjectBuilder
+import kotlin.test.Test
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 
-class IndraPublishingPlugin : AbstractIndraPublishingPlugin() {
+class GradlePluginPublishingPluginTest {
+  @Test
+  fun testEmptyBuild() {
+    val project = ProjectBuilder.builder().build()
 
-  override fun applyPublishingActions(publishing: PublishingExtension, actions: Set<Action<MavenPublication>>) {
-    publishing.publications.named(PUBLICATION_NAME, MavenPublication::class) {
-      actions.forEach { it(this) }
-    }
-  }
+    project.pluginManager.apply("net.kyori.indra.publishing.gradle-plugin")
 
-  override fun configurePublications(publishing: PublishingExtension, configuration: Action<MavenPublication>) {
-    publishing.publications.register(PUBLICATION_NAME, MavenPublication::class, configuration)
+    assertNull(project.extensions.findByName("indraPluginPublishing"))
+
+    project.pluginManager.apply("java-gradle-plugin")
+    project.pluginManager.apply("com.gradle.plugin-publish")
+
+    assertNotNull(project.extensions.findByName("indraPluginPublishing"))
   }
 }
-
