@@ -41,7 +41,7 @@ class IndraCheckstylePlugin : Plugin<Project> {
 
       // Create task for executing all checkstyle tasks
       tasks.register("checkstyleAll") {
-        group = LifecycleBasePlugin.VERIFICATION_GROUP
+        it.group = LifecycleBasePlugin.VERIFICATION_GROUP
         it.description = "Execute checkstyle checks for all source sets"
         it.dependsOn(tasks.withType(Checkstyle::class))
       }
