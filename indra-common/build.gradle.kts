@@ -1,5 +1,3 @@
-import net.kyori.indra.self.declarePlugin
-
 dependencies {
   compileOnlyApi("org.immutables:value:2.8.8:annotations")
   annotationProcessor("org.immutables:value:2.8.8")
@@ -9,34 +7,36 @@ dependencies {
   implementation("gradle.plugin.org.cadixdev.gradle:licenser:0.5.0")
 }
 
-declarePlugin(
-  id = "indra",
-  mainClass = "IndraPlugin",
-  displayName = "Indra",
-  description = "Simplified tools for configuring modern JVM projects",
-  tags = listOf("boilerplate", "java", "jvm")
-)
+indraPluginPublishing {
+  plugin(
+    "indra",
+    "net.kyori.indra.IndraPlugin",
+    "Indra",
+    "Simplified tools for configuring modern JVM projects",
+    listOf("boilerplate", "java", "jvm")
+  )
 
-declarePlugin(
-  id = "indra.checkstyle",
-  mainClass = "IndraCheckstylePlugin",
-  displayName = "Indra Checkstyle",
-  description = "Checkstyle configuration in line with the Indra file layout",
-  tags = listOf("boilerplate", "checkstyle")
-)
+  plugin(
+    "indra.checkstyle",
+    "net.kyori.indra.IndraCheckstylePlugin",
+    "Indra Checkstyle",
+    "Checkstyle configuration in line with the Indra file layout",
+    listOf("boilerplate", "checkstyle")
+  )
 
-declarePlugin(
-  id = "indra.license-header",
-  mainClass = "IndraLicenseHeaderPlugin",
-  displayName = "Indra License Header",
-  description = "License header configuration in line with the Indra file layout",
-  tags = listOf("boilerplate", "license", "license-header", "licensing")
-)
+  plugin(
+    "indra.license-header",
+    "net.kyori.indra.IndraLicenseHeaderPlugin",
+    "Indra License Header",
+    "License header configuration in line with the Indra file layout",
+    listOf("boilerplate", "license", "license-header", "licensing")
+  )
 
-declarePlugin(
-  id = "indra.publishing",
-  mainClass = "IndraPublishingPlugin",
-  displayName = "Indra Publishing",
-  description = "Reasonable publishing configuration and repository aliases",
-  tags = listOf("boilerplate", "publishing", "nexus")
-)
+  plugin(
+    "indra.publishing",
+    "net.kyori.indra.IndraPublishingPlugin",
+    "Indra Publishing",
+    "Reasonable publishing configuration and repository aliases",
+    listOf("boilerplate", "publishing", "nexus")
+  )
+}

@@ -1,17 +1,14 @@
-import net.kyori.indra.self.declarePlugin
-plugins {
-  kotlin("jvm")
-}
-
 dependencies {
   implementation(project(":indra-common"))
   implementation("com.gradle.publish:plugin-publish-plugin:0.12.0")
 }
 
-declarePlugin(
-  id = "indra.publishing.gradle-plugin",
-  mainClass = "gradle.GradlePluginPublishingPlugin",
-  displayName = "Indra Gradle Plugin Publishing",
-  description = "Reasonable settings for Gradle plugin publishing",
-  tags = listOf("publishing", "gradle-plugin", "boilerplate")
-)
+indraPluginPublishing {
+  plugin(
+    "indra.publishing.gradle-plugin",
+    "net.kyori.indra.gradle.GradlePluginPublishingPlugin",
+    "Indra Gradle Plugin Publishing",
+    "Reasonable settings for Gradle plugin publishing",
+    listOf("publishing", "gradle-plugin", "boilerplate")
+  )
+}
