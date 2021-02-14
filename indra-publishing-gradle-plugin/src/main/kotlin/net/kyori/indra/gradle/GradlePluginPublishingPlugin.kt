@@ -26,8 +26,8 @@ package net.kyori.indra.gradle
 import com.gradle.publish.PluginBundleExtension
 import com.gradle.publish.PublishPlugin
 import net.kyori.indra.AbstractIndraPublishingPlugin
+import net.kyori.indra.Indra
 import net.kyori.indra.IndraPlugin
-import net.kyori.indra.extension
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.api.publish.PublishingExtension
@@ -75,9 +75,9 @@ class GradlePluginPublishingPlugin : AbstractIndraPublishingPlugin() {
 
       target.afterEvaluate {
         // Inherit properties from plugin and project
-        val indraExtension = extension(it)
-        if(indraExtension.scm.isPresent && pluginBundleExtension.vcsUrl == null) {
-          pluginBundleExtension.vcsUrl = indraExtension.scm.get().url
+        val indraExtension = Indra.extension(it.extensions)
+        if(indraExtension.scm().isPresent && pluginBundleExtension.vcsUrl == null) {
+          pluginBundleExtension.vcsUrl = indraExtension.scm().get().url()
         }
 
         if(it.description != null && pluginBundleExtension.description == null) {
@@ -87,7 +87,7 @@ class GradlePluginPublishingPlugin : AbstractIndraPublishingPlugin() {
     }
 
     target.plugins.withType(IndraPlugin::class.java) {
-      extension(target).includeJavaSoftwareComponentInPublications.set(false)
+      Indra.extension(target.extensions).includeJavaSoftwareComponentInPublications().set(false)
     }
   }
 

@@ -25,7 +25,6 @@ subprojects {
   apply(plugin = "java-gradle-plugin")
   apply(plugin = "com.gradle.plugin-publish")
   apply(plugin = "maven-publish")
-  apply(plugin = "org.jetbrains.kotlin.jvm")
   apply(plugin = "net.kyori.indra")
   apply(plugin = "net.kyori.indra.license-header")
 
@@ -41,12 +40,6 @@ subprojects {
   }
 
   dependencies {
-    // DSL stubs are generated per-project but only for what's applied in the `plugins` block.
-    // Since this root project doesn't have anything applied, we don't get DSL extensions for the
-    // java configurations so we have to refer to them with strings.
-    "implementation"(gradleKotlinDsl())
-
-    "testImplementation"(kotlin("test-junit5"))
     "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.7.0")
     "testRuntimeOnly"("org.junit.jupiter:junit-jupiter-engine:5.7.0")
   }
