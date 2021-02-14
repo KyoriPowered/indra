@@ -58,13 +58,17 @@ public final class Versioning {
   }
 
   /**
-   * Verify that this project is checked out to a release version, meaning that:
+   * Verify that this project is checked out to a release version.
    *
+   * <p>This means that:</p>
    * <ul>
    * <li>The version does not contain SNAPSHOT</li>
    * <li>The project is managed within a Git repository</li>
    * <li>the current head commit is tagged</li>
    * </ul>
+   *
+   * @param project the project to check
+   * @return if the project is recognized as a release
    */
   public static boolean isRelease(final Project project) {
     final @Nullable IndraGitExtension git = project.getExtensions().findByType(IndraGitExtension.class);

@@ -49,7 +49,6 @@ public interface License {
       .spdx("GPL-3.0-only")
       .name("GNU General Public License version 3")
       .url("https://opensource.org/licenses/GPL-3.0")
-      .bintray("GPL-3.0")
       .build();
   }
 
@@ -67,11 +66,6 @@ public interface License {
   @NonNull String name();
 
   @NonNull String url();
-
-  @Value.Default
-  default @Nullable String bintray() {
-    return this.spdx();
-  }
 
   final class Builder extends LicenseImpl.Builder {
     // generated based on class spec
