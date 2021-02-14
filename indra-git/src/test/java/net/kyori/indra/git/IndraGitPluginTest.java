@@ -21,36 +21,19 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra.task;
+package net.kyori.indra.git;
 
-import net.kyori.indra.util.VersionControl;
-import org.ajoberstar.grgit.Grgit;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.gradle.api.DefaultTask;
-import org.gradle.api.GradleException;
-import org.gradle.api.tasks.TaskAction;
-import org.gradle.language.base.plugins.LifecycleBasePlugin;
+import org.gradle.api.Project;
+import org.gradle.api.plugins.PluginManager;
+import org.gradle.testfixtures.ProjectBuilder;
+import org.junit.jupiter.api.Test;
 
-/**
- * Require that the project has no files that are uncommitted to SCM.
- *
- * <p>This prevents accidentally publishing content that does not match the
- * published source.</p>
- *
- * @since 1.0.0
- */
-public class RequireClean extends DefaultTask {
-  public static final String NAME = "requireClean";
+class IndraGitPluginTest {
+  @Test
+  void testPluginApplication() {
+    final Project project = ProjectBuilder.builder().build();
+    final PluginManager plugins = project.getPluginManager();
 
-  public RequireClean() {
-    this.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
-  }
-
-  @TaskAction
-  public void check() {
-    final @Nullable Grgit grgit = VersionControl.grgit(this.getProject());
-    if(grgit != null && !grgit.status().isClean()) {
-      throw new GradleException("Source root must be clean! Make sure your changes are committed");
-    }
+    plugins.apply("net.kyori.indra.git");
   }
 }

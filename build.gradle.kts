@@ -13,9 +13,7 @@ version = "1.4.0-SNAPSHOT"
 
 allprojects {
   repositories {
-    mavenLocal()
     mavenCentral()
-    jcenter()
     gradlePluginPortal()
   }
 }

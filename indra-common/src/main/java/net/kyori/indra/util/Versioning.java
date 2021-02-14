@@ -23,8 +23,9 @@
  */
 package net.kyori.indra.util;
 
-import org.ajoberstar.grgit.Tag;
+import net.kyori.indra.git.IndraGitExtension;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.eclipse.jgit.lib.Ref;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 
@@ -39,7 +40,7 @@ public final class Versioning {
   }
 
   public static String versionString(final int version) {
-    if (version <= 8) {
+    if(version <= 8) {
       return "1." + version;
     } else {
       return String.valueOf(version);
@@ -47,9 +48,9 @@ public final class Versioning {
   }
 
   public static String versionString(final JavaVersion version) {
-    if (version == JavaVersion.VERSION_1_9) {
+    if(version == JavaVersion.VERSION_1_9) {
       return "9";
-    } else if (version == JavaVersion.VERSION_1_10) {
+    } else if(version == JavaVersion.VERSION_1_10) {
       return "10";
     } else {
       return version.toString();
@@ -66,8 +67,9 @@ public final class Versioning {
    * </ul>
    */
   public static boolean isRelease(final Project project) {
-    final @Nullable Tag tag = VersionControl.headTag(project);
-    return (tag != null || VersionControl.grgit(project) == null) && !isSnapshot(project);
+    final @Nullable IndraGitExtension git = project.getExtensions().findByType(IndraGitExtension.class);
+    final @Nullable Ref tag = git == null ? null : git.headTag();
+    return (tag != null || git == null) && !isSnapshot(project);
   }
 
   private Versioning() {

@@ -21,42 +21,44 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra.util;
+package net.kyori.indra.git.task;
 
-import org.ajoberstar.grgit.Commit;
-import org.ajoberstar.grgit.Grgit;
-import org.ajoberstar.grgit.Tag;
+import net.kyori.indra.git.IndraGitService;
 import org.checkerframework.checker.nullness.qual.Nullable;
-import org.gradle.api.Project;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.TaskAction;
+import org.gradle.language.base.plugins.LifecycleBasePlugin;
 
-public final class VersionControl {
-
-  private VersionControl() {
+/**
+ * Require that the project has no files that are uncommitted to SCM.
+ *
+ * <p>This prevents accidentally publishing content that does not match the
+ * published source.</p>
+ *
+ * @since 2.0.0
+ */
+public abstract class RequireClean extends DefaultTask {
+  public RequireClean() {
+    this.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
   }
 
-  /**
-   * Access Grgit.
-   *
-   * @param project the project that may be managed under git
-   * @return a possible {@link Grgit} instance
-   */
-  public static @Nullable Grgit grgit(final Project project) {
-    return project.getExtensions().findByType(Grgit.class);
-  }
+  @Internal
+  protected abstract Provider<IndraGitService> getGit();
 
-  /**
-   * Find a tag, if any, that corresponds with the current checked out commit.
-   */
-  public static @Nullable Tag headTag(final Project project) {
-    final @Nullable Grgit grgit = grgit(project);
-    if(grgit == null) return null;
-    final Commit headCommit = grgit.head();
-    for(final Tag tag : grgit.getTag().list()) {
-      if(tag.getCommit().equals(headCommit)) {
-        return tag;
+  @TaskAction
+  public void check() {
+    final @Nullable Git git = this.getGit().get().git(this.getProject());
+    try {
+      if(git != null && !git.status().call().isClean()) {
+        throw new GradleException("Source root must be clean! Make sure your changes are committed");
       }
+    } catch(final GitAPIException ex) {
+      this.getLogger().error("Failed to query clean status of current project repository", ex);
     }
-    return null;
   }
-
 }

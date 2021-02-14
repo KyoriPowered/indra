@@ -25,12 +25,13 @@ package net.kyori.indra;
 
 import java.util.Objects;
 import java.util.Set;
+import net.kyori.indra.git.GitPlugin;
+import net.kyori.indra.git.task.RequireClean;
 import net.kyori.indra.gradle.api.ProjectPlugin;
 import net.kyori.indra.api.model.ContinuousIntegration;
 import net.kyori.indra.api.model.Issues;
 import net.kyori.indra.api.model.License;
 import net.kyori.indra.api.model.SourceCodeManagement;
-import net.kyori.indra.task.RequireClean;
 import net.kyori.indra.util.Versioning;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Action;
@@ -55,6 +56,7 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
   public void apply(final @NonNull Project project, final @NonNull PluginContainer plugins, final @NonNull ExtensionContainer extensions, final @NonNull Convention convention, final @NonNull TaskContainer tasks) {
     plugins.apply(MavenPublishPlugin.class);
     plugins.apply(SigningPlugin.class);
+    plugins.apply(GitPlugin.class);
 
     final IndraExtension indra = Indra.extension(extensions);
 
@@ -106,7 +108,7 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
       sign.onlyIf($ -> project.hasProperty("forceSign") || Versioning.isRelease(project));
     });
 
-    final TaskProvider<RequireClean> requireClean = tasks.register(RequireClean.NAME, RequireClean.class);
+    final TaskProvider<RequireClean> requireClean = tasks.named(GitPlugin.REQUIRE_CLEAN_TASK_NAME, RequireClean.class);
     tasks.withType(AbstractPublishToMaven.class).configureEach(aPTM -> {
       if(!(aPTM instanceof PublishToMavenLocal)) {
         aPTM.dependsOn(requireClean);
