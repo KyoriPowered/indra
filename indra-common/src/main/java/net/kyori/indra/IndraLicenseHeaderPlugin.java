@@ -23,7 +23,7 @@
  */
 package net.kyori.indra;
 
-import net.kyori.indra.gradle.api.ProjectPlugin;
+import net.kyori.gradle.api.ProjectPlugin;
 import org.cadixdev.gradle.licenser.LicenseExtension;
 import org.cadixdev.gradle.licenser.Licenser;
 import org.checkerframework.checker.nullness.qual.NonNull;

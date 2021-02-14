@@ -25,7 +25,7 @@ package net.kyori.indra.sonatype;
 
 import de.marcphilipp.gradle.nexus.NexusPublishExtension;
 import de.marcphilipp.gradle.nexus.NexusPublishPlugin;
-import net.kyori.indra.gradle.api.ProjectPlugin;
+import net.kyori.gradle.api.ProjectPlugin;
 import net.kyori.indra.IndraPublishingPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Project;

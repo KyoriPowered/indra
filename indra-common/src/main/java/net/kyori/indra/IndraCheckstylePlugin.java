@@ -26,7 +26,7 @@ package net.kyori.indra;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import net.kyori.indra.gradle.api.ProjectPlugin;
+import net.kyori.gradle.api.ProjectPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.Convention;

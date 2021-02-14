@@ -26,7 +26,7 @@ package net.kyori.indra;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
-import net.kyori.indra.gradle.api.ProjectPlugin;
+import net.kyori.gradle.api.ProjectPlugin;
 import net.kyori.indra.repository.RemoteRepository;
 import net.kyori.indra.repository.Repositories;
 import net.kyori.indra.util.Versioning;

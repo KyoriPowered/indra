@@ -32,6 +32,7 @@ import net.kyori.indra.api.model.ContinuousIntegration;
 import net.kyori.indra.api.model.Issues;
 import net.kyori.indra.api.model.License;
 import net.kyori.indra.api.model.SourceCodeManagement;
+import net.kyori.gradle.api.Configurable;
 import net.kyori.indra.repository.RemoteRepository;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -116,9 +117,7 @@ class IndraExtensionImpl implements IndraExtension {
 
   @Override
   public void ci(final Action<ContinuousIntegration.Builder> configureAction) {
-    final ContinuousIntegration.Builder builder = ContinuousIntegration.builder();
-    requireNonNull(configureAction, "configureAction").execute(builder);
-    this.ci.set(builder.build());
+    this.ci.set(Configurable.configure(ContinuousIntegration.builder(), configureAction).build());
   }
 
   @Override
@@ -133,9 +132,7 @@ class IndraExtensionImpl implements IndraExtension {
 
   @Override
   public void issues(final Action<Issues.Builder> configureAction) {
-    final Issues.Builder builder = Issues.builder();
-    requireNonNull(configureAction, "configureAction").execute(builder);
-    this.issues.set(builder.build());
+    this.issues.set(Configurable.configure(Issues.builder(), configureAction).build());
   }
 
   @Override
@@ -150,9 +147,7 @@ class IndraExtensionImpl implements IndraExtension {
 
   @Override
   public void scm(final Action<SourceCodeManagement.Builder> configureAction) {
-    final SourceCodeManagement.Builder builder = SourceCodeManagement.builder();
-    requireNonNull(configureAction, "configureAction").execute(builder);
-    this.scm.set(builder.build());
+    this.scm.set(Configurable.configure(SourceCodeManagement.builder(), configureAction).build());
   }
 
   @Override
@@ -167,19 +162,14 @@ class IndraExtensionImpl implements IndraExtension {
 
   @Override
   public void license(final Action<License.Builder> configureAction) {
-    final License.Builder builder = License.builder();
-    requireNonNull(configureAction, "configureAction").execute(builder);
-    this.license.set(builder.build());
+    this.license.set(Configurable.configure(License.builder(), configureAction).build());
   }
 
   // Configuration for specific platforms //
 
   @Override
   public void github(final String user, final String repo, final @Nullable Action<ApplyTo> applicable) {
-    final ApplyTo options = ApplyTo.defaults();
-    if(applicable != null) {
-      applicable.execute(options);
-    }
+    final ApplyTo options = Configurable.configureIfNonNull(ApplyTo.defaults(), applicable);
 
     if(options.ci()) {
       this.ci(ci -> ci.system("GitHub Actions").url(String.format("https://github.com/%s/%s/actions", user, repo)));
@@ -200,10 +190,7 @@ class IndraExtensionImpl implements IndraExtension {
 
   @Override
   public void gitlab(final @NonNull String user, final @NonNull String repo, final @Nullable Action<ApplyTo> applicable) {
-    final ApplyTo options = ApplyTo.defaults();
-    if(applicable != null) {
-      applicable.execute(options);
-    }
+    final ApplyTo options = Configurable.configureIfNonNull(ApplyTo.defaults(), applicable);
 
     if(options.ci()) {
       this.ci(ci -> ci.system("GitLab CI").url(String.format("https://gitlab.com/%s/%s/-/pipelines", user, repo)));

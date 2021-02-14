@@ -27,7 +27,7 @@ import java.util.Objects;
 import java.util.Set;
 import net.kyori.indra.git.GitPlugin;
 import net.kyori.indra.git.task.RequireClean;
-import net.kyori.indra.gradle.api.ProjectPlugin;
+import net.kyori.gradle.api.ProjectPlugin;
 import net.kyori.indra.api.model.ContinuousIntegration;
 import net.kyori.indra.api.model.Issues;
 import net.kyori.indra.api.model.License;

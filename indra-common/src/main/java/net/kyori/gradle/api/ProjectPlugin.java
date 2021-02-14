@@ -21,43 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra.gradle.api;
+package net.kyori.gradle.api;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
-import org.gradle.api.Action;
+import org.gradle.api.Plugin;
+import org.gradle.api.Project;
+import org.gradle.api.plugins.Convention;
+import org.gradle.api.plugins.ExtensionContainer;
+import org.gradle.api.plugins.PluginContainer;
+import org.gradle.api.tasks.TaskContainer;
 
-import static java.util.Objects.requireNonNull;
+// todo(kashike): promote to own project if this package (net.kyori.gradle) becomes useful for others to use
 
 /**
- * Utilities for configurable items in Gradle.
+ * A more friendly interface for creating a {@link Plugin} that operates on a {@link Project}.
  */
-public class Configurable {
-  /**
-   * Apply a configuration action to an instance and return it.
-   *
-   * @param instance the instance to configure
-   * @param configureAction the action to configure with
-   * @param <T> type being configured
-   * @return the provided {@code instance}
-   */
-  public <T> @NonNull T configure(final @NonNull T instance, final @NonNull Action<T> configureAction) {
-    requireNonNull(configureAction, "configureAction").execute(instance);
-    return instance;
+public interface ProjectPlugin extends Plugin<Project> {
+  @Override
+  default void apply(final @NonNull Project project) {
+    this.apply(
+      project,
+      project.getPlugins(),
+      project.getExtensions(),
+      project.getConvention(),
+      project.getTasks()
+    );
   }
 
-  /**
-   * Configure the instance if an action is provided, otherwise
-   *
-   * @param instance the instance to configure
-   * @param configureAction the action to configure with
-   * @param <T> type being configured
-   * @return the provided {@code instance}
-   */
-  public <T> @NonNull T configureIfNonNull(final @NonNull T instance, final @Nullable Action<T> configureAction) {
-    if(configureAction != null) {
-      configureAction.execute(instance);
-    }
-    return instance;
-  }
+  void apply(
+    final @NonNull Project project,
+    final @NonNull PluginContainer plugins,
+    final @NonNull ExtensionContainer extensions,
+    final @NonNull Convention convention,
+    final @NonNull TaskContainer tasks
+  );
 }

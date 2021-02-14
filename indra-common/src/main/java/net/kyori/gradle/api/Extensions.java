@@ -21,38 +21,28 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra.gradle.api;
+package net.kyori.gradle.api;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.gradle.api.Plugin;
-import org.gradle.api.Project;
-import org.gradle.api.plugins.Convention;
 import org.gradle.api.plugins.ExtensionContainer;
-import org.gradle.api.plugins.PluginContainer;
-import org.gradle.api.tasks.TaskContainer;
 
-// todo(kashike): promote to own project if this package (net.kyori.gradle) becomes useful for others to use
-
-/**
- * A more friendly interface for creating a {@link Plugin} that operates on a {@link Project}.
- */
-public interface ProjectPlugin extends Plugin<Project> {
-  @Override
-  default void apply(final @NonNull Project project) {
-    this.apply(
-      project,
-      project.getPlugins(),
-      project.getExtensions(),
-      project.getConvention(),
-      project.getTasks()
-    );
+public final class Extensions {
+  public static <E> E findOrCreate(final ExtensionContainer extensions, final String name, final Class<E> type) {
+    E extension = extensions.findByType(type);
+    if(extension == null) {
+      extension = extensions.create(name, type);
+    }
+    return extension;
   }
 
-  void apply(
-    final @NonNull Project project,
-    final @NonNull PluginContainer plugins,
-    final @NonNull ExtensionContainer extensions,
-    final @NonNull Convention convention,
-    final @NonNull TaskContainer tasks
-  );
+  @SuppressWarnings("unchecked")
+  public static <E> E findOrCreate(final ExtensionContainer extensions, final String name, final Class<? super E> publicType, final Class<E> implementationType) {
+    E extension = extensions.findByType(implementationType);
+    if(extension == null) {
+      extension = (E) extensions.create(publicType, name, implementationType);
+    }
+    return extension;
+  }
+
+  private Extensions() {
+  }
 }
