@@ -38,6 +38,9 @@ import org.gradle.api.plugins.quality.CheckstylePlugin;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 
+/**
+ * Configure Gradle's built-in {@code checkstyle} plugin.
+ */
 public class IndraCheckstylePlugin implements ProjectPlugin {
   public static final String CHECKSTYLE_ALL_TASK = "checkstyleAll";
 

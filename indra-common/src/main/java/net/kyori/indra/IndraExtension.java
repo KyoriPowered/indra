@@ -23,6 +23,7 @@
  */
 package net.kyori.indra;
 
+import net.kyori.gradle.api.Configurable;
 import net.kyori.indra.api.model.ApplyTo;
 import net.kyori.indra.api.model.ContinuousIntegration;
 import net.kyori.indra.api.model.Issues;
@@ -58,11 +59,15 @@ public interface IndraExtension {
 
   Property<ContinuousIntegration> ci();
 
-  void ci(ContinuousIntegration ci);
+  default void ci(final ContinuousIntegration ci) {
+    this.ci().set(ci);
+  }
 
-  void ci(Action<ContinuousIntegration.Builder> configureAction);
+  default void ci(Action<ContinuousIntegration.Builder> configureAction) {
+    this.ci().set(Configurable.configure(ContinuousIntegration.builder(), configureAction).build());
+  }
 
-  default void jenkins(String url) {
+  default void jenkins(final String url) {
     requireNonNull(url, "url");
 
     this.ci(ContinuousIntegration.builder()
@@ -73,21 +78,33 @@ public interface IndraExtension {
 
   Property<Issues> issues();
 
-  void issues(Issues issues);
+  default void issues(final Issues issues) {
+    this.issues().set(issues);
+  }
 
-  void issues(Action<Issues.Builder> configureAction);
+  default void issues(final Action<Issues.Builder> configureAction) {
+    this.issues().set(Configurable.configure(Issues.builder(), configureAction).build());
+  }
 
   Property<SourceCodeManagement> scm();
 
-  void scm(SourceCodeManagement scm);
+  default void scm(final SourceCodeManagement scm) {
+    this.scm().set(scm);
+  }
 
-  void scm(Action<SourceCodeManagement.Builder> configureAction);
+  default void scm(final Action<SourceCodeManagement.Builder> configureAction) {
+    this.scm().set(Configurable.configure(SourceCodeManagement.builder(), configureAction).build());
+  }
 
   Property<License> license();
 
-  void license(License license);
+  default void license(License license) {
+    this.license().set(license);
+  }
 
-  void license(Action<License.Builder> configureAction);
+  default void license(Action<License.Builder> configureAction) {
+    this.license().set(Configurable.configure(License.builder(), configureAction).build());
+  }
 
   default void apache2License() {
     this.license(License.apache2());

@@ -55,13 +55,6 @@ class IndraExtensionImpl implements IndraExtension {
   private final Property<Boolean> reproducibleBuilds;
   private final Property<String> checkstyle;
 
-  /**
-   * Whether the {@code java} {@link org.gradle.api.component.SoftwareComponent} should be
-   * automatically included in publications.
-   *
-   * <p>This property does not usually need to be changed, unless working with Gradle plugins
-   * that publish in a non-standard way.</p>
-   */
   private final Property<Boolean> includeJavaSoftwareComponentInPublications;
 
   private final JavaToolchainVersions javaVersions;
@@ -76,7 +69,7 @@ class IndraExtensionImpl implements IndraExtension {
 
     this.reproducibleBuilds = objects.property(Boolean.class).convention(true);
 
-    this.checkstyle = objects.property(String.class).convention("8.37");
+    this.checkstyle = objects.property(String.class).convention("8.40");
     this.includeJavaSoftwareComponentInPublications = objects.property(Boolean.class).convention(true);
     this.javaVersions = objects.newInstance(JavaToolchainVersions.class);
     this.repositories = objects.domainObjectSet(RemoteRepository.class);
@@ -111,28 +104,8 @@ class IndraExtensionImpl implements IndraExtension {
   }
 
   @Override
-  public void ci(final ContinuousIntegration ci) {
-    this.ci.set(ci);
-  }
-
-  @Override
-  public void ci(final Action<ContinuousIntegration.Builder> configureAction) {
-    this.ci.set(Configurable.configure(ContinuousIntegration.builder(), configureAction).build());
-  }
-
-  @Override
   public Property<Issues> issues() {
     return this.issues;
-  }
-
-  @Override
-  public void issues(final Issues issues) {
-    this.issues.set(issues);
-  }
-
-  @Override
-  public void issues(final Action<Issues.Builder> configureAction) {
-    this.issues.set(Configurable.configure(Issues.builder(), configureAction).build());
   }
 
   @Override
@@ -141,28 +114,8 @@ class IndraExtensionImpl implements IndraExtension {
   }
 
   @Override
-  public void scm(final SourceCodeManagement scm) {
-    this.scm.set(scm);
-  }
-
-  @Override
-  public void scm(final Action<SourceCodeManagement.Builder> configureAction) {
-    this.scm.set(Configurable.configure(SourceCodeManagement.builder(), configureAction).build());
-  }
-
-  @Override
   public Property<License> license() {
     return this.license;
-  }
-
-  @Override
-  public void license(final License license) {
-    this.license.set(license);
-  }
-
-  @Override
-  public void license(final Action<License.Builder> configureAction) {
-    this.license.set(Configurable.configure(License.builder(), configureAction).build());
   }
 
   // Configuration for specific platforms //
