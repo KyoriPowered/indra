@@ -29,6 +29,8 @@ import java.util.Map;
 import net.kyori.gradle.api.ProjectPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Project;
+import org.gradle.api.file.FileCollection;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.Convention;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.PluginContainer;
@@ -53,6 +55,10 @@ public class IndraCheckstylePlugin implements ProjectPlugin {
       task.setDescription("Execute checkstyle checks for all source sets");
       task.dependsOn(tasks.withType(Checkstyle.class));
     });
+
+    // Remove task dependencies from checkstyle tasks
+    final ObjectFactory objects = project.getObjects();
+    tasks.withType(Checkstyle.class).configureEach(check -> check.setClasspath(objects.fileCollection()));
 
     project.afterEvaluate(p -> {
       final IndraExtension indra = Indra.extension(p.getExtensions());
