@@ -44,6 +44,8 @@ public class GitPlugin implements Plugin<Project> {
     target.getExtensions().create(IndraGitExtension.class, "indraGit", IndraGitExtensionImpl.class, target, service);
 
     // And create a task, but don't ever make it run
-    target.getTasks().register(REQUIRE_CLEAN_TASK_NAME, RequireClean.class);
+    target.getTasks().register(REQUIRE_CLEAN_TASK_NAME, RequireClean.class, task -> {
+      task.getGit().set(service);
+    });
   }
 }

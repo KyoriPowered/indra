@@ -29,6 +29,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
+import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
@@ -43,12 +44,13 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin;
  * @since 2.0.0
  */
 public abstract class RequireClean extends DefaultTask {
+
   public RequireClean() {
     this.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
   }
 
   @Internal
-  protected abstract Provider<IndraGitService> getGit();
+  public abstract Property<IndraGitService> getGit();
 
   @TaskAction
   public void check() {
