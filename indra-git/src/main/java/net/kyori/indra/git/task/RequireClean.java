@@ -44,7 +44,6 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin;
  * @since 2.0.0
  */
 public abstract class RequireClean extends DefaultTask {
-
   public RequireClean() {
     this.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
   }

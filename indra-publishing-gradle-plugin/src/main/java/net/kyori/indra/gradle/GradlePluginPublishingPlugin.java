@@ -39,39 +39,41 @@ import org.gradle.plugin.devel.GradlePluginDevelopmentExtension;
 import org.gradle.plugin.devel.plugins.JavaGradlePluginPlugin;
 
 public class GradlePluginPublishingPlugin extends AbstractIndraPublishingPlugin {
+  private static final String EXTENSION_NAME = "indraPluginPublishing";
 
   @Override
-  protected void extraApplySteps(final Project target) {
+  protected void extraApplySteps(final Project project) {
     // TODO: do we want to apply these plugins ourselves instead of only acting when the user chooses to do so?
-    target.getPlugins().withType(PublishPlugin.class, $ -> {
-      final PluginBundleExtension pluginBundleExtension = target.getExtensions().getByType(PluginBundleExtension.class);
+    project.getPlugins().withType(PublishPlugin.class, $ -> {
+      final PluginBundleExtension pluginBundleExtension = project.getExtensions().getByType(PluginBundleExtension.class);
 
       // Needed to publish plugins using GH actions secrets, which can only be specified in environment variables.
       // Unfortunately, the plugin we are forced to use to publish to the plugin portal does not
       // support customizing these properties, so instead we just have to copy from original properties
       // to the ones that plugin expects.
       final BiConsumer<String, String> copyProperty = (definedProperty, originalProperty) -> {
-        final Object property = target.findProperty(definedProperty);
+        final Object property = project.findProperty(definedProperty);
         if(property != null) {
-          target.getExtensions().getExtraProperties().set(originalProperty, property);
+          project.getExtensions().getExtraProperties().set(originalProperty, property);
         }
       };
       copyProperty.accept("pluginPortalApiKey", "gradle.publish.key");
       copyProperty.accept("pluginPortalApiSecret", "gradle.publish.secret");
 
-      target.getPlugins().withType(JavaGradlePluginPlugin.class, $$ -> {
+      project.getPlugins().withType(JavaGradlePluginPlugin.class, $$ -> {
         // When we have both plugins, we can create an extension
-        final IndraPluginPublishingExtension extension = target.getExtensions().create(IndraPluginPublishingExtension.class,
-          "indraPluginPublishing",
+        final IndraPluginPublishingExtension extension = project.getExtensions().create(
+          IndraPluginPublishingExtension.class,
+          EXTENSION_NAME,
           IndraPluginPublishingExtensionImpl.class,
-          target.getExtensions().getByType(GradlePluginDevelopmentExtension.class),
+          project.getExtensions().getByType(GradlePluginDevelopmentExtension.class),
           pluginBundleExtension
         );
 
-        extension.pluginIdBase().convention(target.provider(() -> (String) target.getGroup()));
+        extension.pluginIdBase().convention(project.provider(() -> (String) project.getGroup()));
       });
 
-      target.afterEvaluate(p -> {
+      project.afterEvaluate(p -> {
         // Inherit properties from plugin and project
         final IndraExtension indraExtension = Indra.extension(p.getExtensions());
         if(indraExtension.scm().isPresent() && pluginBundleExtension.getVcsUrl() == null) {
@@ -84,8 +86,8 @@ public class GradlePluginPublishingPlugin extends AbstractIndraPublishingPlugin 
       });
     });
 
-    target.getPlugins().withType(IndraPlugin.class, $ -> {
-      Indra.extension(target.getExtensions()).includeJavaSoftwareComponentInPublications().set(false);
+    project.getPlugins().withType(IndraPlugin.class, $ -> {
+      Indra.extension(project.getExtensions()).includeJavaSoftwareComponentInPublications().set(false);
     });
   }
 

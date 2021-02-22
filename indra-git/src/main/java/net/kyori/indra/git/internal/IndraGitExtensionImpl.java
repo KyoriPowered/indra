@@ -45,9 +45,9 @@ public class IndraGitExtensionImpl implements IndraGitExtension {
   private final Provider<Git> service;
 
   @Inject
-  public IndraGitExtensionImpl(final Project baseProject, final Provider<IndraGitService> service) {
-    this.logger = baseProject.getLogger();
-    this.service = service.map(s -> s.git(baseProject));
+  public IndraGitExtensionImpl(final Project project, final Provider<IndraGitService> service) {
+    this.logger = project.getLogger();
+    this.service = service.map(s -> s.git(project));
   }
 
   @Override

@@ -35,12 +35,11 @@ import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.tasks.TaskContainer;
 
 public class IndraSonatypePublishingPlugin implements ProjectPlugin {
-
   @Override
   public void apply(final @NonNull Project project, final @NonNull PluginContainer plugins, final @NonNull ExtensionContainer extensions, final @NonNull Convention convention, final @NonNull TaskContainer tasks) {
     plugins.apply(IndraPublishingPlugin.class);
     plugins.apply(NexusPublishPlugin.class);
 
-    extensions.configure(NexusPublishExtension.class, ext -> ext.getRepositories().sonatype());
+    extensions.configure(NexusPublishExtension.class, extension -> extension.getRepositories().sonatype());
   }
 }

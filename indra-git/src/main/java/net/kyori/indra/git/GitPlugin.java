@@ -36,19 +36,21 @@ import org.gradle.api.provider.Provider;
  * @since 2.0.0
  */
 public class GitPlugin implements Plugin<Project> {
+  private static final String EXTENSION_NAME = "indraGit";
+  private static final String SERVICE_NAME = "indraGitService";
 
-  public static final String REQUIRE_CLEAN_TASK_NAME = "requireClean";
+  public static final String REQUIRE_CLEAN_TASK = "requireClean";
 
   @Override
-  public void apply(final Project target) {
+  public void apply(final Project project) {
     // Register the service, then create an extension
-    final Provider<IndraGitService> service = target.getGradle().getSharedServices().registerIfAbsent("indraGitService", IndraGitService.class, params -> {
-      params.getParameters().getBaseDirectory().set(target.getRootDir());
+    final Provider<IndraGitService> service = project.getGradle().getSharedServices().registerIfAbsent(SERVICE_NAME, IndraGitService.class, params -> {
+      params.getParameters().getBaseDirectory().set(project.getRootDir());
     });
-    target.getExtensions().create(IndraGitExtension.class, "indraGit", IndraGitExtensionImpl.class, target, service);
+    project.getExtensions().create(IndraGitExtension.class, EXTENSION_NAME, IndraGitExtensionImpl.class, project, service);
 
     // And create a task, but don't ever make it run
-    target.getTasks().register(REQUIRE_CLEAN_TASK_NAME, RequireClean.class, task -> {
+    project.getTasks().register(REQUIRE_CLEAN_TASK, RequireClean.class, task -> {
       task.getGit().set(service);
     });
   }

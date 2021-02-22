@@ -25,6 +25,7 @@ package net.kyori.indra.gradle;
 
 import java.util.List;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 
 /**
@@ -33,6 +34,11 @@ import org.gradle.api.provider.Property;
  * @since 1.3.0
  */
 public interface IndraPluginPublishingExtension {
+  ListProperty<String> bundleTags();
+
+  default void bundleTags(final List<String> bundleTags) {
+    this.bundleTags().set(bundleTags);
+  }
 
   /**
    * A property providing the base id that indra-declared plugin ids are relative to.

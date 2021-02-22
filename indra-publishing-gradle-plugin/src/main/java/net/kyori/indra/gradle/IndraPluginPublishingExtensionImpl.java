@@ -29,12 +29,14 @@ import java.util.List;
 import javax.inject.Inject;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.plugin.devel.GradlePluginDevelopmentExtension;
 
 public class IndraPluginPublishingExtensionImpl implements IndraPluginPublishingExtension {
   private final GradlePluginDevelopmentExtension publishingExtension;
   private final PluginBundleExtension pluginBundleExtension;
+  private final ListProperty<String> bundleTags; // todo: do something with me!
   private final Property<String> pluginIdBase;
 
   @Inject
@@ -45,7 +47,13 @@ public class IndraPluginPublishingExtensionImpl implements IndraPluginPublishing
   ) {
     this.publishingExtension = publishingExtension;
     this.pluginBundleExtension = pluginBundleExtension;
+    this.bundleTags = objects.listProperty(String.class);
     this.pluginIdBase = objects.property(String.class);
+  }
+
+  @Override
+  public ListProperty<String> bundleTags() {
+    return this.bundleTags;
   }
 
   @Override
@@ -59,21 +67,21 @@ public class IndraPluginPublishingExtensionImpl implements IndraPluginPublishing
     this.publishingExtension.getPlugins().create(id, plugin -> {
       plugin.setId(qualifiedId);
       plugin.setImplementationClass(mainClass);
+      plugin.setDisplayName(displayName);
       if(description != null) {
         plugin.setDescription(description);
       }
-      plugin.setDisplayName(displayName);
     });
 
     final PluginConfig plugin = this.pluginBundleExtension.getPlugins().maybeCreate(id);
 
     plugin.setId(qualifiedId);
+    if(description != null) {
+      plugin.setDescription(description);
+    }
     plugin.setDisplayName(displayName);
     if(tags != null && !tags.isEmpty()) {
       plugin.setTags(tags);
-    }
-    if(description != null) {
-      plugin.setDescription(description);
     }
 
     if(tags != null && this.pluginBundleExtension.getTags().isEmpty()) {

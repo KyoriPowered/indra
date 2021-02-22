@@ -32,6 +32,7 @@ import net.kyori.indra.api.model.ContinuousIntegration;
 import net.kyori.indra.api.model.Issues;
 import net.kyori.indra.api.model.License;
 import net.kyori.indra.api.model.SourceCodeManagement;
+import net.kyori.indra.repository.RemoteRepository;
 import net.kyori.indra.util.Versioning;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Action;
@@ -52,6 +53,8 @@ import org.gradle.plugins.signing.SigningExtension;
 import org.gradle.plugins.signing.SigningPlugin;
 
 public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
+  private static final String FORCE_SIGN_PROPERTY = "forceSign";
+
   @Override
   public void apply(final @NonNull Project project, final @NonNull PluginContainer plugins, final @NonNull ExtensionContainer extensions, final @NonNull Convention convention, final @NonNull TaskContainer tasks) {
     plugins.apply(MavenPublishPlugin.class);
@@ -104,14 +107,14 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
       extension.useGpgCmd();
     });
 
-    tasks.withType(Sign.class).configureEach(sign -> {
-      sign.onlyIf($ -> project.hasProperty("forceSign") || Versioning.isRelease(project));
+    tasks.withType(Sign.class).configureEach(task -> {
+      task.onlyIf(spec -> project.hasProperty(FORCE_SIGN_PROPERTY) || Versioning.isRelease(project));
     });
 
-    final TaskProvider<RequireClean> requireClean = tasks.named(GitPlugin.REQUIRE_CLEAN_TASK_NAME, RequireClean.class);
-    tasks.withType(AbstractPublishToMaven.class).configureEach(aPTM -> {
-      if(!(aPTM instanceof PublishToMavenLocal)) {
-        aPTM.dependsOn(requireClean);
+    final TaskProvider<RequireClean> requireClean = tasks.named(GitPlugin.REQUIRE_CLEAN_TASK, RequireClean.class);
+    tasks.withType(AbstractPublishToMaven.class).configureEach(task -> {
+      if(!(task instanceof PublishToMavenLocal)) {
+        task.dependsOn(requireClean);
       }
     });
 
@@ -119,16 +122,11 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
       extensions.configure(PublishingExtension.class, publishing -> {
         this.applyPublishingActions(publishing, ((IndraExtensionImpl) indra).publishingActions);
 
-        ((IndraExtensionImpl) indra).repositories.all(it -> { // will be applied to repositories as they're added
-          final String username = it.name() + "Username";
-          final String password = it.name() + "Password";
-          if(((it.releases() && Versioning.isRelease(project))
-            || (it.releases() && Versioning.isSnapshot(project)))
-            && project.hasProperty(username)
-            && project.hasProperty(password)) {
+        ((IndraExtensionImpl) indra).repositories.all(rr -> { // will be applied to repositories as they're added
+          if(this.canPublishTo(project, rr)) {
             p.getRepositories().maven(repository -> {
-              repository.setName(it.name());
-              repository.setUrl(it.url());
+              repository.setName(rr.name());
+              repository.setUrl(rr.url());
               // ${id}Username + ${id}Password properties
               repository.credentials(PasswordCredentials.class);
             });
@@ -139,12 +137,27 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
     this.extraApplySteps(project);
   }
 
+  @SuppressWarnings("RedundantIfStatement")
+  private boolean canPublishTo(final Project project, final RemoteRepository repository) {
+    // as per PasswordCredentials
+    final String username = repository.name() + "Username";
+    final String password = repository.name() + "Password";
+
+    if(!project.hasProperty(username)) return false;
+    if(!project.hasProperty(password)) return false;
+
+    if(repository.releases() && Versioning.isRelease(project)) return true;
+    if(repository.snapshots() && Versioning.isSnapshot(project)) return true;
+
+    return false;
+  }
+
   /**
    * Add any extra steps sub-plugins might want to perform on application.
    *
-   * @param target the project to target
+   * @param project the project to target
    */
-  protected void extraApplySteps(final Project target) {
+  protected void extraApplySteps(final Project project) {
   }
 
   /**

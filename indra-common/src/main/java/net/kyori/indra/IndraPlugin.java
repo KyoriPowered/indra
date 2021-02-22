@@ -61,7 +61,7 @@ public class IndraPlugin implements ProjectPlugin {
   public void apply(final @NonNull Project project, final @NonNull PluginContainer plugins, final @NonNull ExtensionContainer extensions, final @NonNull Convention convention, final @NonNull TaskContainer tasks) {
     plugins.apply(JavaLibraryPlugin.class);
 
-    final IndraExtensionImpl extension = (IndraExtensionImpl) Indra.extension(extensions);
+    final IndraExtensionImpl indra = (IndraExtensionImpl) Indra.extension(extensions);
 
     convention.getPlugin(BasePluginConvention.class).setArchivesBaseName(project.getName().toLowerCase());
 
@@ -77,7 +77,7 @@ public class IndraPlugin implements ProjectPlugin {
 
       // JDK 9+ only arguments
       options.getCompilerArgumentProviders().add(() -> {
-        if(extension.javaVersions().minimumToolchain().get() >= 9) {
+        if(indra.javaVersions().minimumToolchain().get() >= 9) {
           return Arrays.asList(
             "-Xdoclint",
             "-Xdoclint:-missing"
@@ -88,11 +88,11 @@ public class IndraPlugin implements ProjectPlugin {
       });
 
       // Enable preview features if option is set in extension
-      options.getCompilerArgumentProviders().add(extension.previewFeatureArgumentProvider());
+      options.getCompilerArgumentProviders().add(indra.previewFeatureArgumentProvider());
     });
 
-    tasks.withType(JavaExec.class).configureEach(exec -> {
-      exec.getArgumentProviders().add(extension.previewFeatureArgumentProvider());
+    tasks.withType(JavaExec.class).configureEach(task -> {
+      task.getArgumentProviders().add(indra.previewFeatureArgumentProvider());
     });
 
     tasks.withType(Javadoc.class, task -> {
@@ -109,28 +109,25 @@ public class IndraPlugin implements ProjectPlugin {
       task.setFilteringCharset(StandardCharsets.UTF_8.name());
     });
 
-    extensions.configure(JavaPluginExtension.class, javaPlugin -> {
-      javaPlugin.withJavadocJar();
-      javaPlugin.withSourcesJar();
+    extensions.configure(JavaPluginExtension.class, extension -> {
+      extension.withJavadocJar();
+      extension.withSourcesJar();
     });
 
     tasks.withType(Test.class, Test::useJUnitPlatform);
 
-    // TODO: Repository extensions in Kotlin buildscript
-    Repositories.registerRepositoryExtensions(project.getRepositories(), RemoteRepository.SONATYPE_SNAPSHOTS);
-
     // If we are publishing, publish java
-    extension.configurePublications(pub -> {
-      extension.includeJavaSoftwareComponentInPublications().finalizeValue();
-      if(extension.includeJavaSoftwareComponentInPublications().get()) {
-        pub.from(project.getComponents().getByName("java"));
+    indra.configurePublications(publication -> {
+      indra.includeJavaSoftwareComponentInPublications().finalizeValue();
+      if(indra.includeJavaSoftwareComponentInPublications().get()) {
+        publication.from(project.getComponents().getByName("java"));
       }
     });
 
     // For things that are eagerly applied (field accesses, anything where you need to `get()`)
     project.afterEvaluate(p -> {
       extensions.configure(JavaPluginExtension.class, javaPlugin -> {
-        final Property<Integer> versionProp = extension.javaVersions().target();
+        final Property<Integer> versionProp = indra.javaVersions().target();
         versionProp.finalizeValue();
         javaPlugin.setSourceCompatibility(JavaVersion.toVersion(versionProp.get()));
         javaPlugin.setTargetCompatibility(JavaVersion.toVersion(versionProp.get()));
@@ -138,12 +135,12 @@ public class IndraPlugin implements ProjectPlugin {
 
       tasks.withType(JavaCompile.class).configureEach(compile -> {
         final Property<Integer> release = compile.getOptions().getRelease();
-        if(!release.isPresent() && extension.javaVersions().minimumToolchain().get() >= 9) {
-          release.set(extension.javaVersions().target());
+        if(!release.isPresent() && indra.javaVersions().minimumToolchain().get() >= 9) {
+          release.set(indra.javaVersions().target());
         }
       });
 
-      if(extension.reproducibleBuilds().get()) {
+      if(indra.reproducibleBuilds().get()) {
         tasks.withType(AbstractArchiveTask.class).configureEach(archive -> {
           archive.setPreserveFileTimestamps(false);
           archive.setReproducibleFileOrder(true);
@@ -160,7 +157,7 @@ public class IndraPlugin implements ProjectPlugin {
           final JavadocOptionFileOption<Boolean> noModuleDirectories = options.addBooleanOption("-no-module-directories");
 
           jd.doFirst(t -> {
-            final JavaToolchainVersions versions = extension.javaVersions();
+            final JavaToolchainVersions versions = indra.javaVersions();
             final int target = versions.target().get();
             options.links(jdkApiDocs(target));
 
@@ -184,7 +181,7 @@ public class IndraPlugin implements ProjectPlugin {
 
       // Set up testing on the selected Java versions
       final JavaToolchainService toolchains = extensions.getByType(JavaToolchainService.class);
-      final SetProperty<Integer> testWithProp = extension.javaVersions().testWith();
+      final SetProperty<Integer> testWithProp = indra.javaVersions().testWith();
       testWithProp.finalizeValue();
       testWithProp.get().forEach(targetRuntime -> {
         // Create task that will use that version
@@ -195,7 +192,7 @@ public class IndraPlugin implements ProjectPlugin {
 
           test.onlyIf($ -> {
             // Only run if our runtime is not the standard runtime, and we're doing strict versions.
-            return extension.javaVersions().strictVersions().get() && targetRuntime != extension.javaVersions().actualVersion().get();
+            return indra.javaVersions().strictVersions().get() && targetRuntime != indra.javaVersions().actualVersion().get();
           });
           test.getJavaLauncher().set(toolchains.launcherFor(it -> it.getLanguageVersion().set(JavaLanguageVersion.of(targetRuntime))));
         });
@@ -203,6 +200,9 @@ public class IndraPlugin implements ProjectPlugin {
         tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME).configure(it -> it.dependsOn(versionedTest));
       });
     });
+
+    // TODO: Repository extensions in Kotlin buildscript
+    Repositories.registerRepositoryExtensions(project.getRepositories(), RemoteRepository.SONATYPE_SNAPSHOTS);
   }
 
   private static String jdkApiDocs(final int javaVersion) {
