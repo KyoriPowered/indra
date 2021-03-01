@@ -54,6 +54,7 @@ import org.gradle.external.javadoc.StandardJavadocDocletOptions;
 import org.gradle.jvm.toolchain.JavaLanguageVersion;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
+import org.gradle.language.jvm.tasks.ProcessResources;
 
 public class IndraPlugin implements ProjectPlugin {
   @Override
@@ -102,6 +103,10 @@ public class IndraPlugin implements ProjectPlugin {
           ((StandardJavadocDocletOptions) options).charSet(StandardCharsets.UTF_8.name());
         }
       });
+    });
+
+    tasks.withType(ProcessResources.class, task -> {
+      task.setFilteringCharset(StandardCharsets.UTF_8.name());
     });
 
     extensions.configure(JavaPluginExtension.class, javaPlugin -> {
