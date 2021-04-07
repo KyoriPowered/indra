@@ -1,6 +1,6 @@
 dependencies {
   compileOnlyApi("org.checkerframework:checker-qual:3.10.0")
-  api("org.eclipse.jgit:org.eclipse.jgit:5.10.0.+")
+  api("org.eclipse.jgit:org.eclipse.jgit:5.11.0.+")
 }
 
 indraPluginPublishing {

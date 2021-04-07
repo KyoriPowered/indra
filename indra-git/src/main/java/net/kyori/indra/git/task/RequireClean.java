@@ -23,14 +23,14 @@
  */
 package net.kyori.indra.git.task;
 
-import net.kyori.indra.git.IndraGitService;
+import net.kyori.indra.git.internal.IndraGitService;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.provider.Property;
-import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
@@ -55,9 +55,24 @@ public abstract class RequireClean extends DefaultTask {
   @TaskAction
   public void check() {
     final @Nullable Git git = this.getGit().get().git(this.getProject());
+    if(git == null) return;
+
     try {
-      if(git != null && !git.status().call().isClean()) {
-        throw new GradleException("Source root must be clean! Make sure your changes are committed");
+      final Status status = git.status().call();
+      if(!status.isClean()) {
+        final StringBuilder message = new StringBuilder("Source root must be clean! Make sure your changes are committed. Changed files:");
+        for(final String changed : status.getUncommittedChanges()) {
+          message.append(System.lineSeparator())
+            .append("- ")
+            .append(changed);
+        }
+        for(final String untracked : status.getUntracked()) {
+          message.append(System.lineSeparator())
+            .append("- ")
+            .append(untracked);
+        }
+
+        throw new GradleException(message.toString());
       }
     } catch(final GitAPIException ex) {
       this.getLogger().error("Failed to query clean status of current project repository", ex);

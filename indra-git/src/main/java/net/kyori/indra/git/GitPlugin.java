@@ -23,6 +23,8 @@
  */
 package net.kyori.indra.git;
 
+import net.kyori.indra.git.internal.IndraGitExtensionImpl;
+import net.kyori.indra.git.internal.IndraGitService;
 import net.kyori.indra.git.task.RequireClean;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -40,7 +42,9 @@ public class GitPlugin implements Plugin<Project> {
   @Override
   public void apply(final Project target) {
     // Register the service, then create an extension
-    final Provider<IndraGitService> service = target.getGradle().getSharedServices().registerIfAbsent("indraGitService", IndraGitService.class, params -> {});
+    final Provider<IndraGitService> service = target.getGradle().getSharedServices().registerIfAbsent("indraGitService", IndraGitService.class, params -> {
+      params.getParameters().getBaseDirectory().set(target.getRootDir());
+    });
     target.getExtensions().create(IndraGitExtension.class, "indraGit", IndraGitExtensionImpl.class, target, service);
 
     // And create a task, but don't ever make it run

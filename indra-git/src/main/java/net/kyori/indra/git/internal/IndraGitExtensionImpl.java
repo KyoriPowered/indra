@@ -21,18 +21,21 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra.git;
+package net.kyori.indra.git.internal;
 
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
+import net.kyori.indra.git.IndraGitExtension;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.lib.Repository;
 import org.gradle.api.Project;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.provider.Provider;
@@ -88,29 +91,28 @@ public class IndraGitExtensionImpl implements IndraGitExtension {
   }
 
   @Override
-  public String describe() {
+  public @Nullable String describe() {
     final @Nullable Git git = this.git();
-    if(git == null) return "";
+    if(git == null) return null;
 
     try {
-      return git.describe().call();
+      return git.describe().setTags(true).setLong(true).call();
+    } catch(final RefNotFoundException ex) {
+      // there is no HEAD when in a git repo without a commit
+      return null;
     } catch(final GitAPIException ex) {
       this.logger.error("Failed to query git for a 'describe' result:", ex);
-      return "";
+      return null;
     }
   }
 
   @Override
-  public String branchName() {
+  public @Nullable String branchName() {
     final @Nullable Git git = this.git();
-    if(git == null) return "";
+    if(git == null) return null;
 
-    try {
-      return git.getRepository().getBranch();
-    } catch(final IOException ex) {
-      this.logger.error("Failed to query git for the current branch name:", ex);
-      return "";
-    }
+    final @Nullable Ref branch = this.branch();
+    return branch == null ? null : Repository.shortenRefName(branch.getName());
   }
 
   @Override
