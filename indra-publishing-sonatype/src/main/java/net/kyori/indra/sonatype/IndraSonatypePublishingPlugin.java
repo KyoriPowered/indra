@@ -23,8 +23,9 @@
  */
 package net.kyori.indra.sonatype;
 
-import de.marcphilipp.gradle.nexus.NexusPublishExtension;
-import de.marcphilipp.gradle.nexus.NexusPublishPlugin;
+import io.github.gradlenexus.publishplugin.NexusPublishExtension;
+import io.github.gradlenexus.publishplugin.NexusPublishPlugin;
+import java.time.Duration;
 import net.kyori.gradle.api.ProjectPlugin;
 import net.kyori.indra.IndraPublishingPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -34,12 +35,25 @@ import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.tasks.TaskContainer;
 
+/**
+ * A plugin for configuring publication to Sonatype OSSRH.
+ *
+ * <p>This plugin can only be applied to the root project.</p>
+ *
+ * @since 2.0.0
+ */
 public class IndraSonatypePublishingPlugin implements ProjectPlugin {
   @Override
   public void apply(final @NonNull Project project, final @NonNull PluginContainer plugins, final @NonNull ExtensionContainer extensions, final @NonNull Convention convention, final @NonNull TaskContainer tasks) {
     plugins.apply(IndraPublishingPlugin.class);
     plugins.apply(NexusPublishPlugin.class);
 
-    extensions.configure(NexusPublishExtension.class, extension -> extension.getRepositories().sonatype());
+    extensions.configure(NexusPublishExtension.class, extension -> {
+      extension.getRepositories().sonatype();
+
+      // Bump out timeouts for days when OSSRH is slow
+      extension.getClientTimeout().set(Duration.ofMinutes(5));
+      extension.getConnectTimeout().set(Duration.ofMinutes(5));
+    });
   }
 }
