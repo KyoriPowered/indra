@@ -32,6 +32,7 @@ import org.gradle.api.plugins.Convention;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.tasks.TaskContainer;
+import org.gradle.language.base.plugins.LifecycleBasePlugin;
 
 public class IndraLicenseHeaderPlugin implements ProjectPlugin {
   private static final String HEADER_FILE_NAME = "license_header.txt";
@@ -40,10 +41,15 @@ public class IndraLicenseHeaderPlugin implements ProjectPlugin {
   public void apply(final @NonNull Project project, final @NonNull PluginContainer plugins, final @NonNull ExtensionContainer extensions, final @NonNull Convention convention, final @NonNull TaskContainer tasks) {
     plugins.apply(Licenser.class);
 
+    // Configure sensible defaults
     extensions.configure(LicenseExtension.class, extension -> {
       extension.setHeader(project.getRootProject().file(HEADER_FILE_NAME));
       extension.include(Indra.SOURCE_FILES);
       extension.setNewLine(false);
     });
+
+    // Move global task into a better category
+    // TODO: Do this in licenser directly?
+    tasks.named("licenseFormat").configure(t -> t.setGroup("formatting"));
   }
 }
