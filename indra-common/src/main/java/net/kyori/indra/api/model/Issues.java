@@ -28,17 +28,27 @@ import org.immutables.value.Value;
 
 /**
  * Project issue tracker information.
+ *
+ * @since 2.0.0
  */
 @Value.Immutable
 public interface Issues {
-  static Builder builder() {
-    return new Builder();
+
+  /**
+   * Create a new builder for a {@link Issues} instance.
+   *
+   * @return a new builder
+   * @since 2.0.0
+   */
+  static @NonNull Builder builder() {
+    return new IssuesImpl.BuilderImpl();
   }
 
   /**
    * The name of the issue tracking system used.
    *
    * @return the issue tracking system name
+   * @since 2.0.0
    */
   @NonNull String system();
 
@@ -46,13 +56,31 @@ public interface Issues {
    * The URL pointing to a web interface for the CI system.
    *
    * @return the URL
+   * @since 2.0.0
    */
   @NonNull String url();
 
   /**
    * A builder for new issue tracker instances.
+   *
+   * @since 2.0.0
    */
-  final class Builder extends IssuesImpl.Builder {
+  interface Builder {
+
+    /**
+     * Fill a builder with attribute values from the provided {@link Issues} instance.
+     *
+     * @param instance The instance from which to copy values
+     * @return this builder
+     * @since 2.0.0
+     */
+    @NonNull Builder from(final Issues instance);
+
+    @NonNull Builder system(final @NonNull String system);
+
+    @NonNull Builder url(final @NonNull String url);
+
+    Issues build();
 
   }
 }

@@ -29,14 +29,29 @@ import org.immutables.value.Value;
 
 /**
  * License information for the current project.
+ *
+ * @since 2.0.0
  */
 @Value.Immutable
 public interface License {
-  static Builder builder() {
-    return new Builder();
+
+  /**
+   * Create a builder to construct a custom license.
+   *
+   * @return the license builder
+   * @since 2.0.0
+   */
+  static @NonNull Builder builder() {
+    return new LicenseImpl.BuilderImpl();
   }
 
-  static License apache2() {
+  /**
+   * Get an Apache 2.0 license instance.
+   *
+   * @return the Apache 2.0 license
+   * @since 2.0.0
+   */
+  static @NonNull License apache2() {
     return License.builder()
       .spdx("Apache-2.0")
       .name("Apache License, Version 2.0")
@@ -44,7 +59,13 @@ public interface License {
       .build();
   }
 
-  static License gpl3Only() {
+  /**
+   * Get a GPL-3.0-only license instance.
+   *
+   * @return the GPL-3.0-only license
+   * @since 2.0.0
+   */
+  static @NonNull License gpl3Only() {
     return License.builder()
       .spdx("GPL-3.0-only")
       .name("GNU General Public License version 3")
@@ -52,7 +73,13 @@ public interface License {
       .build();
   }
 
-  static License mit() {
+  /**
+   * Get a MIT license instance.
+   *
+   * @return the MIT license
+   * @since 2.0.0
+   */
+  static @NonNull License mit() {
     return License.builder()
       .spdx("MIT")
       .name("The MIT License")
@@ -60,14 +87,83 @@ public interface License {
       .build();
   }
 
+  /**
+   * Get the <a href="https://spdx.org/licenses/">SPDX</a> identifier that describes this license.
+   *
+   * @return spdx the license identifier
+   * @since 2.0.0
+   */
   @SuppressWarnings("SpellCheckingInspection")
-  @Nullable String spdx(); // https://spdx.org/licenses/
+  @Nullable String spdx();
 
+  /**
+   * Get the display name of this license.
+   *
+   * @return the license display name
+   * @since 2.0.0
+   */
   @NonNull String name();
 
+  /**
+   * Get a URL to the text of this license.
+   *
+   * @return a URL pointing to this license text
+   * @since 2.0.0
+   */
   @NonNull String url();
 
-  final class Builder extends LicenseImpl.Builder {
-    // generated based on class spec
+  /**
+   * A builder for {@link License}s.
+   *
+   * @since 2.0.0
+   */
+  interface Builder {
+    /**
+     * Fill a builder with attribute values from the provided {@link Issues} instance.
+     *
+     * @param instance The instance from which to copy values
+     * @return this builder
+     * @since 2.0.0
+     */
+    @NonNull Builder from(final License instance);
+
+    /**
+     * Set the <a href="https://spdx.org/licenses/">SPDX</a> identifier that describes this license.
+     *
+     * <p>This field is optional.</p>
+     *
+     * @param spdx the license identifier
+     * @return this builder
+     * @since 2.0.0
+     */
+    @NonNull Builder spdx(final @NonNull String spdx);
+
+    /**
+     * Set the display name of this license.
+     *
+     * @param name the license name
+     * @return this builder
+     * @since 2.0.0
+     */
+    @NonNull Builder name(final @NonNull String name);
+
+    /**
+     * Set the URL of this license.
+     *
+     * @param url the license URL
+     * @return this builder
+     * @since 2.0.0
+     */
+    @NonNull Builder url(final @NonNull String url);
+
+    /**
+     * Create a new license.
+     *
+     * <p>All fields but {@link #spdx(String)} must be set.</p>
+     *
+     * @return a new {@link License}
+     * @since 2.0.0
+     */
+    @NonNull License build();
   }
 }

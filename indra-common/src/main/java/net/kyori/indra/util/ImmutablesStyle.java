@@ -39,9 +39,12 @@ import org.immutables.value.Value;
 @Value.Style(
   with = "*",
   of = "new",
+  builder = "new",
+  create = "new",
   typeImmutable = "*Impl",
-  overshadowImplementation = true,
+  typeBuilder = "BuilderImpl",
   visibility = Value.Style.ImplementationVisibility.PACKAGE,
+  builderVisibility = Value.Style.BuilderVisibility.PACKAGE,
   deferCollectionAllocation = true,
   jdkOnly = true
 )

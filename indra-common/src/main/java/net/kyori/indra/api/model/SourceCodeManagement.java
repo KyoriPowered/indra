@@ -26,17 +26,97 @@ package net.kyori.indra.api.model;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.immutables.value.Value;
 
+/**
+ * SCM metadata information.
+ *
+ * @since 2.0.0
+ */
 @Value.Immutable
 public interface SourceCodeManagement {
-  static Builder builder() {
-    return new Builder();
+
+  /**
+   * Create a new builder for {@link SourceCodeManagement} instances.
+   *
+   * @return a new builder
+   * @since 2.0.0
+   */
+  static @NonNull Builder builder() {
+    return new SourceCodeManagementImpl.BuilderImpl();
   }
+
+  /**
+   * Get a read-only access to the project's repository.
+   *
+   * <p>This must be in a {@code scm:[provider]:[provider-specific arguments]} format.</p>
+   *
+   * @return the read-only project repository
+   * @since 2.0.0
+   */
   @NonNull String connection();
 
+  /**
+   * Get a read-write access to the project's repository.
+   *
+   * <p>This must be in a {@code scm:[provider]:[provider-specific arguments]} format.</p>
+   *
+   * @return the read-write project repository
+   * @since 2.0.0
+   */
   @NonNull String developerConnection();
 
+  /**
+   * Get a web URL to view this project's repository.
+   *
+   * @return the project's SCM web URL
+   * @since 2.0.0
+   */
   @NonNull String url();
 
-  final class Builder extends SourceCodeManagementImpl.Builder {
+  /**
+   * A builder for {@link SourceCodeManagement} instances.
+   *
+   * @since 2.0.0
+   */
+  interface Builder {
+    /**
+     * Set a read-only access to the project's repository.
+     *
+     * <p>This must be in a {@code scm:[provider]:[provider-specific arguments]} format.</p>
+     *
+     * @param connection the read-only project repository
+     * @return this builder
+     * @since 2.0.0
+     */
+    @NonNull Builder connection(final @NonNull String connection);
+
+    /**
+     * Set a read-write access to the project's repository.
+     *
+     * <p>This must be in a {@code scm:[provider]:[provider-specific arguments]} format.</p>
+     *
+     * @param developerConnection the read-write project repository
+     * @return this builder
+     * @since 2.0.0
+     */
+    @NonNull Builder developerConnection(final @NonNull String developerConnection);
+
+    /**
+     * Get a web URL to view this project's repository.
+     *
+     * @param url the project's SCM web URL
+     * @return this builder
+     * @since 2.0.0
+     */
+    @NonNull Builder url(final @NonNull String url);
+
+    /**
+     * Create a new {@link SourceCodeManagement} instance.
+     *
+     * <p>The {@link #connection(String)}, {@link #developerConnection(String)}, and {@link #url(String)} properties must be set.</p>
+     *
+     * @return a new {@link SourceCodeManagement} instance
+     * @since 2.0.0
+     */
+    @NonNull SourceCodeManagement build();
   }
 }

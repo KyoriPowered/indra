@@ -38,15 +38,17 @@ public interface ContinuousIntegration {
    * Create a new CI builder.
    *
    * @return the builder
+   * @since 2.0.0
    */
-  static Builder builder() {
-    return new Builder();
+  static @NonNull Builder builder() {
+    return new ContinuousIntegrationImpl.BuilderImpl();
   }
 
   /**
    * The name of the continuous integration system used.
    *
    * @return the CI system name
+   * @since 2.0.0
    */
   @NonNull String system();
 
@@ -54,13 +56,30 @@ public interface ContinuousIntegration {
    * The URL pointing to a web interface for the CI system.
    *
    * @return the URL
+   * @since 2.0.0
    */
   @NonNull String url();
 
   /**
    * A builder for new continuous integration instances.
+   *
+   * @since 2.0.0
    */
-  final class Builder extends ContinuousIntegrationImpl.Builder {
+  interface Builder {
+    /**
+     * Fill a builder with attribute values from the provided {@link ContinuousIntegration} instance.
+     *
+     * @param instance The instance from which to copy values
+     * @return this builder
+     * @since 2.0.0
+     */
+    Builder from(final ContinuousIntegration instance);
+
+    Builder system(final @NonNull String system);
+
+    Builder url(final @NonNull String url);
+
+    ContinuousIntegration build();
 
   }
 }

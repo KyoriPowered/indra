@@ -23,6 +23,7 @@
  */
 package net.kyori.indra.api.model;
 
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.immutables.value.Value;
 
 /**
@@ -33,7 +34,7 @@ import org.immutables.value.Value;
  * @since 1.0.0
  */
 @Value.Modifiable
-@Value.Style(set = "*", defaultAsDefault = true, visibility = Value.Style.ImplementationVisibility.PACKAGE)
+@Value.Style(set = "*", create = "new", defaultAsDefault = true, visibility = Value.Style.ImplementationVisibility.PACKAGE)
 public interface ApplyTo {
 
   /**
@@ -42,8 +43,8 @@ public interface ApplyTo {
    * @return the new instance
    * @since 2.0.0
    */
-  static ApplyTo defaults() {
-    return ModifiableApplyTo.create();
+  static @NonNull ApplyTo defaults() {
+    return new ModifiableApplyTo();
   }
 
   /**
