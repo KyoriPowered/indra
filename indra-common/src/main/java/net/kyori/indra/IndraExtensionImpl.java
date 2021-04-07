@@ -69,7 +69,7 @@ class IndraExtensionImpl implements IndraExtension {
 
     this.reproducibleBuilds = objects.property(Boolean.class).convention(true);
 
-    this.checkstyle = objects.property(String.class).convention("8.40");
+    this.checkstyle = objects.property(String.class).convention("8.41.1");
     this.includeJavaSoftwareComponentInPublications = objects.property(Boolean.class).convention(true);
     this.javaVersions = objects.newInstance(JavaToolchainVersions.class);
     this.repositories = objects.domainObjectSet(RemoteRepository.class);
