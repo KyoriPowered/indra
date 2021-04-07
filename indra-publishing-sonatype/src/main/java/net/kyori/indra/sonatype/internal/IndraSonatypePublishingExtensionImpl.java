@@ -30,6 +30,7 @@ import javax.inject.Inject;
 import net.kyori.indra.sonatype.IndraSonatypePublishingExtension;
 
 public class IndraSonatypePublishingExtensionImpl implements IndraSonatypePublishingExtension {
+  private static final String SONATYPE_REPO = "sonatype";
 
   private final NexusPublishExtension nexusExtension;
 
@@ -40,7 +41,7 @@ public class IndraSonatypePublishingExtensionImpl implements IndraSonatypePublis
 
   @Override
   public void useAlternateSonatypeOssHost(final String name) {
-    final NexusRepository repo = this.nexusExtension.getRepositories().maybeCreate("sonatype");
+    final NexusRepository repo = this.nexusExtension.getRepositories().maybeCreate(SONATYPE_REPO);
 
     repo.getNexusUrl().set(this.nexusUrl(name));
     repo.getSnapshotRepositoryUrl().set(this.snapshotUrl(name));
