@@ -36,7 +36,7 @@ public final class Extensions {
 
   @SuppressWarnings("unchecked")
   public static <E> E findOrCreate(final ExtensionContainer extensions, final String name, final Class<? super E> publicType, final Class<E> implementationType) {
-    E extension = extensions.findByType(implementationType);
+    E extension = (E) extensions.findByType(publicType);
     if(extension == null) {
       extension = (E) extensions.create(publicType, name, implementationType);
     }

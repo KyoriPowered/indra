@@ -26,7 +26,9 @@ package net.kyori.indra;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Objects;
 import net.kyori.gradle.api.ProjectPlugin;
+import net.kyori.indra.internal.multirelease.IndraMultireleasePlugin;
 import net.kyori.indra.repository.RemoteRepository;
 import net.kyori.indra.repository.Repositories;
 import net.kyori.indra.util.Versioning;
@@ -56,6 +58,11 @@ import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.gradle.language.jvm.tasks.ProcessResources;
 
+/**
+ * The primary Indra plugin providing project configuration.
+ *
+ * @since 1.0.0
+ */
 public class IndraPlugin implements ProjectPlugin {
   @Override
   public void apply(final @NonNull Project project, final @NonNull PluginContainer plugins, final @NonNull ExtensionContainer extensions, final @NonNull Convention convention, final @NonNull TaskContainer tasks) {
@@ -124,6 +131,8 @@ public class IndraPlugin implements ProjectPlugin {
       }
     });
 
+    plugins.apply(IndraMultireleasePlugin.class);
+
     // For things that are eagerly applied (field accesses, anything where you need to `get()`)
     project.afterEvaluate(p -> {
       extensions.configure(JavaPluginExtension.class, javaPlugin -> {
@@ -159,10 +168,16 @@ public class IndraPlugin implements ProjectPlugin {
           jd.doFirst(t -> {
             final JavaToolchainVersions versions = indra.javaVersions();
             final int target = versions.target().get();
-            options.links(jdkApiDocs(target));
+            final int minimum = versions.minimumToolchain().get();
+            final int actual = versions.actualVersion().get();
 
-            if(versions.minimumToolchain().get() >= 9) {
-              if(versions.actualVersion().get() < 12) {
+            // Java 16 automatically links with the API documentation anyways
+            if(actual < 16) {
+              options.links(jdkApiDocs(target));
+            }
+
+            if(minimum >= 9) {
+              if(actual < 12) {
                 // Apply workaround for https://bugs.openjdk.java.net/browse/JDK-8215291
                 // Hopefully this gets backported some day... (JDK-8215291)
                 noModuleDirectories.setValue(true);
@@ -185,14 +200,14 @@ public class IndraPlugin implements ProjectPlugin {
       testWithProp.finalizeValue();
       testWithProp.get().forEach(targetRuntime -> {
         // Create task that will use that version
-        final TaskProvider<Test> versionedTest = tasks.register("testJava$targetRuntime", Test.class, test -> {
-          test.setDescription("Runs tests on Java $targetRuntime if necessary based on build settings");
+        final TaskProvider<Test> versionedTest = tasks.register("testJava" + targetRuntime, Test.class, test -> {
+          test.setDescription("Runs tests on Java " + targetRuntime + " if necessary based on build settings");
           test.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
           // Appropriate classpath and test class source information is set on all test tasks by JavaPlugin
 
           test.onlyIf($ -> {
             // Only run if our runtime is not the standard runtime, and we're doing strict versions.
-            return indra.javaVersions().strictVersions().get() && targetRuntime != indra.javaVersions().actualVersion().get();
+            return indra.javaVersions().strictVersions().get() && !Objects.equals(targetRuntime, indra.javaVersions().actualVersion().get());
           });
           test.getJavaLauncher().set(toolchains.launcherFor(it -> it.getLanguageVersion().set(JavaLanguageVersion.of(targetRuntime))));
         });
