@@ -29,12 +29,17 @@ import org.gradle.api.DomainObjectSet;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.SourceSet;
 
+/**
+ * Information about multirelease variants of a source set.
+ *
+ * @since 2.0.0
+ */
 public interface MultireleaseSourceSet {
 
   /**
    * Given an existing source set, get the multirelease extension.
    *
-   * <p>This will fail when the provided source set is already a multirelease variant.</p>
+   * <p>This will fail when the provided source set is already a multirelease variant of a base source set.</p>
    *
    * @param set the source set
    * @return the multirelease extension
@@ -67,6 +72,18 @@ public interface MultireleaseSourceSet {
    * @since 2.0.0
    */
   @NonNull Property<String> moduleName();
+
+  /**
+   * The module name to explicitly pass if a modular multirelease jar is desired.
+   *
+   * <p>This is optional in non-modular environments.</p>
+   *
+   * @param moduleName the name of the module that the different version variants should contribute to
+   * @since 2.0.0
+   */
+  default void moduleName(final String moduleName) {
+    this.moduleName().set(moduleName);
+  }
 
   /**
    * Configure derived source sets.

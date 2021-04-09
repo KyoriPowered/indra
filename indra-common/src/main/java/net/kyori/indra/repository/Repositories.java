@@ -28,8 +28,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
-import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
-import org.gradle.api.artifacts.repositories.MavenRepositoryContentDescriptor;
 import org.gradle.api.plugins.ExtensionAware;
 
 /**
@@ -42,18 +40,6 @@ public final class Repositories {
   // TODO: can this be done without using Kotlin directly
   // fun RepositoryHandler.sonatypeSnapshots() = addRepository(this, RemoteRepository.SONATYPE_SNAPSHOTS)
 
-  private static MavenArtifactRepository addRepository(final RepositoryHandler handler, final RemoteRepository repository) {
-    return handler.maven(it -> {
-      it.setName(repository.name());
-      it.setUrl(repository.url());
-      if(repository.releases() && !repository.snapshots()) {
-        it.mavenContent(MavenRepositoryContentDescriptor::releasesOnly);
-      } else if(repository.snapshots() && !repository.releases()) {
-        it.mavenContent(MavenRepositoryContentDescriptor::snapshotsOnly);
-      }
-    });
-  }
-
   public static void registerRepositoryExtensions(final RepositoryHandler handler, final RemoteRepository... repositories) {
     registerRepositoryExtensions(handler, Arrays.asList(repositories));
   }
@@ -62,7 +48,7 @@ public final class Repositories {
     for(final RemoteRepository repo : repositories) {
       ((ExtensionAware) handler).getExtensions().add(repo.name(), new Closure<Void>(null, handler) {
         public void doCall() {
-          addRepository((RepositoryHandler) this.getThisObject(), repo);
+          repo.addTo((RepositoryHandler) this.getThisObject());
         }
       });
     }

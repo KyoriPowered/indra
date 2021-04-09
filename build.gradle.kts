@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "net.kyori"
-version = "1.4.0-SNAPSHOT"
+version = "2.0.0-SNAPSHOT"
 description = "KyoriPowered organizational build standards and utilities"
 
 allprojects {
@@ -56,6 +56,11 @@ subprojects {
             timezone.set("America/Vancouver")
           }
         }
+      }
+
+      versionMapping {
+        usage(Usage.JAVA_API) { fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME) }
+        usage(Usage.JAVA_RUNTIME) { fromResolutionResult() }
       }
     }
   }
