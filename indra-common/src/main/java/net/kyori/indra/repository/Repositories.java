@@ -27,6 +27,7 @@ import groovy.lang.Closure;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Arrays;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.plugins.ExtensionAware;
 
@@ -40,11 +41,11 @@ public final class Repositories {
   // TODO: can this be done without using Kotlin directly
   // fun RepositoryHandler.sonatypeSnapshots() = addRepository(this, RemoteRepository.SONATYPE_SNAPSHOTS)
 
-  public static void registerRepositoryExtensions(final RepositoryHandler handler, final RemoteRepository... repositories) {
+  public static void registerRepositoryExtensions(final @NonNull RepositoryHandler handler, final @NonNull RemoteRepository@NonNull... repositories) {
     registerRepositoryExtensions(handler, Arrays.asList(repositories));
   }
 
-  public static void registerRepositoryExtensions(final RepositoryHandler handler, final Iterable<RemoteRepository> repositories) {
+  public static void registerRepositoryExtensions(final @NonNull RepositoryHandler handler, final @NonNull Iterable<RemoteRepository> repositories) {
     for(final RemoteRepository repo : repositories) {
       ((ExtensionAware) handler).getExtensions().add(repo.name(), new Closure<Void>(null, handler) {
         public void doCall() {

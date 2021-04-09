@@ -33,7 +33,6 @@ import org.immutables.value.Value;
  */
 @Value.Immutable
 public interface Issues {
-
   /**
    * Create a new builder for a {@link Issues} instance.
    *
@@ -66,7 +65,6 @@ public interface Issues {
    * @since 2.0.0
    */
   interface Builder {
-
     /**
      * Fill a builder with attribute values from the provided {@link Issues} instance.
      *
@@ -80,7 +78,7 @@ public interface Issues {
 
     @NonNull Builder url(final @NonNull String url);
 
-    Issues build();
+    @NonNull Issues build();
 
   }
 }

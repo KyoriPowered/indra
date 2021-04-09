@@ -23,7 +23,7 @@
  */
 package net.kyori.indra.multirelease;
 
-import net.kyori.indra.util.ImmutablesStyle;
+import net.kyori.indra.internal.ImmutablesStyle;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.tasks.SourceSet;
 import org.immutables.value.Value;
@@ -46,7 +46,7 @@ public interface MultireleaseVariantDetails {
    * @return a new variant details
    * @since 2.0.0
    */
-  static @NonNull MultireleaseVariantDetails details(final SourceSet base, final int targetVersion, final SourceSet variant) {
+  static @NonNull MultireleaseVariantDetails details(final @NonNull SourceSet base, final int targetVersion, final @NonNull SourceSet variant) {
     return new MultireleaseVariantDetailsImpl(base, targetVersion, variant);
   }
 
@@ -57,7 +57,7 @@ public interface MultireleaseVariantDetails {
    * @since 2.0.0
    */
   @Value.Parameter
-  SourceSet base();
+  @NonNull SourceSet base();
 
   /**
    * The target Java major release.
@@ -75,5 +75,5 @@ public interface MultireleaseVariantDetails {
    * @since 2.0.0
    */
   @Value.Parameter
-  SourceSet variant();
+  @NonNull SourceSet variant();
 }

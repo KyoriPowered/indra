@@ -24,4 +24,4 @@
 @ImmutablesStyle
 package net.kyori.indra.api.model;
 
-import net.kyori.indra.util.ImmutablesStyle;
+import net.kyori.indra.internal.ImmutablesStyle;

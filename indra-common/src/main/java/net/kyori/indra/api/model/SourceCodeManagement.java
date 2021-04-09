@@ -33,7 +33,6 @@ import org.immutables.value.Value;
  */
 @Value.Immutable
 public interface SourceCodeManagement {
-
   /**
    * Create a new builder for {@link SourceCodeManagement} instances.
    *

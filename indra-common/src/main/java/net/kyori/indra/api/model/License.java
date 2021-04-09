@@ -34,7 +34,6 @@ import org.immutables.value.Value;
  */
 @Value.Immutable
 public interface License {
-
   /**
    * Create a builder to construct a custom license.
    *

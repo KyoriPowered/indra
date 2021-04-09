@@ -21,12 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra.util;
+package net.kyori.indra.internal;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import org.checkerframework.checker.nullness.qual.NonNull;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.immutables.value.Value;
 
 /**
@@ -39,6 +41,7 @@ import org.immutables.value.Value;
 @Value.Style(
   with = "*",
   of = "new",
+  set = "*",
   builder = "new",
   create = "new",
   typeImmutable = "*Impl",
@@ -46,7 +49,9 @@ import org.immutables.value.Value;
   visibility = Value.Style.ImplementationVisibility.PACKAGE,
   builderVisibility = Value.Style.BuilderVisibility.PACKAGE,
   deferCollectionAllocation = true,
-  jdkOnly = true
+  jdkOnly = true,
+  nullableAnnotation = "org.checkerframework.checker.nullness.qual.Nullable",
+  passAnnotations = {Nullable.class, NonNull.class}
 )
 public @interface ImmutablesStyle {
 }

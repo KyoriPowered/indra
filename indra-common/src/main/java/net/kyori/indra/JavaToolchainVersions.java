@@ -25,6 +25,7 @@ package net.kyori.indra;
 
 import javax.inject.Inject;
 import net.kyori.indra.util.Versioning;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
@@ -38,6 +39,9 @@ import org.gradle.api.provider.SetProperty;
  * @since 1.1.0
  */
 public class JavaToolchainVersions {
+  private static final String STRICT_MULTIRELEASE_VERSIONS = "strictMultireleaseVersions";
+  private static final String CI = "CI";
+
   private final Property<Integer> target;
   private final Property<Integer> minimumToolchain;
   private final Property<Boolean> strictVersions;
@@ -51,8 +55,8 @@ public class JavaToolchainVersions {
     this.minimumToolchain = objects.property(Integer.class).convention(11);
     this.strictVersions = objects.property(Boolean.class)
       .convention(
-        providers.gradleProperty("strictMultireleaseVersions").forUseAtConfigurationTime()
-          .orElse(providers.environmentVariable("CI").forUseAtConfigurationTime()) // set by GH Actions and Travis
+        providers.gradleProperty(STRICT_MULTIRELEASE_VERSIONS).forUseAtConfigurationTime()
+          .orElse(providers.environmentVariable(CI).forUseAtConfigurationTime()) // set by GH Actions and Travis
           .map(Boolean::parseBoolean)
           .orElse(false)
       );
@@ -80,7 +84,7 @@ public class JavaToolchainVersions {
    * @return a property providing the target version
    * @since 1.1.1
    */
-  public Property<Integer> target() {
+  public @NonNull Property<Integer> target() {
     return this.target;
   }
 
@@ -100,7 +104,7 @@ public class JavaToolchainVersions {
    *
    * @return A property providing the minimum toolchain version
    */
-  public Property<Integer> minimumToolchain() {
+  public @NonNull Property<Integer> minimumToolchain() {
     return this.minimumToolchain;
   }
 
@@ -117,7 +121,7 @@ public class JavaToolchainVersions {
    *
    * <p>Default: {@code false} unless the {@code CI} environment variable or {@code strictMultireleaseVersions} gradle property are set.</p>
    */
-  public Property<Boolean> strictVersions() {
+  public @NonNull Property<Boolean> strictVersions() {
     return this.strictVersions;
   }
 
@@ -128,7 +132,7 @@ public class JavaToolchainVersions {
   /**
    * Toolchains that should be used to execute tests when strict versions are enabled.
    */
-  public SetProperty<Integer> testWith() {
+  public @NonNull SetProperty<Integer> testWith() {
     return this.testWith;
   }
 
@@ -146,7 +150,7 @@ public class JavaToolchainVersions {
    *
    * @return a property providing preview feature enabled state
    */
-  public Property<Boolean> previewFeaturesEnabled() {
+  public @NonNull Property<Boolean> previewFeaturesEnabled() {
     return this.enablePreviewFeatures;
   }
 
@@ -159,7 +163,7 @@ public class JavaToolchainVersions {
    *
    * @return a provider resolving the actual Java toolchain version to use
    */
-  public Provider<Integer> actualVersion() {
+  public @NonNull Provider<Integer> actualVersion() {
     return this.actualVersion;
   }
 }

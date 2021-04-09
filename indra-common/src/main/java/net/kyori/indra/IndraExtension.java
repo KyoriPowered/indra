@@ -48,26 +48,26 @@ public interface IndraExtension {
    *
    * @since 2.0.0
    */
-  JavaToolchainVersions javaVersions();
+  @NonNull JavaToolchainVersions javaVersions();
 
   /**
    * Configure the versioning configuration.
    *
    * @since 2.0.0
    */
-  void javaVersions(Action<JavaToolchainVersions> action);
+  void javaVersions(final @NonNull Action<JavaToolchainVersions> action);
 
-  Property<ContinuousIntegration> ci();
+  @NonNull Property<ContinuousIntegration> ci();
 
-  default void ci(final ContinuousIntegration ci) {
+  default void ci(final @NonNull ContinuousIntegration ci) {
     this.ci().set(ci);
   }
 
-  default void ci(Action<ContinuousIntegration.Builder> configureAction) {
+  default void ci(final @NonNull Action<ContinuousIntegration.Builder> configureAction) {
     this.ci().set(Configurable.configure(ContinuousIntegration.builder(), configureAction).build());
   }
 
-  default void jenkins(final String url) {
+  default void jenkins(final @NonNull String url) {
     requireNonNull(url, "url");
 
     this.ci(ContinuousIntegration.builder()
@@ -76,33 +76,33 @@ public interface IndraExtension {
       .build());
   }
 
-  Property<Issues> issues();
+  @NonNull Property<Issues> issues();
 
-  default void issues(final Issues issues) {
+  default void issues(final @NonNull Issues issues) {
     this.issues().set(issues);
   }
 
-  default void issues(final Action<Issues.Builder> configureAction) {
+  default void issues(final @NonNull Action<Issues.Builder> configureAction) {
     this.issues().set(Configurable.configure(Issues.builder(), configureAction).build());
   }
 
-  Property<SourceCodeManagement> scm();
+  @NonNull Property<SourceCodeManagement> scm();
 
-  default void scm(final SourceCodeManagement scm) {
+  default void scm(final @NonNull SourceCodeManagement scm) {
     this.scm().set(scm);
   }
 
-  default void scm(final Action<SourceCodeManagement.Builder> configureAction) {
+  default void scm(final @NonNull Action<SourceCodeManagement.Builder> configureAction) {
     this.scm().set(Configurable.configure(SourceCodeManagement.builder(), configureAction).build());
   }
 
-  Property<License> license();
+  @NonNull Property<License> license();
 
-  default void license(License license) {
+  default void license(final @NonNull License license) {
     this.license().set(license);
   }
 
-  default void license(Action<License.Builder> configureAction) {
+  default void license(final @NonNull Action<License.Builder> configureAction) {
     this.license().set(Configurable.configure(License.builder(), configureAction).build());
   }
 
@@ -118,27 +118,27 @@ public interface IndraExtension {
     this.license(License.mit());
   }
 
-  default void github(@NonNull String user, @NonNull String repo) {
+  default void github(final @NonNull String user, final @NonNull String repo) {
     this.github(user, repo, null);
   }
 
-  void github(String user, String repo, @Nullable Action<ApplyTo> applicable);
+  void github(final @NonNull String user, final @NonNull String repo, final @Nullable Action<ApplyTo> applicable);
 
-  default void gitlab(@NonNull String user, @NonNull String repo) {
+  default void gitlab(final @NonNull String user, final @NonNull String repo) {
     this.gitlab(user, repo, null);
   }
 
-  void gitlab(@NonNull String user, @NonNull String repo, @Nullable Action<ApplyTo> applicable);
+  void gitlab(final @NonNull String user, final @NonNull String repo, final @Nullable Action<ApplyTo> applicable);
 
   // Publishing repositories
 
-  void publishAllTo(String id, String url);
+  void publishAllTo(final @NonNull String id, final @NonNull String url);
 
-  void publishReleasesTo(String id, String url);
+  void publishReleasesTo(final @NonNull String id, final @NonNull String url);
 
-  void publishSnapshotsTo(String id, String url);
+  void publishSnapshotsTo(final @NonNull String id, final @NonNull String url);
 
-  void configurePublications(@NonNull Action<MavenPublication> action);
+  void configurePublications(final @NonNull Action<MavenPublication> action);
 
   /**
    * A property representing the version of checkstyle to be used.
@@ -149,7 +149,7 @@ public interface IndraExtension {
    * @return the checkstyle version property
    * @since 2.0.0
    */
-  Property<String> checkstyle();
+  @NonNull Property<String> checkstyle();
 
   /**
    * Set the version of checkstyle to be used.
@@ -158,11 +158,11 @@ public interface IndraExtension {
    * @see #checkstyle() for information on limitations
    * @since 2.0.0
    */
-  default void checkstyle(final String checkstyleVersion) {
+  default void checkstyle(final @NonNull String checkstyleVersion) {
     this.checkstyle().set(checkstyleVersion);
   }
 
-  Property<Boolean> reproducibleBuilds();
+  @NonNull Property<Boolean> reproducibleBuilds();
 
   default void reproducibleBuilds(final boolean reproducibleBuilds) {
     this.reproducibleBuilds().set(reproducibleBuilds);
@@ -178,9 +178,9 @@ public interface IndraExtension {
    * @return the property representing this option
    * @since 2.0.0
    */
-  Property<Boolean> includeJavaSoftwareComponentInPublications();
+  @NonNull Property<Boolean> includeJavaSoftwareComponentInPublications();
 
-  default void includeJavaSoftwareComponentInPublications(boolean include) {
+  default void includeJavaSoftwareComponentInPublications(final boolean include) {
     this.includeJavaSoftwareComponentInPublications().set(include);
   }
 }

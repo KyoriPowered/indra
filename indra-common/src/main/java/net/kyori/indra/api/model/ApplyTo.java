@@ -34,9 +34,7 @@ import org.immutables.value.Value;
  * @since 1.0.0
  */
 @Value.Modifiable
-@Value.Style(set = "*", create = "new", defaultAsDefault = true, visibility = Value.Style.ImplementationVisibility.PACKAGE)
 public interface ApplyTo {
-
   /**
    * Create a new instance with default values.
    *
@@ -53,6 +51,7 @@ public interface ApplyTo {
    * @return whether to apply CI configuration
    * @since 1.2.0
    */
+  @Value.Default
   default boolean ci() {
     return false;
   }
@@ -64,7 +63,7 @@ public interface ApplyTo {
    * @return this instance
    * @since 1.2.0
    */
-  ApplyTo ci(final boolean ci);
+  @NonNull ApplyTo ci(final boolean ci);
 
   /**
    * Get whether issues configuration will be applied.
@@ -72,6 +71,7 @@ public interface ApplyTo {
    * @return whether to apply issues configuration
    * @since 1.0.0
    */
+  @Value.Default
   default boolean issues() {
     return true;
   }
@@ -83,7 +83,7 @@ public interface ApplyTo {
    * @return this instance
    * @since 1.0.0
    */
-  ApplyTo issues(final boolean issues);
+  @NonNull ApplyTo issues(final boolean issues);
 
   /**
    * Get whether scm configuration will be applied.
@@ -91,6 +91,7 @@ public interface ApplyTo {
    * @return whether to apply scm
    * @since 1.0.0
    */
+  @Value.Default
   default boolean scm() {
     return true;
   }
@@ -102,7 +103,7 @@ public interface ApplyTo {
    * @return this instance
    * @since 1.0.0
    */
-  ApplyTo scm(final boolean scm);
+  @NonNull ApplyTo scm(final boolean scm);
 
   /**
    * Get whether publishing configuration will be applied.
@@ -110,6 +111,7 @@ public interface ApplyTo {
    * @return whether to apply publishing
    * @since 1.0.0
    */
+  @Value.Default
   default boolean publishing() {
     return false;
   }
@@ -121,6 +123,5 @@ public interface ApplyTo {
    * @return this instance
    * @since 1.0.0
    */
-  ApplyTo publishing(final boolean publishing);
-
+  @NonNull ApplyTo publishing(final boolean publishing);
 }

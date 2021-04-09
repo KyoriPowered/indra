@@ -44,7 +44,7 @@ public interface MultireleaseSourceSet {
    * @param set the source set
    * @return the multirelease extension
    */
-  static @NonNull MultireleaseSourceSet from(final SourceSet set) {
+  static @NonNull MultireleaseSourceSet from(final @NonNull SourceSet set) {
     return set.getExtensions().getByType(MultireleaseSourceSet.class);
   }
 
@@ -81,7 +81,7 @@ public interface MultireleaseSourceSet {
    * @param moduleName the name of the module that the different version variants should contribute to
    * @since 2.0.0
    */
-  default void moduleName(final String moduleName) {
+  default void moduleName(final @NonNull String moduleName) {
     this.moduleName().set(moduleName);
   }
 

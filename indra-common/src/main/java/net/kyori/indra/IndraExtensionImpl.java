@@ -76,12 +76,12 @@ class IndraExtensionImpl implements IndraExtension {
   }
 
   @Override
-  public JavaToolchainVersions javaVersions() {
+  public @NonNull JavaToolchainVersions javaVersions() {
     return this.javaVersions;
   }
 
   @Override
-  public void javaVersions(final Action<JavaToolchainVersions> action) {
+  public void javaVersions(final @NonNull Action<JavaToolchainVersions> action) {
     requireNonNull(action, "action").execute(this.javaVersions);
   }
 
@@ -99,29 +99,29 @@ class IndraExtensionImpl implements IndraExtension {
   // Metadata properties //
 
   @Override
-  public Property<ContinuousIntegration> ci() {
+  public @NonNull Property<ContinuousIntegration> ci() {
     return this.ci;
   }
 
   @Override
-  public Property<Issues> issues() {
+  public @NonNull Property<Issues> issues() {
     return this.issues;
   }
 
   @Override
-  public Property<SourceCodeManagement> scm() {
+  public @NonNull Property<SourceCodeManagement> scm() {
     return this.scm;
   }
 
   @Override
-  public Property<License> license() {
+  public @NonNull Property<License> license() {
     return this.license;
   }
 
   // Configuration for specific platforms //
 
   @Override
-  public void github(final String user, final String repo, final @Nullable Action<ApplyTo> applicable) {
+  public void github(final @NonNull String user, final @NonNull String repo, final @Nullable Action<ApplyTo> applicable) {
     final ApplyTo options = Configurable.configureIfNonNull(ApplyTo.defaults(), applicable);
 
     if(options.ci()) {
@@ -169,17 +169,17 @@ class IndraExtensionImpl implements IndraExtension {
   final Set<Action<MavenPublication>> publishingActions = new HashSet<>();
 
   @Override
-  public void publishAllTo(final String id, final String url) {
+  public void publishAllTo(final @NonNull String id, final @NonNull String url) {
     this.repositories.add(RemoteRepository.all(id, url));
   }
 
   @Override
-  public void publishReleasesTo(final String id, final String url) {
+  public void publishReleasesTo(final @NonNull String id, final @NonNull String url) {
     this.repositories.add(RemoteRepository.releasesOnly(id, url));
   }
 
   @Override
-  public void publishSnapshotsTo(final String id, final String url) {
+  public void publishSnapshotsTo(final @NonNull String id, final @NonNull String url) {
     this.repositories.add(RemoteRepository.snapshotsOnly(id, url));
   }
 
@@ -189,17 +189,17 @@ class IndraExtensionImpl implements IndraExtension {
   }
 
   @Override
-  public Property<String> checkstyle() {
+  public @NonNull Property<String> checkstyle() {
     return this.checkstyle;
   }
 
   @Override
-  public Property<Boolean> reproducibleBuilds() {
+  public @NonNull Property<Boolean> reproducibleBuilds() {
     return this.reproducibleBuilds;
   }
 
   @Override
-  public Property<Boolean> includeJavaSoftwareComponentInPublications() {
+  public @NonNull Property<Boolean> includeJavaSoftwareComponentInPublications() {
     return this.includeJavaSoftwareComponentInPublications;
   }
 }

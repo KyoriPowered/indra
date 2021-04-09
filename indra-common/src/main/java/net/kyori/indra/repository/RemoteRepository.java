@@ -24,7 +24,7 @@
 package net.kyori.indra.repository;
 
 import java.net.URI;
-import net.kyori.indra.util.ImmutablesStyle;
+import net.kyori.indra.internal.ImmutablesStyle;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;

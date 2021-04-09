@@ -33,7 +33,6 @@ import org.immutables.value.Value;
  */
 @Value.Immutable
 public interface ContinuousIntegration {
-
   /**
    * Create a new CI builder.
    *
@@ -73,13 +72,13 @@ public interface ContinuousIntegration {
      * @return this builder
      * @since 2.0.0
      */
-    Builder from(final ContinuousIntegration instance);
+    @NonNull Builder from(final ContinuousIntegration instance);
 
-    Builder system(final @NonNull String system);
+    @NonNull Builder system(final @NonNull String system);
 
-    Builder url(final @NonNull String url);
+    @NonNull Builder url(final @NonNull String url);
 
-    ContinuousIntegration build();
+    @NonNull ContinuousIntegration build();
 
   }
 }
