@@ -4,7 +4,7 @@ dependencies {
   compileOnlyApi("org.immutables:builder:2.8.8")
   compileOnlyApi("org.checkerframework:checker-qual:3.12.0")
   api(project(":indra-git"))
-  implementation("gradle.plugin.org.cadixdev.gradle:licenser:0.5.1")
+  implementation("org.cadixdev.gradle:licenser:0.6.0-SNAPSHOT")
 }
 
 indraPluginPublishing {

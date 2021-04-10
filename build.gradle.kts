@@ -16,6 +16,10 @@ description = "KyoriPowered organizational build standards and utilities"
 allprojects {
   repositories {
     mavenCentral()
+    maven("https://repo.stellardrift.ca/repository/snapshots/") {
+      name = "stellardriftSnapshots"
+      mavenContent { snapshotsOnly() }
+    }
     gradlePluginPortal()
   }
 }
