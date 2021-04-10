@@ -27,6 +27,7 @@ import io.github.gradlenexus.publishplugin.NexusPublishExtension;
 import io.github.gradlenexus.publishplugin.NexusPublishPlugin;
 import java.time.Duration;
 import net.kyori.gradle.api.ProjectPlugin;
+import net.kyori.indra.IndraPlugin;
 import net.kyori.indra.IndraPublishingPlugin;
 import net.kyori.indra.sonatype.internal.IndraSonatypePublishingExtensionImpl;
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -48,7 +49,7 @@ public class IndraSonatypePublishingPlugin implements ProjectPlugin {
 
   @Override
   public void apply(final @NonNull Project project, final @NonNull PluginContainer plugins, final @NonNull ExtensionContainer extensions, final @NonNull Convention convention, final @NonNull TaskContainer tasks) {
-    plugins.apply(IndraPublishingPlugin.class);
+    plugins.withType(IndraPlugin.class, plugin -> plugins.apply(IndraPublishingPlugin.class));
     plugins.apply(NexusPublishPlugin.class);
 
     extensions.configure(NexusPublishExtension.class, extension -> {

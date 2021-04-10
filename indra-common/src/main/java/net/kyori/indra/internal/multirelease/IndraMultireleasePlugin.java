@@ -36,16 +36,20 @@ import net.kyori.indra.multirelease.MultireleaseVariantDetails;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
+import org.gradle.api.NamedDomainObjectProvider;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.ProjectLayout;
+import org.gradle.api.file.SourceDirectorySet;
 import org.gradle.api.plugins.Convention;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.SourceSetOutput;
@@ -53,11 +57,13 @@ import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
 import org.gradle.api.tasks.bundling.Jar;
+import org.gradle.api.tasks.compile.AbstractCompile;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.jvm.toolchain.JavaCompiler;
 import org.gradle.jvm.toolchain.JavaLanguageVersion;
 import org.gradle.jvm.toolchain.JavaToolchainService;
+import org.gradle.language.jvm.tasks.ProcessResources;
 
 /**
  * Multirelease jar plugin.
@@ -73,6 +79,8 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
 
   private static final String MULTI_RELEASE_ATTRIBUTE = "Multi-Release";
   private static final String MULTI_RELEASE_PATH = "META-INF/versions/";
+  private static final String CLASSES_VARIANT = "classes"; // apiElements and runtimeElements
+  private static final String RESOURCES_VARAINT = "resources"; // runtimeElements
 
   @Override
   public void apply(final @NonNull Project project, final @NonNull PluginContainer plugins, final @NonNull ExtensionContainer extensions, final @NonNull Convention convention, final @NonNull TaskContainer tasks) {
@@ -127,6 +135,9 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
           }
         }
 
+        final NamedDomainObjectProvider<Configuration> baseApiElements = project.getConfigurations().getNames().contains(base.getApiElementsConfigurationName()) ? project.getConfigurations().named(base.getApiElementsConfigurationName()) : null;
+        final NamedDomainObjectProvider<Configuration> baseRuntimeElements = project.getConfigurations().getNames().contains(base.getRuntimeElementsConfigurationName()) ? project.getConfigurations().named(base.getRuntimeElementsConfigurationName()) : null;
+
         for(int idx = 0, length = versions.length; idx < length; ++idx) {
           final int version = versions[idx];
           // Configure classpath
@@ -158,7 +169,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
             spec.getLanguageVersion().set(indra.javaVersions().actualVersion().map(activeEnv -> JavaLanguageVersion.of(Math.max(activeEnv, version)))); // make sure our JVM is always compatible
           });
 
-          tasks.named(variant.getCompileJavaTaskName(), JavaCompile.class, task -> {
+          final TaskProvider<JavaCompile> compileJava = tasks.named(variant.getCompileJavaTaskName(), JavaCompile.class, task -> {
             task.getOptions().getRelease().set(version);
             task.getJavaCompiler().set(compiler);
 
@@ -171,6 +182,44 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
             final Jar jarTask = (Jar) task;
             jarTask.into(MULTI_RELEASE_PATH + version, spec -> spec.from(output));
           });
+
+          // Add sources to the sources jar
+          // TODO: do we want to maybe create multiple sources jars, one for each target version?
+          final SourceDirectorySet allSource = variant.getAllSource();
+          tasks.matching(task -> task.getName().equals(base.getSourcesJarTaskName())).configureEach(task -> {
+            final Jar jarTask = (Jar) task;
+            jarTask.into(MULTI_RELEASE_PATH + version, spec -> spec.from(allSource));
+          });
+
+          // Add classes to the appropriate outgoing variants of the base configuration
+          if(baseApiElements != null) {
+            baseApiElements.configure(conf -> {
+              // TODO: this isn't entirely accurate, since it won't capture every input to the jar task
+              conf.getOutgoing().getVariants().named(CLASSES_VARIANT, classesVariant -> {
+                classesVariant.artifact(
+                  compileJava.flatMap(AbstractCompile::getDestinationDirectory),
+                  artifact -> artifact.builtBy(compileJava)
+                );
+              });
+            });
+          }
+          if(baseRuntimeElements != null) {
+            final TaskProvider<ProcessResources> processResources = tasks.named(variant.getProcessResourcesTaskName(), ProcessResources.class);
+            baseRuntimeElements.configure(conf -> {
+              conf.getOutgoing().getVariants().named(CLASSES_VARIANT, classesVariant -> {
+                classesVariant.artifact(
+                  compileJava.flatMap(AbstractCompile::getDestinationDirectory),
+                  artifact -> artifact.builtBy(compileJava)
+                );
+              });
+              conf.getOutgoing().getVariants().named(RESOURCES_VARAINT, classesVariant -> {
+                classesVariant.artifact(
+                  processResources.map(Copy::getDestinationDir),
+                  artifact -> artifact.builtBy(processResources)
+                );
+              });
+            });
+          }
 
           // Then execute user-defined tasks
           if(!extension.alternateConfigurationActions.isEmpty()) {
