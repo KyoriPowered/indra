@@ -32,8 +32,8 @@ import net.kyori.indra.api.model.ContinuousIntegration;
 import net.kyori.indra.api.model.Issues;
 import net.kyori.indra.api.model.License;
 import net.kyori.indra.api.model.SourceCodeManagement;
-import net.kyori.gradle.api.Configurable;
 import net.kyori.indra.repository.RemoteRepository;
+import net.kyori.mammoth.Configurable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.Action;
@@ -82,7 +82,7 @@ class IndraExtensionImpl implements IndraExtension {
 
   @Override
   public void javaVersions(final @NonNull Action<JavaToolchainVersions> action) {
-    requireNonNull(action, "action").execute(this.javaVersions);
+    Configurable.configure(this.javaVersions, action);
   }
 
   public CommandLineArgumentProvider previewFeatureArgumentProvider() {

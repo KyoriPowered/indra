@@ -26,31 +26,37 @@ package net.kyori.indra.git;
 import net.kyori.indra.git.internal.IndraGitExtensionImpl;
 import net.kyori.indra.git.internal.IndraGitService;
 import net.kyori.indra.git.task.RequireClean;
+import net.kyori.mammoth.ProjectPlugin;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.plugins.Convention;
+import org.gradle.api.plugins.ExtensionContainer;
+import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.TaskContainer;
 
 /**
  * A plugin that exposes any git repository that might be in a project.
  *
  * @since 2.0.0
  */
-public class GitPlugin implements Plugin<Project> {
+public class GitPlugin implements ProjectPlugin {
   private static final String EXTENSION_NAME = "indraGit";
   private static final String SERVICE_NAME = "indraGitService";
 
   public static final String REQUIRE_CLEAN_TASK = "requireClean";
 
   @Override
-  public void apply(final Project project) {
+  public void apply(@NonNull final Project project, @NonNull final PluginContainer plugins, @NonNull final ExtensionContainer extensions, @NonNull final Convention convention, @NonNull final TaskContainer tasks) {
     // Register the service, then create an extension
     final Provider<IndraGitService> service = project.getGradle().getSharedServices().registerIfAbsent(SERVICE_NAME, IndraGitService.class, params -> {
       params.getParameters().getBaseDirectory().set(project.getRootDir());
     });
-    project.getExtensions().create(IndraGitExtension.class, EXTENSION_NAME, IndraGitExtensionImpl.class, project, service);
+    extensions.create(IndraGitExtension.class, EXTENSION_NAME, IndraGitExtensionImpl.class, project, service);
 
     // And create a task, but don't ever make it run
-    project.getTasks().register(REQUIRE_CLEAN_TASK, RequireClean.class, task -> {
+    tasks.register(REQUIRE_CLEAN_TASK, RequireClean.class, task -> {
       task.getGit().set(service);
     });
   }

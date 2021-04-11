@@ -28,11 +28,11 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import net.kyori.gradle.api.ProjectPlugin;
 import net.kyori.indra.Indra;
 import net.kyori.indra.IndraExtension;
 import net.kyori.indra.multirelease.MultireleaseSourceSet;
 import net.kyori.indra.multirelease.MultireleaseVariantDetails;
+import net.kyori.mammoth.ProjectPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
@@ -177,49 +177,10 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
           });
 
           // Add classes to the base jar
-          final SourceSetOutput output = variant.getOutput();
-          tasks.matching(task -> task.getName().equals(base.getJarTaskName())).configureEach(task -> {
-            final Jar jarTask = (Jar) task;
-            jarTask.into(MULTI_RELEASE_PATH + version, spec -> spec.from(output));
-          });
-
-          // Add sources to the sources jar
-          // TODO: do we want to maybe create multiple sources jars, one for each target version?
-          final SourceDirectorySet allSource = variant.getAllSource();
-          tasks.matching(task -> task.getName().equals(base.getSourcesJarTaskName())).configureEach(task -> {
-            final Jar jarTask = (Jar) task;
-            jarTask.into(MULTI_RELEASE_PATH + version, spec -> spec.from(allSource));
-          });
+          this.addMultireleaseVariantToJars(tasks, base, variant, version);
 
           // Add classes to the appropriate outgoing variants of the base configuration
-          if(baseApiElements != null) {
-            baseApiElements.configure(conf -> {
-              // TODO: this isn't entirely accurate, since it won't capture every input to the jar task
-              conf.getOutgoing().getVariants().named(CLASSES_VARIANT, classesVariant -> {
-                classesVariant.artifact(
-                  compileJava.flatMap(AbstractCompile::getDestinationDirectory),
-                  artifact -> artifact.builtBy(compileJava)
-                );
-              });
-            });
-          }
-          if(baseRuntimeElements != null) {
-            final TaskProvider<ProcessResources> processResources = tasks.named(variant.getProcessResourcesTaskName(), ProcessResources.class);
-            baseRuntimeElements.configure(conf -> {
-              conf.getOutgoing().getVariants().named(CLASSES_VARIANT, classesVariant -> {
-                classesVariant.artifact(
-                  compileJava.flatMap(AbstractCompile::getDestinationDirectory),
-                  artifact -> artifact.builtBy(compileJava)
-                );
-              });
-              conf.getOutgoing().getVariants().named(RESOURCES_VARAINT, classesVariant -> {
-                classesVariant.artifact(
-                  processResources.map(Copy::getDestinationDir),
-                  artifact -> artifact.builtBy(processResources)
-                );
-              });
-            });
-          }
+          this.addMultireleaseVariantToBaseOutgoingVariants(tasks, compileJava, variant, baseApiElements, baseRuntimeElements);
 
           // Then execute user-defined tasks
           if(!extension.alternateConfigurationActions.isEmpty()) {
@@ -232,12 +193,74 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
 
         // Now, just once for the source set if we do in fact have versions,
         if(versions.length > 0) {
-          tasks.matching(task -> task.getName().equals(base.getJarTaskName())).configureEach(task -> {
-            final Jar jarTask = (Jar) task;
-            jarTask.getManifest().getAttributes().put(MULTI_RELEASE_ATTRIBUTE, true);
-          });
+          this.configureMultireleaseJarManifestAttribute(tasks, base);
         }
       });
+    });
+  }
+
+  private void addMultireleaseVariantToJars(final TaskContainer tasks, final SourceSet base, final SourceSet variant, final int version) {
+    // Add classes to the base jar
+    final SourceSetOutput output = variant.getOutput();
+    final String jarTaskName = base.getJarTaskName();
+    tasks.matching(task -> task.getName().equals(jarTaskName)).configureEach(task -> {
+      final Jar jarTask = (Jar) task;
+      jarTask.into(MULTI_RELEASE_PATH + version, spec -> spec.from(output));
+    });
+
+    // Add sources to the sources jar
+    // TODO: do we want to maybe create multiple sources jars, one for each target version?
+    final SourceDirectorySet allSource = variant.getAllSource();
+    final String sourcesJarTaskName = base.getSourcesJarTaskName();
+    tasks.matching(task -> task.getName().equals(sourcesJarTaskName)).configureEach(task -> {
+      final Jar jarTask = (Jar) task;
+      jarTask.into(MULTI_RELEASE_PATH + version, spec -> spec.from(allSource));
+    });
+
+  }
+
+  private void addMultireleaseVariantToBaseOutgoingVariants(
+    final TaskContainer tasks,
+    final TaskProvider<JavaCompile> compileJava,
+    final SourceSet variant,
+    final NamedDomainObjectProvider<Configuration> baseApiElements,
+    final NamedDomainObjectProvider<Configuration> baseRuntimeElements
+  ) {
+    // Add classes to the appropriate outgoing variants of the base configuration
+    if(baseApiElements != null) {
+      baseApiElements.configure(conf -> {
+        // TODO: this isn't entirely accurate, since it won't capture every input to the jar task
+        conf.getOutgoing().getVariants().named(CLASSES_VARIANT, classesVariant -> {
+          classesVariant.artifact(
+            compileJava.flatMap(AbstractCompile::getDestinationDirectory),
+            artifact -> artifact.builtBy(compileJava)
+          );
+        });
+      });
+    }
+    if(baseRuntimeElements != null) {
+      final TaskProvider<ProcessResources> processResources = tasks.named(variant.getProcessResourcesTaskName(), ProcessResources.class);
+      baseRuntimeElements.configure(conf -> {
+        conf.getOutgoing().getVariants().named(CLASSES_VARIANT, classesVariant -> {
+          classesVariant.artifact(
+            compileJava.flatMap(AbstractCompile::getDestinationDirectory),
+            artifact -> artifact.builtBy(compileJava)
+          );
+        });
+        conf.getOutgoing().getVariants().named(RESOURCES_VARAINT, classesVariant -> {
+          classesVariant.artifact(
+            processResources.map(Copy::getDestinationDir),
+            artifact -> artifact.builtBy(processResources)
+          );
+        });
+      });
+    }
+  }
+
+  private void configureMultireleaseJarManifestAttribute(final TaskContainer tasks, final SourceSet base) {
+    tasks.matching(task -> task.getName().equals(base.getJarTaskName())).configureEach(task -> {
+      final Jar jarTask = (Jar) task;
+      jarTask.getManifest().getAttributes().put(MULTI_RELEASE_ATTRIBUTE, true);
     });
   }
 

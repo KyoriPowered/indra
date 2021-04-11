@@ -25,15 +25,15 @@ package net.kyori.indra;
 
 import java.util.Objects;
 import java.util.Set;
-import net.kyori.indra.git.GitPlugin;
-import net.kyori.indra.git.task.RequireClean;
-import net.kyori.gradle.api.ProjectPlugin;
 import net.kyori.indra.api.model.ContinuousIntegration;
 import net.kyori.indra.api.model.Issues;
 import net.kyori.indra.api.model.License;
 import net.kyori.indra.api.model.SourceCodeManagement;
+import net.kyori.indra.git.GitPlugin;
+import net.kyori.indra.git.task.RequireClean;
 import net.kyori.indra.repository.RemoteRepository;
 import net.kyori.indra.util.Versioning;
+import net.kyori.mammoth.ProjectPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Action;
 import org.gradle.api.Project;

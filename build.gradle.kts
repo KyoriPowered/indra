@@ -67,6 +67,8 @@ subprojects {
         usage(Usage.JAVA_RUNTIME) { fromResolutionResult() }
       }
     }
+
+    publishSnapshotsTo("stellardrift", "https://repo.stellardrift.ca/repository/snapshots/")
   }
 
   extensions.getByType(PluginBundleExtension::class).tags = listOf("kyori", "standard")

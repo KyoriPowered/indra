@@ -23,12 +23,12 @@
  */
 package net.kyori.indra;
 
-import net.kyori.gradle.api.Configurable;
 import net.kyori.indra.api.model.ApplyTo;
 import net.kyori.indra.api.model.ContinuousIntegration;
 import net.kyori.indra.api.model.Issues;
 import net.kyori.indra.api.model.License;
 import net.kyori.indra.api.model.SourceCodeManagement;
+import net.kyori.mammoth.Configurable;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.Action;

@@ -25,7 +25,7 @@ package net.kyori.indra;
 
 import java.util.HashSet;
 import java.util.Set;
-import net.kyori.gradle.api.Extensions;
+import net.kyori.mammoth.Extensions;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.plugins.ExtensionContainer;
 
