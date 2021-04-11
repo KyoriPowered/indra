@@ -38,9 +38,6 @@ import org.gradle.api.plugins.ExtensionAware;
  */
 public final class Repositories {
 
-  // TODO: can this be done without using Kotlin directly
-  // fun RepositoryHandler.sonatypeSnapshots() = addRepository(this, RemoteRepository.SONATYPE_SNAPSHOTS)
-
   public static void registerRepositoryExtensions(final @NonNull RepositoryHandler handler, final @NonNull RemoteRepository@NonNull... repositories) {
     registerRepositoryExtensions(handler, Arrays.asList(repositories));
   }

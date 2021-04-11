@@ -1,5 +1,11 @@
 rootProject.name = "indra"
 
+pluginManagement {
+  plugins {
+    kotlin("jvm") version embeddedKotlinVersion
+  }
+}
+
 listOf(
   "indra-common",
   "indra-git",

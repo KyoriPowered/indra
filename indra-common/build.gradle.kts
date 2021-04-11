@@ -1,3 +1,16 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
+plugins {
+  kotlin("jvm")
+}
+
+tasks.withType(KotlinCompile::class) {
+  kotlinOptions {
+    jvmTarget = "1.8"
+    languageVersion = "1.3"
+  }
+}
+
 dependencies {
   compileOnlyApi("org.immutables:value:2.8.8:annotations")
   annotationProcessor("org.immutables:value:2.8.8")
