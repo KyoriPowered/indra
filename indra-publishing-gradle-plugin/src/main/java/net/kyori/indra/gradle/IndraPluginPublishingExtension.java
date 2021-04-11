@@ -48,8 +48,32 @@ public interface IndraPluginPublishingExtension {
    */
   Property<String> pluginIdBase();
 
+  /**
+   * Set the base id that indra-declared plugin ids are relative to.
+   *
+   * @param idBase the base for relative plugin ids
+   * @since 2.0.0
+   */
   default void pluginIdBase(final String idBase) {
     this.pluginIdBase().set(idBase);
+  }
+
+  /**
+   * Get the website to link to from this plugin's page on the plugin portal.
+   *
+   * @return the website property
+   * @since 2.0.0
+   */
+  Property<String> website();
+
+  /**
+   * Set the website to link to from this plugin's page on the plugin portal.
+   *
+   * @param website the URL of the website
+   * @since 2.0.0
+   */
+  default void website(final String website) {
+    this.website().set(website);
   }
 
   /**

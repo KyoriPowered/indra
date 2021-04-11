@@ -36,8 +36,9 @@ import org.gradle.plugin.devel.GradlePluginDevelopmentExtension;
 public class IndraPluginPublishingExtensionImpl implements IndraPluginPublishingExtension {
   private final GradlePluginDevelopmentExtension publishingExtension;
   private final PluginBundleExtension pluginBundleExtension;
-  private final ListProperty<String> bundleTags; // todo: do something with me!
+  private final ListProperty<String> bundleTags;
   private final Property<String> pluginIdBase;
+  private final Property<String> website;
 
   @Inject
   public IndraPluginPublishingExtensionImpl(
@@ -49,6 +50,7 @@ public class IndraPluginPublishingExtensionImpl implements IndraPluginPublishing
     this.pluginBundleExtension = pluginBundleExtension;
     this.bundleTags = objects.listProperty(String.class);
     this.pluginIdBase = objects.property(String.class);
+    this.website = objects.property(String.class);
   }
 
   @Override
@@ -59,6 +61,11 @@ public class IndraPluginPublishingExtensionImpl implements IndraPluginPublishing
   @Override
   public Property<String> pluginIdBase() {
     return this.pluginIdBase;
+  }
+
+  @Override
+  public Property<String> website() {
+    return this.website;
   }
 
   @Override

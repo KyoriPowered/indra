@@ -25,6 +25,7 @@ package net.kyori.indra.gradle;
 
 import com.gradle.publish.PluginBundleExtension;
 import com.gradle.publish.PublishPlugin;
+import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import net.kyori.indra.AbstractIndraPublishingPlugin;
@@ -71,6 +72,20 @@ public class GradlePluginPublishingPlugin extends AbstractIndraPublishingPlugin 
         );
 
         extension.pluginIdBase().convention(project.provider(() -> (String) project.getGroup()));
+
+        project.afterEvaluate(p -> {
+          // Set tags if present
+          if(extension.bundleTags().isPresent()) {
+            final List<String> tags = extension.bundleTags().get();
+            if(!tags.isEmpty()) {
+              pluginBundleExtension.setTags(tags);
+            }
+          }
+          // Set website if present
+          if(extension.website().isPresent()) {
+            pluginBundleExtension.setWebsite(extension.website().get());
+          }
+        });
       });
 
       project.afterEvaluate(p -> {
