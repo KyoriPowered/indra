@@ -21,10 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra;
+package net.kyori.indra.internal;
 
 import java.util.Objects;
 import java.util.Set;
+import net.kyori.indra.Indra;
+import net.kyori.indra.IndraExtension;
 import net.kyori.indra.api.model.ContinuousIntegration;
 import net.kyori.indra.api.model.Issues;
 import net.kyori.indra.api.model.License;

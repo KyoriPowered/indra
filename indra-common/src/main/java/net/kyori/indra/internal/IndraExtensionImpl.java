@@ -21,12 +21,14 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra;
+package net.kyori.indra.internal;
 
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Inject;
+import net.kyori.indra.IndraExtension;
+import net.kyori.indra.JavaToolchainVersions;
 import net.kyori.indra.api.model.ApplyTo;
 import net.kyori.indra.api.model.ContinuousIntegration;
 import net.kyori.indra.api.model.Issues;
@@ -46,7 +48,7 @@ import org.gradle.process.CommandLineArgumentProvider;
 
 import static java.util.Objects.requireNonNull;
 
-class IndraExtensionImpl implements IndraExtension {
+public class IndraExtensionImpl implements IndraExtension {
   private final Property<ContinuousIntegration> ci;
   private final Property<Issues> issues;
   private final Property<License> license;
@@ -57,7 +59,7 @@ class IndraExtensionImpl implements IndraExtension {
 
   private final Property<Boolean> includeJavaSoftwareComponentInPublications;
 
-  private final JavaToolchainVersions javaVersions;
+  private final JavaToolchainVersionsImpl javaVersions;
   final DomainObjectSet<RemoteRepository> repositories;
 
   @Inject
@@ -71,7 +73,7 @@ class IndraExtensionImpl implements IndraExtension {
 
     this.checkstyle = objects.property(String.class).convention("8.41.1");
     this.includeJavaSoftwareComponentInPublications = objects.property(Boolean.class).convention(true);
-    this.javaVersions = objects.newInstance(JavaToolchainVersions.class);
+    this.javaVersions = objects.newInstance(JavaToolchainVersionsImpl.class);
     this.repositories = objects.domainObjectSet(RemoteRepository.class);
   }
 

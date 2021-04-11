@@ -24,6 +24,7 @@
 package net.kyori.indra;
 
 import java.util.Set;
+import net.kyori.indra.internal.AbstractIndraPublishingPlugin;
 import org.gradle.api.Action;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPublication;

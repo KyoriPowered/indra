@@ -25,6 +25,7 @@ package net.kyori.indra;
 
 import java.util.HashSet;
 import java.util.Set;
+import net.kyori.indra.internal.IndraExtensionImpl;
 import net.kyori.mammoth.Extensions;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.plugins.ExtensionContainer;
@@ -44,6 +45,12 @@ public class Indra {
     return sourceFiles;
   }
 
+  /**
+   * Get or create the {@code indra} extension for a project.
+   *
+   * @param extensions the extensions container
+   * @return the appropriate extension instance
+   */
   public static @NonNull IndraExtension extension(final @NonNull ExtensionContainer extensions) {
     return Extensions.findOrCreate(extensions, EXTENSION_NAME, IndraExtension.class, IndraExtensionImpl.class);
   }

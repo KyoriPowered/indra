@@ -27,6 +27,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
+import net.kyori.indra.internal.IndraExtensionImpl;
 import net.kyori.indra.internal.multirelease.IndraMultireleasePlugin;
 import net.kyori.indra.repository.RemoteRepository;
 import net.kyori.indra.repository.Repositories;

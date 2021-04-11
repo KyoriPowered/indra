@@ -28,7 +28,7 @@ import com.gradle.publish.PublishPlugin;
 import java.util.List;
 import java.util.Set;
 import java.util.function.BiConsumer;
-import net.kyori.indra.AbstractIndraPublishingPlugin;
+import net.kyori.indra.internal.AbstractIndraPublishingPlugin;
 import net.kyori.indra.Indra;
 import net.kyori.indra.IndraExtension;
 import net.kyori.indra.IndraPlugin;

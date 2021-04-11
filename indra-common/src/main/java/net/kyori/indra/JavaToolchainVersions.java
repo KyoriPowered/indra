@@ -23,14 +23,9 @@
  */
 package net.kyori.indra;
 
-import javax.inject.Inject;
-import net.kyori.indra.util.Versioning;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.gradle.api.JavaVersion;
-import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
-import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.provider.SetProperty;
 
 /**
@@ -38,44 +33,7 @@ import org.gradle.api.provider.SetProperty;
  *
  * @since 1.1.0
  */
-public class JavaToolchainVersions {
-  private static final String STRICT_MULTIRELEASE_VERSIONS = "strictMultireleaseVersions";
-  private static final String CI = "CI";
-
-  private final Property<Integer> target;
-  private final Property<Integer> minimumToolchain;
-  private final Property<Boolean> strictVersions;
-  private final SetProperty<Integer> testWith;
-  private final Property<Boolean> enablePreviewFeatures;
-  private final Provider<Integer> actualVersion;
-
-  @Inject
-  public JavaToolchainVersions(final ObjectFactory objects, final ProviderFactory providers) {
-    this.target = objects.property(Integer.class).convention(8);
-    this.minimumToolchain = objects.property(Integer.class).convention(11);
-    this.strictVersions = objects.property(Boolean.class)
-      .convention(
-        providers.gradleProperty(STRICT_MULTIRELEASE_VERSIONS).forUseAtConfigurationTime()
-          .orElse(providers.environmentVariable(CI).forUseAtConfigurationTime()) // set by GH Actions and Travis
-          .map(Boolean::parseBoolean)
-          .orElse(false)
-      );
-    this.testWith = objects.setProperty(Integer.class);
-    this.testWith.add(this.target);
-    this.enablePreviewFeatures = objects.property(Boolean.class).convention(false);
-    this.actualVersion = this.strictVersions.map(strict -> {
-      final int running = Versioning.versionNumber(JavaVersion.current());
-      this.target.finalizeValue();
-      this.minimumToolchain.finalizeValue();
-      final int minimum = Math.max(this.minimumToolchain.get(), this.target.get()); // If target > minimum toolchain, the target is our new minimum
-      if(strict || running < minimum) {
-        return minimum;
-      } else {
-        return running;
-      }
-    });
-  }
-
+public interface JavaToolchainVersions {
   /**
    * The target Java version to compile for.
    *
@@ -84,18 +42,15 @@ public class JavaToolchainVersions {
    * @return a property providing the target version
    * @since 1.1.1
    */
-  public @NonNull Property<Integer> target() {
-    return this.target;
-  }
+  @NonNull Property<Integer> target();
 
   /**
    * Set the target to compile Java for.
    *
    * @param target the java compile target
+   * @since 2.0.0
    */
-  public void target(final int target) {
-    this.target.set(target);
-  }
+  void target(int target);
 
   /**
    * The minimum toolchain version to use when building.
@@ -104,13 +59,9 @@ public class JavaToolchainVersions {
    *
    * @return A property providing the minimum toolchain version
    */
-  public @NonNull Property<Integer> minimumToolchain() {
-    return this.minimumToolchain;
-  }
+  @NonNull Property<Integer> minimumToolchain();
 
-  public void minimumToolchain(final int minimumToolchain) {
-    this.minimumToolchain.set(minimumToolchain);
-  }
+  void minimumToolchain(int minimumToolchain);
 
   /**
    * Whether to strictly apply toolchain versions.
@@ -120,50 +71,49 @@ public class JavaToolchainVersions {
    * and cross-version testing will not be performed.</p>
    *
    * <p>Default: {@code false} unless the {@code CI} environment variable or {@code strictMultireleaseVersions} gradle property are set.</p>
+   *
+   * @return whether strict versions are enabled
+   * @since 2.0.0
    */
-  public @NonNull Property<Boolean> strictVersions() {
-    return this.strictVersions;
-  }
+  @NonNull Property<Boolean> strictVersions();
 
-  public void strictVersions(final boolean strictVersions) {
-    this.strictVersions.set(strictVersions);
-  }
+  void strictVersions(boolean strictVersions);
 
   /**
    * Toolchains that should be used to execute tests when strict versions are enabled.
+   *
+   * @return a property containing the versions to test with
+   * @since 2.0.0
    */
-  public @NonNull SetProperty<Integer> testWith() {
-    return this.testWith;
-  }
+  @NonNull SetProperty<Integer> testWith();
 
   /**
    * Add alternate versions that should be tested with, when strict versions are enabled.
+   *
+   * @since 2.0.0
    */
-  public void testWith(final int... testVersions) {
-    for(final int version : testVersions) {
-      this.testWith.add(version);
-    }
-  }
+  void testWith(int... testVersions);
 
   /**
    * Whether to enable Java preview features on compile, test, and execution tasks.
    *
    * @return a property providing preview feature enabled state
+   * @since 2.0.0
    */
-  public @NonNull Property<Boolean> previewFeaturesEnabled() {
-    return this.enablePreviewFeatures;
-  }
+  @NonNull Property<Boolean> previewFeaturesEnabled();
 
-  public void previewFeaturesEnabled(final boolean previewFeaturesEnabled) {
-    this.enablePreviewFeatures.set(previewFeaturesEnabled);
-  }
+  /**
+   * Set whether Java preview features are enabled on compile, test, and execution tasks.
+   *
+   * @param previewFeaturesEnabled whether to enable preview features
+   * @since 2.0.0
+   */
+  void previewFeaturesEnabled(boolean previewFeaturesEnabled);
 
   /**
    * The version that should be used to run compile tasks, taking into account strict version and current JVM.
    *
    * @return a provider resolving the actual Java toolchain version to use
    */
-  public @NonNull Provider<Integer> actualVersion() {
-    return this.actualVersion;
-  }
+  @NonNull Provider<Integer> actualVersion();
 }
