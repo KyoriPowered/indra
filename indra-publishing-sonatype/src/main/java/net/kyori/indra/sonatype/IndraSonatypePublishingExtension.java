@@ -35,5 +35,5 @@ public interface IndraSonatypePublishingExtension {
    * @param name the prefix to use -- for example, to use {@code s01.oss.sonatype.org}, the name should be {@code s01}
    * @since 2.0.0
    */
-  void useAlternateSonatypeOssHost(String name);
+  void useAlternateSonatypeOssHost(final String name);
 }

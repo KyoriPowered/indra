@@ -28,7 +28,6 @@ import net.kyori.indra.git.internal.IndraGitService;
 import net.kyori.indra.git.task.RequireClean;
 import net.kyori.mammoth.ProjectPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.Convention;
 import org.gradle.api.plugins.ExtensionContainer;

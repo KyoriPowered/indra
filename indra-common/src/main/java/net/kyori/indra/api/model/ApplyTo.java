@@ -63,6 +63,7 @@ public interface ApplyTo {
    * @return this instance
    * @since 1.2.0
    */
+  @SuppressWarnings({"NullableProblems", "override"}) // generated
   @NonNull ApplyTo ci(final boolean ci);
 
   /**
@@ -83,6 +84,7 @@ public interface ApplyTo {
    * @return this instance
    * @since 1.0.0
    */
+  @SuppressWarnings({"NullableProblems", "override"}) // generated
   @NonNull ApplyTo issues(final boolean issues);
 
   /**
@@ -103,6 +105,7 @@ public interface ApplyTo {
    * @return this instance
    * @since 1.0.0
    */
+  @SuppressWarnings({"NullableProblems", "override"}) // generated
   @NonNull ApplyTo scm(final boolean scm);
 
   /**
@@ -123,5 +126,6 @@ public interface ApplyTo {
    * @return this instance
    * @since 1.0.0
    */
+  @SuppressWarnings({"NullableProblems", "override"}) // generated
   @NonNull ApplyTo publishing(final boolean publishing);
 }

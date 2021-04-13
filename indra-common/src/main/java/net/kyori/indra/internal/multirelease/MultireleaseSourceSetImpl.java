@@ -38,7 +38,6 @@ import org.gradle.api.tasks.SourceSet;
 import static java.util.Objects.requireNonNull;
 
 class MultireleaseSourceSetImpl implements MultireleaseSourceSet {
-
   static final int MINIMUM_MULTIRELEASE_VERSION = 8;
 
   private final DomainObjectSet<Integer> alternateVersions;

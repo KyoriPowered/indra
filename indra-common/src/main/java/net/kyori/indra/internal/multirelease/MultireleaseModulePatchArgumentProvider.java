@@ -27,6 +27,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
+import net.kyori.mammoth.Properties;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.model.ObjectFactory;
@@ -37,9 +38,7 @@ import org.gradle.api.tasks.Optional;
 import org.gradle.process.CommandLineArgumentProvider;
 
 class MultireleaseModulePatchArgumentProvider implements CommandLineArgumentProvider {
-
   private final Property<String> moduleName;
-
   private final ConfigurableFileCollection classDirectories;
 
   MultireleaseModulePatchArgumentProvider(final ObjectFactory objects) {
@@ -63,8 +62,7 @@ class MultireleaseModulePatchArgumentProvider implements CommandLineArgumentProv
     final @Nullable String moduleName = this.moduleName.getOrNull();
     if(moduleName == null) return Collections.emptyList();
 
-    this.getClassDirectories().finalizeValue();
-    final String directories = this.getClassDirectories().getFiles()
+    final String directories = Properties.finalized(this.getClassDirectories()).getFiles()
       .stream()
       .map(File::getAbsolutePath)
       .collect(Collectors.joining(File.pathSeparator, moduleName + "=", ""));

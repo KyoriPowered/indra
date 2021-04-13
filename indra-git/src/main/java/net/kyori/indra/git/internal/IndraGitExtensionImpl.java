@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 import net.kyori.indra.git.IndraGitExtension;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -56,7 +57,7 @@ public class IndraGitExtensionImpl implements IndraGitExtension {
   }
 
   @Override
-  public List<Ref> tags() {
+  public @NonNull List<Ref> tags() {
     final @Nullable Git git = this.git();
     if(git == null) return Collections.emptyList();
 

@@ -27,6 +27,7 @@ import com.gradle.publish.PluginBundleExtension;
 import com.gradle.publish.PluginConfig;
 import java.util.List;
 import javax.inject.Inject;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
@@ -54,22 +55,22 @@ public class IndraPluginPublishingExtensionImpl implements IndraPluginPublishing
   }
 
   @Override
-  public ListProperty<String> bundleTags() {
+  public @NonNull ListProperty<String> bundleTags() {
     return this.bundleTags;
   }
 
   @Override
-  public Property<String> pluginIdBase() {
+  public @NonNull Property<String> pluginIdBase() {
     return this.pluginIdBase;
   }
 
   @Override
-  public Property<String> website() {
+  public @NonNull Property<String> website() {
     return this.website;
   }
 
   @Override
-  public void plugin(final String id, final String mainClass, final String displayName, final @Nullable String description, final @Nullable List<String> tags) {
+  public void plugin(final @NonNull String id, final @NonNull String mainClass, final @NonNull String displayName, final @Nullable String description, final @Nullable List<String> tags) {
     final String qualifiedId = this.pluginIdBase.get() + '.' + id;
     this.publishingExtension.getPlugins().create(id, plugin -> {
       plugin.setId(qualifiedId);

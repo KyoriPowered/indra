@@ -50,18 +50,23 @@ public interface JavaToolchainVersions {
    * @param target the java compile target
    * @since 2.0.0
    */
-  void target(int target);
+  void target(final int target);
 
   /**
    * The minimum toolchain version to use when building.
    *
    * <p>Default: 11</p>
    *
-   * @return A property providing the minimum toolchain version
+   * @return a property providing the minimum toolchain version
    */
   @NonNull Property<Integer> minimumToolchain();
 
-  void minimumToolchain(int minimumToolchain);
+  /**
+   * Sets the minimum toolchain version.
+   *
+   * @param minimumToolchain the minimum toolchain version
+   */
+  void minimumToolchain(final int minimumToolchain);
 
   /**
    * Whether to strictly apply toolchain versions.
@@ -77,7 +82,7 @@ public interface JavaToolchainVersions {
    */
   @NonNull Property<Boolean> strictVersions();
 
-  void strictVersions(boolean strictVersions);
+  void strictVersions(final boolean strictVersions);
 
   /**
    * Toolchains that should be used to execute tests when strict versions are enabled.
@@ -92,7 +97,7 @@ public interface JavaToolchainVersions {
    *
    * @since 2.0.0
    */
-  void testWith(int... testVersions);
+  void testWith(final int... testVersions);
 
   /**
    * Whether to enable Java preview features on compile, test, and execution tasks.
@@ -108,7 +113,7 @@ public interface JavaToolchainVersions {
    * @param previewFeaturesEnabled whether to enable preview features
    * @since 2.0.0
    */
-  void previewFeaturesEnabled(boolean previewFeaturesEnabled);
+  void previewFeaturesEnabled(final boolean previewFeaturesEnabled);
 
   /**
    * The version that should be used to run compile tasks, taking into account strict version and current JVM.

@@ -33,6 +33,7 @@ import net.kyori.indra.repository.RemoteRepository;
 import net.kyori.indra.repository.Repositories;
 import net.kyori.indra.util.Versioning;
 import net.kyori.mammoth.ProjectPlugin;
+import net.kyori.mammoth.Properties;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
@@ -126,8 +127,7 @@ public class IndraPlugin implements ProjectPlugin {
 
     // If we are publishing, publish java
     indra.configurePublications(publication -> {
-      indra.includeJavaSoftwareComponentInPublications().finalizeValue();
-      if(indra.includeJavaSoftwareComponentInPublications().get()) {
+      if(Properties.finalized(indra.includeJavaSoftwareComponentInPublications()).get()) {
         publication.from(project.getComponents().getByName("java"));
       }
     });
@@ -137,8 +137,7 @@ public class IndraPlugin implements ProjectPlugin {
     // For things that are eagerly applied (field accesses, anything where you need to `get()`)
     project.afterEvaluate(p -> {
       extensions.configure(JavaPluginExtension.class, javaPlugin -> {
-        final Property<Integer> versionProp = indra.javaVersions().target();
-        versionProp.finalizeValue();
+        final Property<Integer> versionProp = Properties.finalized(indra.javaVersions().target());
         javaPlugin.setSourceCompatibility(JavaVersion.toVersion(versionProp.get()));
         javaPlugin.setTargetCompatibility(JavaVersion.toVersion(versionProp.get()));
       });
@@ -197,11 +196,10 @@ public class IndraPlugin implements ProjectPlugin {
 
       // Set up testing on the selected Java versions
       final JavaToolchainService toolchains = extensions.getByType(JavaToolchainService.class);
-      final SetProperty<Integer> testWithProp = indra.javaVersions().testWith();
-      testWithProp.finalizeValue();
+      final SetProperty<Integer> testWithProp = Properties.finalized(indra.javaVersions().testWith());
       testWithProp.get().forEach(targetRuntime -> {
         // Create task that will use that version
-        final TaskProvider<Test> versionedTest = tasks.register("testJava" + targetRuntime, Test.class, test -> {
+        final TaskProvider<Test> versionedTest = tasks.register(Indra.testJava(targetRuntime), Test.class, test -> {
           test.setDescription("Runs tests on Java " + targetRuntime + " if necessary based on build settings");
           test.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
           // Appropriate classpath and test class source information is set on all test tasks by JavaPlugin

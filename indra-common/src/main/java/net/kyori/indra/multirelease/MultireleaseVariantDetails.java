@@ -33,10 +33,9 @@ import org.immutables.value.Value;
  *
  * @since 2.0.0
  */
-@Value.Immutable
 @ImmutablesStyle
+@Value.Immutable
 public interface MultireleaseVariantDetails {
-
   /**
    * Create a new instance of multirelease variant details.
    *

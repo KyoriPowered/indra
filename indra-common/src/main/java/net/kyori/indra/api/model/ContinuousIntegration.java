@@ -72,13 +72,16 @@ public interface ContinuousIntegration {
      * @return this builder
      * @since 2.0.0
      */
+    @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder from(final ContinuousIntegration instance);
 
+    @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder system(final @NonNull String system);
 
+    @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder url(final @NonNull String url);
 
+    @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull ContinuousIntegration build();
-
   }
 }

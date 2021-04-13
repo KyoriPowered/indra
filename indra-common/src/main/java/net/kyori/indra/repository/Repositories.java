@@ -24,8 +24,6 @@
 package net.kyori.indra.repository;
 
 import groovy.lang.Closure;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.Arrays;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
@@ -37,6 +35,8 @@ import org.gradle.api.plugins.ExtensionAware;
  * @since 2.0.0
  */
 public final class Repositories {
+  private Repositories() {
+  }
 
   public static void registerRepositoryExtensions(final @NonNull RepositoryHandler handler, final @NonNull RemoteRepository@NonNull... repositories) {
     registerRepositoryExtensions(handler, Arrays.asList(repositories));
@@ -50,16 +50,5 @@ public final class Repositories {
         }
       });
     }
-  }
-
-  static URI uri(final String input) {
-    try {
-      return new URI(input);
-    } catch(final URISyntaxException ex) {
-      throw new RuntimeException(ex);
-    }
-  }
-
-  private Repositories() {
   }
 }

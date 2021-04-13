@@ -26,6 +26,7 @@ package net.kyori.indra.internal;
 import javax.inject.Inject;
 import net.kyori.indra.JavaToolchainVersions;
 import net.kyori.indra.util.Versioning;
+import net.kyori.mammoth.Properties;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.model.ObjectFactory;
@@ -61,9 +62,7 @@ public class JavaToolchainVersionsImpl implements JavaToolchainVersions {
     this.enablePreviewFeatures = objects.property(Boolean.class).convention(false);
     this.actualVersion = this.strictVersions.map(strict -> {
       final int running = Versioning.versionNumber(JavaVersion.current());
-      this.target.finalizeValue();
-      this.minimumToolchain.finalizeValue();
-      final int minimum = Math.max(this.minimumToolchain.get(), this.target.get()); // If target > minimum toolchain, the target is our new minimum
+      final int minimum = Math.max(Properties.finalized(this.minimumToolchain).get(), Properties.finalized(this.target).get()); // If target > minimum toolchain, the target is our new minimum
       if(strict || running < minimum) {
         return minimum;
       } else {

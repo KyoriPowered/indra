@@ -136,6 +136,7 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
         });
       });
     });
+
     this.extraApplySteps(project);
   }
 

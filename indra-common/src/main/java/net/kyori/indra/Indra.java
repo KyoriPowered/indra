@@ -45,6 +45,10 @@ public class Indra {
     return sourceFiles;
   }
 
+  public static String testJava(final int version) {
+    return "testJava" + version;
+  }
+
   /**
    * Get or create the {@code indra} extension for a project.
    *

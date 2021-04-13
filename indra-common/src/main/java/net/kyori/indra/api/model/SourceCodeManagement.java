@@ -86,6 +86,7 @@ public interface SourceCodeManagement {
      * @return this builder
      * @since 2.0.0
      */
+    @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder connection(final @NonNull String connection);
 
     /**
@@ -97,6 +98,7 @@ public interface SourceCodeManagement {
      * @return this builder
      * @since 2.0.0
      */
+    @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder developerConnection(final @NonNull String developerConnection);
 
     /**
@@ -106,6 +108,7 @@ public interface SourceCodeManagement {
      * @return this builder
      * @since 2.0.0
      */
+    @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder url(final @NonNull String url);
 
     /**
@@ -116,6 +119,7 @@ public interface SourceCodeManagement {
      * @return a new {@link SourceCodeManagement} instance
      * @since 2.0.0
      */
+    @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull SourceCodeManagement build();
   }
 }

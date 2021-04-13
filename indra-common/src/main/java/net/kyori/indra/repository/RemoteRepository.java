@@ -34,11 +34,11 @@ import org.immutables.value.Value;
 /**
  * A definition for a repository that can be added to projects.
  *
- * @since 2.0.0
  * @see Repositories#registerRepositoryExtensions(RepositoryHandler, Iterable) to registere remote repository extensions
+ * @since 2.0.0
  */
-@Value.Immutable(builder = false)
 @ImmutablesStyle
+@Value.Immutable(builder = false)
 public interface RemoteRepository {
   RemoteRepository SONATYPE_SNAPSHOTS = RemoteRepository.snapshotsOnly("sonatypeSnapshots", "https://oss.sonatype.org/content/repositories/snapshots/");
 
@@ -63,7 +63,7 @@ public interface RemoteRepository {
    * @since 2.0.0
    */
   static @NonNull RemoteRepository all(final String name, final String url) {
-    return new RemoteRepositoryImpl(name, Repositories.uri(url), true, true);
+    return new RemoteRepositoryImpl(name, URI.create(url), true, true);
   }
 
   /**
@@ -87,7 +87,7 @@ public interface RemoteRepository {
    * @since 2.0.0
    */
   static @NonNull RemoteRepository releasesOnly(final String name, final String url) {
-    return new RemoteRepositoryImpl(name, Repositories.uri(url), true, false);
+    return new RemoteRepositoryImpl(name, URI.create(url), true, false);
   }
 
   /**
@@ -111,7 +111,7 @@ public interface RemoteRepository {
    * @since 2.0.0
    */
   static @NonNull RemoteRepository snapshotsOnly(final String name, final String url) {
-    return new RemoteRepositoryImpl(name, Repositories.uri(url), false, true);
+    return new RemoteRepositoryImpl(name, URI.create(url), false, true);
   }
 
   /**
@@ -140,8 +140,8 @@ public interface RemoteRepository {
    * @return whether releases should be published/resolved
    * @since 2.0.0
    */
-  @Value.Parameter
   @Value.Default
+  @Value.Parameter
   default boolean releases() {
     return true;
   }
@@ -152,8 +152,8 @@ public interface RemoteRepository {
    * @return whether snapshots should be published/resolved
    * @since 2.0.0
    */
-  @Value.Parameter
   @Value.Default
+  @Value.Parameter
   default boolean snapshots() {
     return true;
   }

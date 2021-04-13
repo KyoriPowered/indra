@@ -36,6 +36,7 @@ import net.kyori.indra.api.model.License;
 import net.kyori.indra.api.model.SourceCodeManagement;
 import net.kyori.indra.repository.RemoteRepository;
 import net.kyori.mammoth.Configurable;
+import net.kyori.mammoth.Properties;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.Action;
@@ -89,8 +90,7 @@ public class IndraExtensionImpl implements IndraExtension {
 
   public CommandLineArgumentProvider previewFeatureArgumentProvider() {
     return () -> {
-      this.javaVersions.previewFeaturesEnabled().finalizeValue();
-      if(this.javaVersions.previewFeaturesEnabled().get()) {
+      if(Properties.finalized(this.javaVersions.previewFeaturesEnabled()).get()) {
         return Collections.singletonList("--enable-preview");
       } else {
         return Collections.emptyList();

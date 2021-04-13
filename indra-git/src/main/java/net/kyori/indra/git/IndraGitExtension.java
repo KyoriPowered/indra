@@ -24,6 +24,7 @@
 package net.kyori.indra.git;
 
 import java.util.List;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
@@ -36,7 +37,6 @@ import org.gradle.api.java.archives.Manifest;
  * @since 2.0.0
  */
 public interface IndraGitExtension {
-
   /**
    * The manifest attribute used to indicate the git commit an archive is built from.
    *
@@ -81,7 +81,7 @@ public interface IndraGitExtension {
    * @return the tags on this repository, or an empty list if this project is not in a git repository
    * @since 2.0.0
    */
-  List<Ref> tags();
+  @NonNull List<Ref> tags();
 
   /**
    * Get the tag pointing to the commit checked out as {@code HEAD}.

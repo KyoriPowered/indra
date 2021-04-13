@@ -72,13 +72,16 @@ public interface Issues {
      * @return this builder
      * @since 2.0.0
      */
+    @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder from(final Issues instance);
 
+    @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder system(final @NonNull String system);
 
+    @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder url(final @NonNull String url);
 
+    @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Issues build();
-
   }
 }

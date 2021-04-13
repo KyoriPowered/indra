@@ -35,7 +35,6 @@ import org.gradle.api.tasks.SourceSet;
  * @since 2.0.0
  */
 public interface MultireleaseSourceSet {
-
   /**
    * Given an existing source set, get the multirelease extension.
    *
@@ -92,5 +91,4 @@ public interface MultireleaseSourceSet {
    * @since 2.0.0
    */
   void configureVariants(final @NonNull Action<MultireleaseVariantDetails> action);
-
 }

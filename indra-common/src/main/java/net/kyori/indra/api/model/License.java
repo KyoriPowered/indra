@@ -124,6 +124,7 @@ public interface License {
      * @return this builder
      * @since 2.0.0
      */
+    @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder from(final License instance);
 
     /**
@@ -135,6 +136,7 @@ public interface License {
      * @return this builder
      * @since 2.0.0
      */
+    @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder spdx(final @NonNull String spdx);
 
     /**
@@ -144,6 +146,7 @@ public interface License {
      * @return this builder
      * @since 2.0.0
      */
+    @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder name(final @NonNull String name);
 
     /**
@@ -153,6 +156,7 @@ public interface License {
      * @return this builder
      * @since 2.0.0
      */
+    @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder url(final @NonNull String url);
 
     /**
@@ -163,6 +167,7 @@ public interface License {
      * @return a new {@link License}
      * @since 2.0.0
      */
+    @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull License build();
   }
 }
