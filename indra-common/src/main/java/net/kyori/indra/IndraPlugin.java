@@ -74,6 +74,10 @@ public class IndraPlugin implements ProjectPlugin {
 
     convention.getPlugin(BasePluginConvention.class).setArchivesBaseName(project.getName().toLowerCase());
 
+    extensions.configure(JavaPluginExtension.class, java -> {
+      java.getToolchain().getLanguageVersion().set(indra.javaVersions().actualVersion().map(JavaLanguageVersion::of));
+    });
+
     tasks.withType(JavaCompile.class, task -> {
       final CompileOptions options = task.getOptions();
       options.setEncoding(StandardCharsets.UTF_8.name());
@@ -169,7 +173,7 @@ public class IndraPlugin implements ProjectPlugin {
             final JavaToolchainVersions versions = indra.javaVersions();
             final int target = versions.target().get();
             final int minimum = versions.minimumToolchain().get();
-            final int actual = versions.actualVersion().get();
+            final int actual = jd.getJavadocTool().get().getMetadata().getLanguageVersion().asInt();
 
             // Java 16 automatically links with the API documentation anyways
             if(actual < 16) {
