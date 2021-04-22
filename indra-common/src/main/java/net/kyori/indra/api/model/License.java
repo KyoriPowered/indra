@@ -160,11 +160,11 @@ public interface License {
     @NonNull Builder url(final @NonNull String url);
 
     /**
-     * Create a new license.
+     * Creates a new {@link License} instance.
      *
      * <p>All fields but {@link #spdx(String)} must be set.</p>
      *
-     * @return a new {@link License}
+     * @return a new {@link License} instance
      * @since 2.0.0
      */
     @SuppressWarnings({"NullableProblems", "override"}) // generated

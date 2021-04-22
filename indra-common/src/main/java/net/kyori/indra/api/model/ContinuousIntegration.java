@@ -75,12 +75,35 @@ public interface ContinuousIntegration {
     @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder from(final ContinuousIntegration instance);
 
+    /**
+     * Sets the name of the continuous integration system used.
+     *
+     * @param system the name
+     * @return this builder
+     * @since 2.0.0
+     */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder system(final @NonNull String system);
 
+    /**
+     * Sets the URL pointing to a web interface for the CI system.
+     *
+     * @param url the url
+     * @return this builder
+     * @since 2.0.0
+     */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder url(final @NonNull String url);
 
+    /**
+     * Creates a new {@link ContinuousIntegration} instance.
+     *
+     * <p>The {@link #system(String)} and {@link #url(String)} properties must be set.</p>
+     *
+     * @return a new {@link ContinuousIntegration} instance
+     * @throws IllegalStateException if a required property is not set
+     * @since 2.0.0
+     */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull ContinuousIntegration build();
   }

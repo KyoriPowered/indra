@@ -75,12 +75,34 @@ public interface Issues {
     @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder from(final Issues instance);
 
+    /**
+     * Sets the name of the issue tracking system used.
+     *
+     * @param system the name
+     * @return this builder
+     * @since 2.0.0
+     */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder system(final @NonNull String system);
 
+    /**
+     * Sets the URL pointing to a web interface for the CI system.
+     *
+     * @param url the url
+     * @return this builder
+     * @since 2.0.0
+     */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Builder url(final @NonNull String url);
 
+    /**
+     * Creates a new {@link Issues} instance.
+     *
+     * <p>The {@link #system(String)} and {@link #url(String)} properties must be set.</p>
+     *
+     * @return a new {@link Issues} instance
+     * @since 2.0.0
+     */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
     @NonNull Issues build();
   }

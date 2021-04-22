@@ -112,7 +112,7 @@ public interface SourceCodeManagement {
     @NonNull Builder url(final @NonNull String url);
 
     /**
-     * Create a new {@link SourceCodeManagement} instance.
+     * Creates a new {@link SourceCodeManagement} instance.
      *
      * <p>The {@link #connection(String)}, {@link #developerConnection(String)}, and {@link #url(String)} properties must be set.</p>
      *

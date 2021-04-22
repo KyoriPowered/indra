@@ -40,7 +40,7 @@ import org.immutables.value.Value;
 @ImmutablesStyle
 @Value.Immutable(builder = false)
 public interface RemoteRepository {
-  RemoteRepository SONATYPE_SNAPSHOTS = RemoteRepository.snapshotsOnly("sonatypeSnapshots", "https://oss.sonatype.org/content/repositories/snapshots/");
+  RemoteRepository SONATYPE_SNAPSHOTS = snapshotsOnly("sonatypeSnapshots", "https://oss.sonatype.org/content/repositories/snapshots/");
 
   /**
    * Create a repository that will publish/resolve both releases and snapshots.
@@ -63,7 +63,7 @@ public interface RemoteRepository {
    * @since 2.0.0
    */
   static @NonNull RemoteRepository all(final String name, final String url) {
-    return new RemoteRepositoryImpl(name, URI.create(url), true, true);
+    return all(name, URI.create(url));
   }
 
   /**
@@ -87,7 +87,7 @@ public interface RemoteRepository {
    * @since 2.0.0
    */
   static @NonNull RemoteRepository releasesOnly(final String name, final String url) {
-    return new RemoteRepositoryImpl(name, URI.create(url), true, false);
+    return releasesOnly(name, URI.create(url));
   }
 
   /**
@@ -111,7 +111,7 @@ public interface RemoteRepository {
    * @since 2.0.0
    */
   static @NonNull RemoteRepository snapshotsOnly(final String name, final String url) {
-    return new RemoteRepositoryImpl(name, URI.create(url), false, true);
+    return snapshotsOnly(name, URI.create(url));
   }
 
   /**
@@ -169,9 +169,14 @@ public interface RemoteRepository {
     return handler.maven(it -> {
       it.setName(this.name());
       it.setUrl(this.url());
-      if(this.releases() && !this.snapshots()) {
+
+      final boolean releases = this.releases();
+      final boolean snapshots = this.snapshots();
+      final boolean releasesOnly = releases && !snapshots;
+      final boolean snapshotsOnly = !releases && snapshots;
+      if(releasesOnly) {
         it.mavenContent(MavenRepositoryContentDescriptor::releasesOnly);
-      } else if(this.snapshots() && !this.releases()) {
+      } else if(snapshotsOnly) {
         it.mavenContent(MavenRepositoryContentDescriptor::snapshotsOnly);
       }
     });
