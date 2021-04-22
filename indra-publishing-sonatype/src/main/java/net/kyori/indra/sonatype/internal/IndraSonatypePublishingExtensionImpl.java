@@ -40,7 +40,7 @@ public class IndraSonatypePublishingExtensionImpl implements IndraSonatypePublis
   }
 
   @Override
-  public void useAlternateSonatypeOssHost(final String name) {
+  public void useAlternateSonatypeOSSHost(final String name) {
     final NexusRepository repo = this.nexusExtension.getRepositories().maybeCreate(SONATYPE_REPO);
 
     repo.getNexusUrl().set(this.nexusUrl(name));

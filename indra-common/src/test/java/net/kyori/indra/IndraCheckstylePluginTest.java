@@ -24,14 +24,14 @@
 package net.kyori.indra;
 
 import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 
 class IndraCheckstylePluginTest {
-  @Test
-  void testEmptyBuild() {
-    final Project project = ProjectBuilder.builder().build();
+  private static final String PLUGIN = "net.kyori.indra.checkstyle";
 
-    project.getPluginManager().apply("net.kyori.indra.checkstyle");
+  @Test
+  void testPluginSimplyApplies() {
+    final Project project = IndraTesting.project();
+    project.getPluginManager().apply(PLUGIN);
   }
 }

@@ -24,19 +24,31 @@
 package net.kyori.indra;
 
 import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 class IndraPluginTest {
+  private static final String PLUGIN = "net.kyori.indra";
 
-  /**
-   * Test that the plugin applies without any errors.
-   */
   @Test
-  void testEmptyBuild() {
-    final Project project = ProjectBuilder.builder().build();
-
-    project.getPluginManager().apply("net.kyori.indra");
+  void testPluginSimplyApplies() {
+    final Project project = IndraTesting.project();
+    project.getPluginManager().apply(PLUGIN);
   }
 
+  @Test
+  void testExtensionLicense() {
+    final Project project = IndraTesting.project();
+    project.getPluginManager().apply(PLUGIN);
+    final IndraExtension extension = Indra.extension(project.getExtensions());
+    assertFalse(extension.license().isPresent());
+    assertThrows(IllegalStateException.class, () -> extension.license().get());
+    extension.mitLicense();
+    assertTrue(extension.license().isPresent());
+    assertEquals("The MIT License", extension.license().get().name());
+  }
 }

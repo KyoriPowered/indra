@@ -28,10 +28,11 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 
 class IndraSonatypePublishingPluginTest {
-  @Test
-  void testEmptyBuild() {
-    final Project project = ProjectBuilder.builder().build();
+  private static final String PLUGIN = "net.kyori.indra.publishing.sonatype";
 
-    project.getPluginManager().apply("net.kyori.indra.publishing.sonatype");
+  @Test
+  void testPluginSimplyApplies() {
+    final Project project = ProjectBuilder.builder().build();
+    project.getPluginManager().apply(PLUGIN);
   }
 }

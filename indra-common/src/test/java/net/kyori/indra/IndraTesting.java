@@ -21,18 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra.git;
+package net.kyori.indra;
 
+import java.util.function.Consumer;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
-import org.junit.jupiter.api.Test;
 
-class IndraGitPluginTest {
-  private static final String PLUGIN = "net.kyori.indra.git";
+public class IndraTesting {
+  public static Project project() {
+    return project(null);
+  }
 
-  @Test
-  void testPluginSimplyApplies() {
-    final Project project = ProjectBuilder.builder().build();
-    project.getPluginManager().apply(PLUGIN);
+  public static Project project(final @Nullable Consumer<ProjectBuilder> consumer) {
+    final ProjectBuilder builder = ProjectBuilder.builder();
+    if(consumer != null) {
+      consumer.accept(builder);
+    }
+    return builder.build();
   }
 }

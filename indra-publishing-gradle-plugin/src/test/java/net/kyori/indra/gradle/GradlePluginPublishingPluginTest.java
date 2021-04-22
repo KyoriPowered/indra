@@ -33,19 +33,21 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 class GradlePluginPublishingPluginTest {
+  private static final String PLUGIN = "net.kyori.indra.publishing.gradle-plugin";
+
   @Test
   void testEmptyBuild() {
     final Project project = ProjectBuilder.builder().build();
     final ExtensionContainer extensions = project.getExtensions();
     final PluginManager plugins = project.getPluginManager();
 
-    plugins.apply("net.kyori.indra.publishing.gradle-plugin");
+    plugins.apply(PLUGIN);
 
     assertNull(extensions.findByName("indraPluginPublishing"));
 
     plugins.apply("java-gradle-plugin");
     plugins.apply("com.gradle.plugin-publish");
 
-    assertNotNull(project.getExtensions().findByName("indraPluginPublishing"));
+    assertNotNull(extensions.findByName("indraPluginPublishing"));
   }
 }
