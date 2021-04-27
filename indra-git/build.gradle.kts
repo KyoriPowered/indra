@@ -1,7 +1,7 @@
 dependencies {
   compileOnlyApi("org.checkerframework:checker-qual:3.10.0")
   api("org.eclipse.jgit:org.eclipse.jgit:5.11.0.+")
-  api("net.kyori:mammoth:1.0.0-SNAPSHOT")
+  api("net.kyori:mammoth:1.0.0")
 }
 
 indraPluginPublishing {
