@@ -35,10 +35,32 @@ import org.gradle.api.provider.Property;
  * @since 1.3.0
  */
 public interface IndraPluginPublishingExtension {
+  /**
+   * Get tags to be included on the plugin bundle.
+   *
+   * @return a property providing the tags used for the overall bundle on the plugin portal
+   * @since 2.0.0
+   */
   @NonNull ListProperty<String> bundleTags();
 
+  /**
+   * Set tags to be included on the plugin bundle.
+   *
+   * @param bundleTags the bundle tags
+   * @since 2.0.0
+   */
   default void bundleTags(final List<String> bundleTags) {
     this.bundleTags().set(bundleTags);
+  }
+
+  /**
+   * Set tags to be included on the plugin bundle.
+   *
+   * @param bundleTags the bundle tags
+   * @since 2.0.0
+   */
+  default void bundleTags(final String... bundleTags) {
+    this.bundleTags().addAll(bundleTags);
   }
 
   /**
