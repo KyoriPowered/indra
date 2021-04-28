@@ -68,8 +68,8 @@ import org.gradle.plugins.ide.eclipse.model.EclipseModel;
  * @since 1.0.0
  */
 public class IndraPlugin implements ProjectPlugin {
-
   private static final String DIFFPLUG_GOOMPH_APT = "com.diffplug.eclipse.apt";
+  private static final String[] APT_TASKS = {"eclipseJdtApt", "eclipseJdt", "eclipseFactorypath"};
 
   @Override
   public void apply(final @NonNull Project project, final @NonNull PluginContainer plugins, final @NonNull ExtensionContainer extensions, final @NonNull Convention convention, final @NonNull TaskContainer tasks) {
@@ -232,8 +232,6 @@ public class IndraPlugin implements ProjectPlugin {
   private void applyIdeConfigurationOptions(final PluginManager manager, final ExtensionContainer extensions, final TaskContainer tasks) {
     // also applies the eclipse plugin
     manager.withPlugin(DIFFPLUG_GOOMPH_APT, applied -> {
-      final String[] APT_TASKS = {"eclipseJdtApt", "eclipseJdt", "eclipseFactorypath"};
-
       extensions.configure(EclipseModel.class, eclipse -> {
         // https://github.com/diffplug/goomph/issues/125
         // buildship pls stop being broken thanks
