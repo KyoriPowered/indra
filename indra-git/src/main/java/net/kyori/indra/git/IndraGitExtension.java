@@ -94,6 +94,8 @@ public interface IndraGitExtension {
   /**
    * Get a <a href="https://git-scm.com/docs/git-describe">{@code git describe}</a> string for the project's repository.
    *
+   * <p>The result will be equivalent to the result of executing {@code git describe --tags --long}</p>
+   *
    * @return the describe string, or {@code null} if this project is not in a git repository or if there are no tags in the project's history
    * @since 2.0.0
    */

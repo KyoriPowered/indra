@@ -162,8 +162,24 @@ public interface IndraExtension {
     this.checkstyle().set(checkstyleVersion);
   }
 
+  /**
+   * Whether options that support reproducible builds should be enabled.
+   *
+   * <p>Default: {@code true}</p>
+   *
+   * @return the property configuring reproducible builds
+   * @since 2.0.0
+   */
   @NonNull Property<Boolean> reproducibleBuilds();
 
+  /**
+   * Set whether options that support reproducible builds should be enabled.
+   *
+   * <p>Default: {@code true}</p>
+   *
+   * @param reproducibleBuilds whether to build in a way that encourages reproducibility
+   * @since 2.0.0
+   */
   default void reproducibleBuilds(final boolean reproducibleBuilds) {
     this.reproducibleBuilds().set(reproducibleBuilds);
   }
@@ -180,6 +196,13 @@ public interface IndraExtension {
    */
   @NonNull Property<Boolean> includeJavaSoftwareComponentInPublications();
 
+  /**
+   * Set whether the {@code java} component should be included in publications.
+   *
+   * @param include whether the component should be included
+   * @see #includeJavaSoftwareComponentInPublications() for more details
+   * @since 2.0.0
+   */
   default void includeJavaSoftwareComponentInPublications(final boolean include) {
     this.includeJavaSoftwareComponentInPublications().set(include);
   }

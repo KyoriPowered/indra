@@ -50,6 +50,9 @@ import org.gradle.process.CommandLineArgumentProvider;
 import static java.util.Objects.requireNonNull;
 
 public class IndraExtensionImpl implements IndraExtension {
+
+  private static final String DEFAULT_CHECKSTYLE_VERSION = "8.42";
+
   private final Property<ContinuousIntegration> ci;
   private final Property<Issues> issues;
   private final Property<License> license;
@@ -72,7 +75,7 @@ public class IndraExtensionImpl implements IndraExtension {
 
     this.reproducibleBuilds = objects.property(Boolean.class).convention(true);
 
-    this.checkstyle = objects.property(String.class).convention("8.41.1");
+    this.checkstyle = objects.property(String.class).convention(DEFAULT_CHECKSTYLE_VERSION);
     this.includeJavaSoftwareComponentInPublications = objects.property(Boolean.class).convention(true);
     this.javaVersions = objects.newInstance(JavaToolchainVersionsImpl.class);
     this.repositories = objects.domainObjectSet(RemoteRepository.class);

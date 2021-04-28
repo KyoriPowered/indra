@@ -311,8 +311,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
         }
       });
 
-      // But always add to the java 16-specific test task
-      // todo: extract a method for this name (shared with versioned test setup in IndraPlugin)
+      // But always add to the java version-specific test task
       tasks.matching(it -> it.getName().equals(Indra.testJava(target))).configureEach(task -> {
         if(!(task instanceof Test)) return;
         final Test testTask = (Test) task;
