@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "net.kyori"
-version = "2.0.0-SNAPSHOT"
+version = "2.0.0"
 description = "KyoriPowered organizational build standards and utilities"
 
 allprojects {
@@ -69,4 +69,5 @@ subprojects {
   }
 
   extensions.getByType(PluginBundleExtension::class).tags = listOf("kyori", "standard")
+  extensions.getByType(PluginBundleExtension::class).website = "https://github.com/KyoriPowered/inda/wiki"
 }
