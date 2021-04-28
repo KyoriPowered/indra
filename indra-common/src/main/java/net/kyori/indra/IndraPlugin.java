@@ -43,6 +43,7 @@ import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.plugins.PluginContainer;
+import org.gradle.api.plugins.PluginManager;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.JavaExec;
@@ -59,6 +60,7 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.gradle.language.jvm.tasks.ProcessResources;
+import org.gradle.plugins.ide.eclipse.model.EclipseModel;
 
 /**
  * The primary Indra plugin providing project configuration.
@@ -66,6 +68,9 @@ import org.gradle.language.jvm.tasks.ProcessResources;
  * @since 1.0.0
  */
 public class IndraPlugin implements ProjectPlugin {
+
+  private static final String DIFFPLUG_GOOMPH_APT = "com.diffplug.eclipse.apt";
+
   @Override
   public void apply(final @NonNull Project project, final @NonNull PluginContainer plugins, final @NonNull ExtensionContainer extensions, final @NonNull Convention convention, final @NonNull TaskContainer tasks) {
     plugins.apply(JavaLibraryPlugin.class);
@@ -77,6 +82,7 @@ public class IndraPlugin implements ProjectPlugin {
     extensions.configure(JavaPluginExtension.class, java -> {
       java.getToolchain().getLanguageVersion().set(indra.javaVersions().actualVersion().map(JavaLanguageVersion::of));
     });
+    this.applyIdeConfigurationOptions(project.getPluginManager(), extensions, tasks);
 
     tasks.withType(JavaCompile.class, task -> {
       final CompileOptions options = task.getOptions();
@@ -221,6 +227,22 @@ public class IndraPlugin implements ProjectPlugin {
 
     // TODO: Repository extensions in Kotlin buildscript
     Repositories.registerRepositoryExtensions(project.getRepositories(), RemoteRepository.SONATYPE_SNAPSHOTS);
+  }
+
+  private void applyIdeConfigurationOptions(final PluginManager manager, final ExtensionContainer extensions, final TaskContainer tasks) {
+    // also applies the eclipse plugin
+    manager.withPlugin(DIFFPLUG_GOOMPH_APT, applied -> {
+      final String[] APT_TASKS = {"eclipseJdtApt", "eclipseJdt", "eclipseFactorypath"};
+
+      extensions.configure(EclipseModel.class, eclipse -> {
+        // https://github.com/diffplug/goomph/issues/125
+        // buildship pls stop being broken thanks
+        for(final String task : APT_TASKS) {
+          eclipse.synchronizationTasks(tasks.named(task));
+        }
+      });
+
+    });
   }
 
   private static String jdkApiDocs(final int javaVersion) {
