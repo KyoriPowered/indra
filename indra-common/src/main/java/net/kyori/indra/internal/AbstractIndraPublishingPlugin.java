@@ -126,7 +126,7 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
 
         ((IndraExtensionImpl) indra).repositories.all(rr -> { // will be applied to repositories as they're added
           if(this.canPublishTo(project, rr)) {
-            p.getRepositories().maven(repository -> {
+            publishing.getRepositories().maven(repository -> {
               repository.setName(rr.name());
               repository.setUrl(rr.url());
               // ${id}Username + ${id}Password properties
