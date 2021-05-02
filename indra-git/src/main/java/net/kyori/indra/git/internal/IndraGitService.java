@@ -95,7 +95,7 @@ public abstract class IndraGitService implements BuildService<IndraGitService.Pa
           }
 
           try {
-            final Git repo = Git.open(realProjectDir);
+            final Git repo = Git.open(targetDir);
 
             GitWrapper repoWrapper = new GitWrapper(repo);
             final GitWrapper existing = this.projectRepos.putIfAbsent(targetDir, repoWrapper);
