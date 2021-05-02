@@ -5,7 +5,7 @@ plugins {
   val indraVersion = "1.3.1"
   id("net.kyori.indra") version indraVersion apply false
   id("net.kyori.indra.publishing.gradle-plugin") version indraVersion apply false
-  id("com.gradle.plugin-publish") version "0.12.0" apply false
+  id("com.gradle.plugin-publish") version "0.14.0" apply false
   id("com.github.ben-manes.versions") version "0.36.0"
 }
 
