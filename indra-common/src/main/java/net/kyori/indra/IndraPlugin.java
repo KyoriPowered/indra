@@ -61,6 +61,7 @@ import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.gradle.language.jvm.tasks.ProcessResources;
 import org.gradle.plugins.ide.eclipse.model.EclipseModel;
+import org.gradle.process.CommandLineArgumentProvider;
 
 /**
  * The primary Indra plugin providing project configuration.
@@ -95,14 +96,18 @@ public class IndraPlugin implements ProjectPlugin {
       ));
 
       // JDK 9+ only arguments
-      options.getCompilerArgumentProviders().add(() -> {
-        if(indra.javaVersions().minimumToolchain().get() >= 9) {
-          return Arrays.asList(
-            "-Xdoclint",
-            "-Xdoclint:-missing"
-          );
-        } else {
-          return Collections.emptyList();
+      //noinspection Convert2Lambda // Gradle will only cache with an anonymous class
+      options.getCompilerArgumentProviders().add(new CommandLineArgumentProvider() {
+        @Override
+        public Iterable<String> asArguments() {
+          if(indra.javaVersions().minimumToolchain().get() >= 9) {
+            return Arrays.asList(
+              "-Xdoclint",
+              "-Xdoclint:-missing"
+            );
+          } else {
+            return Collections.emptyList();
+          }
         }
       });
 

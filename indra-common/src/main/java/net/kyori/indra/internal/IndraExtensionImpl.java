@@ -92,11 +92,15 @@ public class IndraExtensionImpl implements IndraExtension {
   }
 
   public CommandLineArgumentProvider previewFeatureArgumentProvider() {
-    return () -> {
-      if(Properties.finalized(this.javaVersions.previewFeaturesEnabled()).get()) {
-        return Collections.singletonList("--enable-preview");
-      } else {
-        return Collections.emptyList();
+    //noinspection Convert2Lambda // Gradle will only cache with an anonymous class
+    return new CommandLineArgumentProvider() {
+      @Override
+      public Iterable<String> asArguments() {
+        if(Properties.finalized(IndraExtensionImpl.this.javaVersions.previewFeaturesEnabled()).get()) {
+          return Collections.singletonList("--enable-preview");
+        } else {
+          return Collections.emptyList();
+        }
       }
     };
   }
