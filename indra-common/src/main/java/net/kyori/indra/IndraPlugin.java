@@ -47,6 +47,7 @@ import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.plugins.PluginManager;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.TaskContainer;
@@ -98,11 +99,12 @@ public class IndraPlugin implements ProjectPlugin {
       ));
 
       // JDK 9+ only arguments
+      final Property<Integer> minimumToolchainProp = indra.javaVersions().minimumToolchain();
       //noinspection Convert2Lambda // Gradle will only cache with an anonymous class
       options.getCompilerArgumentProviders().add(new CommandLineArgumentProvider() {
         @Override
         public Iterable<String> asArguments() {
-          if(indra.javaVersions().minimumToolchain().get() >= 9) {
+          if(minimumToolchainProp.get() >= 9) {
             return Arrays.asList(
               "-Xdoclint",
               "-Xdoclint:-missing"
@@ -182,12 +184,15 @@ public class IndraPlugin implements ProjectPlugin {
           final JavadocOptionFileOption<Boolean> enablePreview = options.addBooleanOption("-enable-preview");
           final JavadocOptionFileOption<Boolean> noModuleDirectories = options.addBooleanOption("-no-module-directories");
 
+          final JavaToolchainVersions versions = indra.javaVersions();
+          final Property<Integer> targetProp = versions.target();
+          final Property<Integer> minimumProp = versions.minimumToolchain();
+          final Property<Boolean> previewFeaturesEnabledProp = versions.previewFeaturesEnabled();
           jd.doFirst(new Action<Task>() {
             @Override
             public void execute(final Task t) {
-              final JavaToolchainVersions versions = indra.javaVersions();
-              final int target = versions.target().get();
-              final int minimum = versions.minimumToolchain().get();
+              final int target = targetProp.get();
+              final int minimum = minimumProp.get();
               final int actual = jd.getJavadocTool().get().getMetadata().getLanguageVersion().asInt();
 
               // Java 16 automatically links with the API documentation anyways
@@ -205,7 +210,7 @@ public class IndraPlugin implements ProjectPlugin {
                 release.setValue(Integer.toString(target));
                 doclintMissing.setValue(true);
                 html5.setValue(true);
-                enablePreview.setValue(versions.previewFeaturesEnabled().get());
+                enablePreview.setValue(previewFeaturesEnabledProp.get());
               } else {
                 options.setSource(Versioning.versionString(target));
               }
@@ -219,6 +224,8 @@ public class IndraPlugin implements ProjectPlugin {
       final SetProperty<Integer> testWithProp = Properties.finalized(indra.javaVersions().testWith());
       testWithProp.get().forEach(targetRuntime -> {
         // Create task that will use that version
+        final Property<Boolean> strictVersions = indra.javaVersions().strictVersions();
+        final Provider<Integer> actualVersion = indra.javaVersions().actualVersion();
         final TaskProvider<Test> versionedTest = tasks.register(Indra.testJava(targetRuntime), Test.class, test -> {
           test.setDescription("Runs tests on Java " + targetRuntime + " if necessary based on build settings");
           test.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
@@ -226,7 +233,7 @@ public class IndraPlugin implements ProjectPlugin {
 
           test.onlyIf($ -> {
             // Only run if our runtime is not the standard runtime, and we're doing strict versions.
-            return indra.javaVersions().strictVersions().get() && !Objects.equals(targetRuntime, indra.javaVersions().actualVersion().get());
+            return strictVersions.get() && !Objects.equals(targetRuntime, actualVersion.get());
           });
           test.getJavaLauncher().set(toolchains.launcherFor(it -> it.getLanguageVersion().set(JavaLanguageVersion.of(targetRuntime))));
         });

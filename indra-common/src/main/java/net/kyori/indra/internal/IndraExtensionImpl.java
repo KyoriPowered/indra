@@ -92,17 +92,8 @@ public class IndraExtensionImpl implements IndraExtension {
   }
 
   public CommandLineArgumentProvider previewFeatureArgumentProvider() {
-    //noinspection Convert2Lambda // Gradle will only cache with an anonymous class
-    return new CommandLineArgumentProvider() {
-      @Override
-      public Iterable<String> asArguments() {
-        if(Properties.finalized(IndraExtensionImpl.this.javaVersions.previewFeaturesEnabled()).get()) {
-          return Collections.singletonList("--enable-preview");
-        } else {
-          return Collections.emptyList();
-        }
-      }
-    };
+    // needs to be a static class to avoid capturing `this`
+    return new PreviewFeatureArgumentProvider(this.javaVersions.previewFeaturesEnabled());
   }
 
   // Metadata properties //
@@ -210,5 +201,22 @@ public class IndraExtensionImpl implements IndraExtension {
   @Override
   public @NonNull Property<Boolean> includeJavaSoftwareComponentInPublications() {
     return this.includeJavaSoftwareComponentInPublications;
+  }
+
+  static class PreviewFeatureArgumentProvider implements CommandLineArgumentProvider {
+    private final Property<Boolean> previewFeaturesEnabledProp;
+
+    PreviewFeatureArgumentProvider(final Property<Boolean> previewFeaturesEnabledProp) {
+      this.previewFeaturesEnabledProp = previewFeaturesEnabledProp;
+    }
+
+    @Override
+    public Iterable<String> asArguments() {
+      if(Properties.finalized(this.previewFeaturesEnabledProp).get()) {
+        return Collections.singletonList("--enable-preview");
+      } else {
+        return Collections.emptyList();
+      }
+    }
   }
 }
