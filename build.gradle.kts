@@ -69,5 +69,5 @@ subprojects {
   }
 
   extensions.getByType(PluginBundleExtension::class).tags = listOf("kyori", "standard")
-  extensions.getByType(PluginBundleExtension::class).website = "https://github.com/KyoriPowered/inda/wiki"
+  extensions.getByType(PluginBundleExtension::class).website = "https://github.com/KyoriPowered/indra/wiki"
 }
