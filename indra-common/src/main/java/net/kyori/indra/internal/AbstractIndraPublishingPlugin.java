@@ -110,7 +110,8 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
     });
 
     tasks.withType(Sign.class).configureEach(task -> {
-      task.onlyIf(spec -> project.hasProperty(FORCE_SIGN_PROPERTY) || Versioning.isRelease(project));
+      final boolean shouldRun = project.hasProperty(FORCE_SIGN_PROPERTY) || Versioning.isRelease(project);
+      task.onlyIf(spec -> shouldRun);
     });
 
     final TaskProvider<RequireClean> requireClean = tasks.named(GitPlugin.REQUIRE_CLEAN_TASK, RequireClean.class);
