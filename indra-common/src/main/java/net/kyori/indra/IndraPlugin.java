@@ -35,8 +35,10 @@ import net.kyori.indra.util.Versioning;
 import net.kyori.mammoth.ProjectPlugin;
 import net.kyori.mammoth.Properties;
 import org.checkerframework.checker.nullness.qual.NonNull;
+import org.gradle.api.Action;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.plugins.BasePluginConvention;
 import org.gradle.api.plugins.Convention;
 import org.gradle.api.plugins.ExtensionContainer;
@@ -180,30 +182,33 @@ public class IndraPlugin implements ProjectPlugin {
           final JavadocOptionFileOption<Boolean> enablePreview = options.addBooleanOption("-enable-preview");
           final JavadocOptionFileOption<Boolean> noModuleDirectories = options.addBooleanOption("-no-module-directories");
 
-          jd.doFirst(t -> {
-            final JavaToolchainVersions versions = indra.javaVersions();
-            final int target = versions.target().get();
-            final int minimum = versions.minimumToolchain().get();
-            final int actual = jd.getJavadocTool().get().getMetadata().getLanguageVersion().asInt();
+          jd.doFirst(new Action<Task>() {
+            @Override
+            public void execute(final Task t) {
+              final JavaToolchainVersions versions = indra.javaVersions();
+              final int target = versions.target().get();
+              final int minimum = versions.minimumToolchain().get();
+              final int actual = jd.getJavadocTool().get().getMetadata().getLanguageVersion().asInt();
 
-            // Java 16 automatically links with the API documentation anyways
-            if(actual < 16) {
-              options.links(jdkApiDocs(target));
-            }
-
-            if(minimum >= 9) {
-              if(actual < 12) {
-                // Apply workaround for https://bugs.openjdk.java.net/browse/JDK-8215291
-                // Hopefully this gets backported some day... (JDK-8215291)
-                noModuleDirectories.setValue(true);
+              // Java 16 automatically links with the API documentation anyways
+              if(actual < 16) {
+                options.links(jdkApiDocs(target));
               }
 
-              release.setValue(Integer.toString(target));
-              doclintMissing.setValue(true);
-              html5.setValue(true);
-              enablePreview.setValue(versions.previewFeaturesEnabled().get());
-            } else {
-              options.setSource(Versioning.versionString(target));
+              if(minimum >= 9) {
+                if(actual < 12) {
+                  // Apply workaround for https://bugs.openjdk.java.net/browse/JDK-8215291
+                  // Hopefully this gets backported some day... (JDK-8215291)
+                  noModuleDirectories.setValue(true);
+                }
+
+                release.setValue(Integer.toString(target));
+                doclintMissing.setValue(true);
+                html5.setValue(true);
+                enablePreview.setValue(versions.previewFeaturesEnabled().get());
+              } else {
+                options.setSource(Versioning.versionString(target));
+              }
             }
           });
         }
