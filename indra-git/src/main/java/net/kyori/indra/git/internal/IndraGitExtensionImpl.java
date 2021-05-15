@@ -81,7 +81,10 @@ public class IndraGitExtensionImpl implements IndraGitExtension {
       final ObjectId headCommit = head.getLeaf().getObjectId();
 
       for(final Ref tag : git.tagList().call()) {
-        if(tag.getLeaf().getObjectId().equals(headCommit)) {
+        @Nullable ObjectId tagId = tag.getPeeledObjectId();
+        if(tagId == null) tagId = tag.getObjectId();
+
+        if(ObjectId.isEqual(tagId, headCommit)) {
           return tag;
         }
       }
