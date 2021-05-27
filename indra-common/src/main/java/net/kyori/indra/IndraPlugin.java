@@ -163,7 +163,7 @@ public class IndraPlugin implements ProjectPlugin {
 
       tasks.withType(JavaCompile.class).configureEach(compile -> {
         final Property<Integer> release = compile.getOptions().getRelease();
-        if(!release.isPresent() && indra.javaVersions().minimumToolchain().get() >= 9) {
+        if(!release.isPresent() && indra.javaVersions().actualVersion().get() >= 9) {
           release.set(indra.javaVersions().target());
         }
       });
@@ -235,7 +235,7 @@ public class IndraPlugin implements ProjectPlugin {
             // Only run if our runtime is not the standard runtime, and we're doing strict versions.
             return strictVersions.get() && !Objects.equals(targetRuntime, actualVersion.get());
           });
-          test.getJavaLauncher().set(toolchains.launcherFor(it -> it.getLanguageVersion().set(JavaLanguageVersion.of(targetRuntime))));
+          test.getJavaLauncher().set(toolchains.launcherFor(it -> it.getLanguageVersion().set(strictVersions.zip(actualVersion, (strict, actual) -> JavaLanguageVersion.of(strict ? targetRuntime : actual)))));
         });
 
         tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME).configure(it -> it.dependsOn(versionedTest));
