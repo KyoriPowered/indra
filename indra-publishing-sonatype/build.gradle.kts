@@ -1,7 +1,7 @@
 dependencies {
   implementation(project(":indra-common"))
   implementation(gradleKotlinDsl()) // needed for gradle-nexus-publish-plugin
-  implementation("io.github.gradle-nexus:publish-plugin:1.0.0")
+  implementation("io.github.gradle-nexus:publish-plugin:1.1.0")
 }
 
 indraPluginPublishing {
