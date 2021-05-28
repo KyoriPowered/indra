@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "net.kyori"
-version = "2.0.5-SNAPSHOT"
+version = "2.0.5"
 description = "KyoriPowered organizational build standards and utilities"
 
 allprojects {
