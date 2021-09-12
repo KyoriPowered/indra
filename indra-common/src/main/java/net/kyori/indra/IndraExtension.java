@@ -114,8 +114,24 @@ public interface IndraExtension {
     this.license(License.gpl3Only());
   }
 
+  default void gpl3OrLaterLicense() {
+    this.license(License.gpl3OrLater());
+  }
+
+  default void lgpl3OnlyLicense() {
+    this.license(License.lgpl3Only());
+  }
+
+  default void lgpl3OrLaterLicense() {
+    this.license(License.lgpl3OrLater());
+  }
+
   default void mitLicense() {
     this.license(License.mit());
+  }
+
+  default void mpl2License() {
+    this.license(License.mpl2());
   }
 
   default void github(final @NonNull String user, final @NonNull String repo) {
