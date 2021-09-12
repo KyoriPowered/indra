@@ -73,6 +73,48 @@ public interface License {
   }
 
   /**
+   * Get a GPL-3.0-or-later license instance.
+   *
+   * @return the GPL-3.0-or-later license
+   * @since 2.1.0
+   */
+  static @NonNull License gpl3OrLater() {
+    return License.builder()
+      .spdx("GPL-3.0-or-later")
+      .name("GNU General Public License version 3 or later")
+      .url("https://opensource.org/licenses/GPL-3.0")
+      .build();
+  }
+
+  /**
+   * Get a LGPL-3.0-only license instance.
+   *
+   * @return the GPL-3.0-only license
+   * @since 2.1.0
+   */
+  static @NonNull License lgpl3Only() {
+    return License.builder()
+      .spdx("LGPL-3.0-only")
+      .name("GNU Lesser General Public License version 3")
+      .url("https://opensource.org/licenses/LGPL-3.0")
+      .build();
+  }
+
+  /**
+   * Get a LGPL-3.0-or-later license instance.
+   *
+   * @return the GPL-3.0-or-later license
+   * @since 2.1.0
+   */
+  static @NonNull License lgpl3OrLater() {
+    return License.builder()
+      .spdx("LGPL-3.0-or-later")
+      .name("GNU Lesser General Public License version 3 or later")
+      .url("https://opensource.org/licenses/LGPL-3.0")
+      .build();
+  }
+
+  /**
    * Get a MIT license instance.
    *
    * @return the MIT license
@@ -83,6 +125,20 @@ public interface License {
       .spdx("MIT")
       .name("The MIT License")
       .url("https://opensource.org/licenses/MIT")
+      .build();
+  }
+
+  /**
+   * Get a MPL-2 license instance.
+   *
+   * @return the MPL-2 license
+   * @since 2.1.0
+   */
+  static @NonNull License mpl2() {
+    return License.builder()
+      .spdx("MPL-2.0")
+      .name("Mozilla Public License 2.0")
+      .url("https://opensource.org/licenses/MPL-2.0")
       .build();
   }
 
