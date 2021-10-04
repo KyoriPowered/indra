@@ -23,9 +23,6 @@
  */
 package net.kyori.indra;
 
-import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 import net.kyori.mammoth.ProjectPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Project;
@@ -39,12 +36,18 @@ import org.gradle.api.plugins.quality.CheckstylePlugin;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 
+import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Configure Gradle's built-in {@code checkstyle} plugin.
  */
 public class IndraCheckstylePlugin implements ProjectPlugin {
   public static final String CHECKSTYLE_ALL_TASK = "checkstyleAll";
-
+  
+  private static final String CHECKSTYLE_CONFIGURATION = "checkstyle";
+    
   @Override
   public void apply(final @NonNull Project project, final @NonNull PluginContainer plugins, final @NonNull ExtensionContainer extensions, final @NonNull Convention convention, final @NonNull TaskContainer tasks) {
     plugins.apply(CheckstylePlugin.class);
@@ -70,6 +73,11 @@ public class IndraCheckstylePlugin implements ProjectPlugin {
         props.put("configDirectory", checkstyleDir);
         props.put("severity", "error");
         cs.setConfigProperties(props);
+        
+        // Add a dependency constraint to ensure we always actually use the requested version of checkstyle
+        p.getDependencies().getConstraints().add(CHECKSTYLE_CONFIGURATION, "com.puppycrawl.tools:checkstyle", c -> {
+          c.version(v -> v.require(indra.checkstyle().get()));
+        });
       });
     });
   }
