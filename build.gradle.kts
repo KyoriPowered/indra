@@ -7,6 +7,8 @@ plugins {
   id("net.kyori.indra.publishing.gradle-plugin") version indraVersion apply false
   id("com.gradle.plugin-publish") version "0.14.0" apply false
   id("com.github.ben-manes.versions") version "0.36.0"
+  id("com.diffplug.eclipse.apt") version "3.33.1" apply false
+  eclipse
 }
 
 group = "net.kyori"
@@ -26,6 +28,7 @@ subprojects {
   apply(plugin = "net.kyori.indra")
   apply(plugin = "net.kyori.indra.license-header")
   apply(plugin = "net.kyori.indra.publishing.gradle-plugin")
+  apply(plugin = "com.diffplug.eclipse.apt")
 
   dependencies {
     "testImplementation"("org.junit.jupiter:junit-jupiter-api:5.7.2")
@@ -66,8 +69,13 @@ subprojects {
     }
 
     publishSnapshotsTo("stellardrift", "https://repo.stellardrift.ca/repository/snapshots/")
+    
   }
 
   extensions.getByType(PluginBundleExtension::class).tags = listOf("kyori", "standard")
   extensions.getByType(PluginBundleExtension::class).website = "https://github.com/KyoriPowered/indra/wiki"
+  
+  eclipse {
+      synchronizationTasks("eclipseJdtApt", "eclipseJdt", "eclipseFactorypath")
+  }
 }

@@ -6,3 +6,7 @@
 /indra-*/out/
 /build/
 /*.iml
+/*/.factorypath
+/*/.checkstyle
+/*/.classpath
+/*/.settings/
