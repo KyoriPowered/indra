@@ -23,10 +23,6 @@
  */
 package net.kyori.indra;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Objects;
 import net.kyori.indra.internal.IndraExtensionImpl;
 import net.kyori.indra.internal.multirelease.IndraMultireleasePlugin;
 import net.kyori.indra.repository.RemoteRepository;
@@ -63,8 +59,14 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.gradle.language.jvm.tasks.ProcessResources;
+import org.gradle.plugins.ide.api.GeneratorTask;
 import org.gradle.plugins.ide.eclipse.model.EclipseModel;
 import org.gradle.process.CommandLineArgumentProvider;
+
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Objects;
 
 /**
  * The primary Indra plugin providing project configuration.
@@ -255,6 +257,14 @@ public class IndraPlugin implements ProjectPlugin {
         for(final String task : APT_TASKS) {
           eclipse.synchronizationTasks(tasks.named(task));
         }
+        // To handle updating dependencies properly, we need to overwrite the factorypath, not just add to it.
+        tasks.named("eclipseFactorypath", GeneratorTask.class, t -> {
+          t.doFirst($ -> {
+            if (t.getInputFile().exists()) {
+              t.getInputFile().delete();
+            }
+          });
+        });
       });
 
     });
