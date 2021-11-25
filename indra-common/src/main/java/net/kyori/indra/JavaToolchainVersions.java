@@ -94,7 +94,8 @@ public interface JavaToolchainVersions {
 
   /**
    * Add alternate versions that should be tested with, when strict versions are enabled.
-   *
+   * 
+   * @param testVersions versions to test with
    * @since 2.0.0
    */
   void testWith(final int... testVersions);
