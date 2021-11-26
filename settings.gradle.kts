@@ -2,7 +2,7 @@ rootProject.name = "indra"
 
 pluginManagement {
   plugins {
-    kotlin("jvm") version embeddedKotlinVersion
+    kotlin("jvm") version "1.5.31"
   }
 }
 

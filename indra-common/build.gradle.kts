@@ -1,13 +1,16 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
   kotlin("jvm")
 }
 
-tasks.withType(KotlinCompile::class) {
-  kotlinOptions {
-    jvmTarget = "1.8"
-    languageVersion = "1.3"
+kotlin {
+  coreLibrariesVersion = "1.3.21"
+  target {
+    compilations.configureEach {
+      kotlinOptions {
+        jvmTarget = "1.8"
+        languageVersion = "1.3"
+      }
+    }
   }
 }
 

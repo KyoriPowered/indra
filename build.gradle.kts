@@ -1,12 +1,13 @@
 import com.gradle.publish.PluginBundleExtension
 import net.kyori.indra.IndraExtension
+import net.kyori.indra.gradle.IndraPluginPublishingExtension
 
 plugins {
-  val indraVersion = "1.3.1"
+  val indraVersion = "2.0.6"
   id("net.kyori.indra") version indraVersion apply false
   id("net.kyori.indra.publishing.gradle-plugin") version indraVersion apply false
-  id("com.gradle.plugin-publish") version "0.14.0" apply false
-  id("com.github.ben-manes.versions") version "0.36.0"
+  id("com.gradle.plugin-publish") version "0.18.0" apply false
+  id("com.github.ben-manes.versions") version "0.39.0"
   id("com.diffplug.eclipse.apt") version "3.33.1" apply false
   eclipse
 }
@@ -38,7 +39,7 @@ subprojects {
 
   extensions.configure(IndraExtension::class) {
     github("KyoriPowered", "indra") {
-      ci = true
+      ci(true)
     }
     mitLicense()
 
@@ -72,10 +73,15 @@ subprojects {
     
   }
 
-  extensions.getByType(PluginBundleExtension::class).tags = listOf("kyori", "standard")
-  extensions.getByType(PluginBundleExtension::class).website = "https://github.com/KyoriPowered/indra/wiki"
-  
-  eclipse {
-      synchronizationTasks("eclipseJdtApt", "eclipseJdt", "eclipseFactorypath")
+  extensions.configure(IndraPluginPublishingExtension::class) {
+    bundleTags("kyori", "standard")
+    website("https://github.com/KyoriPowered/indra/wiki")
+  }
+
+
+  tasks.withType(Test::class) {
+    if (JavaVersion.current() > JavaVersion.VERSION_1_8) {
+      jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
+    }
   }
 }

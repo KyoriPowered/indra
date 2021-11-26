@@ -6,10 +6,10 @@ dependencies {
 
 indraPluginPublishing {
   plugin(
-    id = "indra.publishing.sonatype",
-    mainClass = "net.kyori.indra.sonatype.IndraSonatypePublishingPlugin",
-    displayName = "Indra Sonatype Publishing",
-    description = "Reasonable sonatype publishing configuration",
-    tags = listOf("boilerplate", "publishing", "nexus", "sonatype")
+    "indra.publishing.sonatype",
+    "net.kyori.indra.sonatype.IndraSonatypePublishingPlugin",
+    "Indra Sonatype Publishing",
+    "Reasonable sonatype publishing configuration",
+    listOf("boilerplate", "publishing", "nexus", "sonatype")
   )
 }
