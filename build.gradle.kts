@@ -1,4 +1,3 @@
-import com.gradle.publish.PluginBundleExtension
 import net.kyori.indra.IndraExtension
 import net.kyori.indra.gradle.IndraPluginPublishingExtension
 
@@ -78,8 +77,7 @@ subprojects {
     website("https://github.com/KyoriPowered/indra/wiki")
   }
 
-
-  tasks.withType(Test::class) {
+  tasks.named("test", Test::class) {
     if (JavaVersion.current() > JavaVersion.VERSION_1_8) {
       jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
     }
