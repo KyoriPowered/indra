@@ -7,6 +7,12 @@
 /build/
 /*.iml
 /*/.factorypath
+/*/.apt_generated/
+/*/.apt_generated_test/
 /*/.checkstyle
 /*/.classpath
+/*/.project
 /*/.settings/
+/*/bin/
+/.project
+/.settings/
