@@ -87,9 +87,9 @@ public interface License {
   }
 
   /**
-   * Get a LGPL-3.0-only license instance.
+   * Get an LGPL-3.0-only license instance.
    *
-   * @return the GPL-3.0-only license
+   * @return the LGPL-3.0-only license
    * @since 2.1.0
    */
   static @NonNull License lgpl3Only() {
@@ -101,9 +101,9 @@ public interface License {
   }
 
   /**
-   * Get a LGPL-3.0-or-later license instance.
+   * Get an LGPL-3.0-or-later license instance.
    *
-   * @return the GPL-3.0-or-later license
+   * @return the LGPL-3.0-or-later license
    * @since 2.1.0
    */
   static @NonNull License lgpl3OrLater() {
@@ -115,7 +115,7 @@ public interface License {
   }
 
   /**
-   * Get a MIT license instance.
+   * Get an MIT license instance.
    *
    * @return the MIT license
    * @since 2.0.0
@@ -129,7 +129,7 @@ public interface License {
   }
 
   /**
-   * Get a MPL-2 license instance.
+   * Get an MPL-2 license instance.
    *
    * @return the MPL-2 license
    * @since 2.1.0
