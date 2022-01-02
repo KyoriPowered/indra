@@ -36,6 +36,7 @@ import net.kyori.mammoth.ProjectPlugin;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
+import org.gradle.api.JavaVersion;
 import org.gradle.api.NamedDomainObjectProvider;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -64,6 +65,9 @@ import org.gradle.jvm.toolchain.JavaCompiler;
 import org.gradle.jvm.toolchain.JavaLanguageVersion;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.language.jvm.tasks.ProcessResources;
+import org.gradle.plugins.ide.eclipse.EclipsePlugin;
+import org.gradle.plugins.ide.eclipse.model.EclipseModel;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Multirelease jar plugin.
@@ -85,13 +89,17 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
   @Override
   public void apply(final @NonNull Project project, final @NonNull PluginContainer plugins, final @NonNull ExtensionContainer extensions, final @NonNull Convention convention, final @NonNull TaskContainer tasks) {
     // Once the source set container is created, configure the multirelease extension
-    plugins.withType(JavaBasePlugin.class, plugin -> {
+    plugins.withType(JavaBasePlugin.class, $ -> {
       final SourceSetContainer sourceSets = extensions.getByType(SourceSetContainer.class);
       this.configureMultiRelease(project, tasks, project.getDependencies(), sourceSets);
 
       // Then configure standard extra options for main source set and test source set
-      plugins.withType(JavaPlugin.class, javaPlugin -> {
+      plugins.withType(JavaPlugin.class, $$ -> {
         this.configureStandardSourceSetMultireleaseActions(project, Indra.extension(extensions), tasks, sourceSets);
+      });
+
+      plugins.withType(EclipsePlugin.class, $$ -> {
+        this.configureEclipseProjectVersions(project, extensions.getByType(EclipseModel.class), Indra.extension(extensions), sourceSets);
       });
     });
   }
@@ -100,7 +108,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
     final Set<String> alternateNames = ConcurrentHashMap.newKeySet();
     // Perform early setup for things that need to be visible in buildscripts
     sourceSets.all(parent -> {
-      if(alternateNames.contains(parent.getName())) {
+      if (alternateNames.contains(parent.getName())) {
         // ignore source sets we create ourself
         return;
       }
@@ -127,10 +135,10 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
 
         // Validate that all versions are valid
         final int baseVersion = indra.javaVersions().target().get();
-        for(final int version : versions) {
-          if(version <= baseVersion) {
+        for (final int version : versions) {
+          if (version <= baseVersion) {
             throw new GradleException("Found declared multirelease variant (version " + version + ") of source set '" + base.getName() + "' which was lower than the base version (" + baseVersion + ")");
-          } else if(version <= MultireleaseSourceSetImpl.MINIMUM_MULTIRELEASE_VERSION) {
+          } else if (version <= MultireleaseSourceSetImpl.MINIMUM_MULTIRELEASE_VERSION) {
             throw new GradleException("Multirelease jars can only be used for variants targeting a Java version greater than " + MultireleaseSourceSetImpl.MINIMUM_MULTIRELEASE_VERSION + ", but " + version + " was provided in source set " + base.getName());
           }
         }
@@ -138,11 +146,11 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
         final NamedDomainObjectProvider<Configuration> baseApiElements = project.getConfigurations().getNames().contains(base.getApiElementsConfigurationName()) ? project.getConfigurations().named(base.getApiElementsConfigurationName()) : null;
         final NamedDomainObjectProvider<Configuration> baseRuntimeElements = project.getConfigurations().getNames().contains(base.getRuntimeElementsConfigurationName()) ? project.getConfigurations().named(base.getRuntimeElementsConfigurationName()) : null;
 
-        for(int idx = 0, length = versions.length; idx < length; ++idx) {
+        for (int idx = 0, length = versions.length; idx < length; ++idx) {
           final int version = versions[idx];
           // Configure classpath
           final SourceSet parent;
-          if(idx == 0) {
+          if (idx == 0) {
             parent = base;
           } else {
             parent = sourceSets.getByName(MultireleaseSourceSetImpl.versionName(base, versions[idx - 1]));
@@ -162,7 +170,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
           final MultireleaseModulePatchArgumentProvider modulePatch = new MultireleaseModulePatchArgumentProvider(p.getObjects());
           modulePatch.getModuleName().set(extension.moduleName());
           modulePatch.getClassDirectories().from(base.getOutput());
-          for(int i = 0; i < idx; ++i) {
+          for (int i = 0; i < idx; ++i) {
             modulePatch.getClassDirectories().from(sourceSets.named(MultireleaseSourceSetImpl.versionName(base, versions[i])).map(SourceSet::getOutput));
           }
           final Provider<JavaCompiler> compiler = javaToolchains.compilerFor(spec -> {
@@ -183,16 +191,16 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
           this.addMultireleaseVariantToBaseOutgoingVariants(tasks, compileJava, variant, baseApiElements, baseRuntimeElements);
 
           // Then execute user-defined tasks
-          if(!extension.alternateConfigurationActions.isEmpty()) {
+          if (!extension.alternateConfigurationActions.isEmpty()) {
             final MultireleaseVariantDetails details = MultireleaseVariantDetails.details(base, version, variant);
-            for(final Action<MultireleaseVariantDetails> action : extension.alternateConfigurationActions) {
+            for (final Action<MultireleaseVariantDetails> action : extension.alternateConfigurationActions) {
               action.execute(details);
             }
           }
         }
 
         // Now, just once for the source set if we do in fact have versions,
-        if(versions.length > 0) {
+        if (versions.length > 0) {
           this.configureMultireleaseJarManifestAttribute(tasks, base);
         }
       });
@@ -224,33 +232,33 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
     final SourceSet variant,
     final NamedDomainObjectProvider<Configuration> baseApiElements,
     final NamedDomainObjectProvider<Configuration> baseRuntimeElements
-  ) {
+    ) {
     // Add classes to the appropriate outgoing variants of the base configuration
-    if(baseApiElements != null) {
+    if (baseApiElements != null) {
       baseApiElements.configure(conf -> {
         // TODO: this isn't entirely accurate, since it won't capture every input to the jar task
         conf.getOutgoing().getVariants().named(CLASSES_VARIANT, classesVariant -> {
           classesVariant.artifact(
             compileJava.flatMap(AbstractCompile::getDestinationDirectory),
             artifact -> artifact.builtBy(compileJava)
-          );
+            );
         });
       });
     }
-    if(baseRuntimeElements != null) {
+    if (baseRuntimeElements != null) {
       final TaskProvider<ProcessResources> processResources = tasks.named(variant.getProcessResourcesTaskName(), ProcessResources.class);
       baseRuntimeElements.configure(conf -> {
         conf.getOutgoing().getVariants().named(CLASSES_VARIANT, classesVariant -> {
           classesVariant.artifact(
             compileJava.flatMap(AbstractCompile::getDestinationDirectory),
             artifact -> artifact.builtBy(compileJava)
-          );
+            );
         });
         conf.getOutgoing().getVariants().named(RESOURCES_VARAINT, classesVariant -> {
           classesVariant.artifact(
             processResources.map(Copy::getDestinationDir),
             artifact -> artifact.builtBy(processResources)
-          );
+            );
         });
       });
     }
@@ -265,7 +273,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
 
   private Set<File> applySourceDirectories(final int version, final Set<File> originalFiles) {
     final Set<File> sourceDirs = new HashSet<>(originalFiles.size());
-    for(final File file : originalFiles) {
+    for (final File file : originalFiles) {
       sourceDirs.add(new File(file.getParentFile(), file.getName() + version));
     }
     return sourceDirs;
@@ -277,7 +285,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
 
     // Configure test tasks to build using a jar as soon as the `main` source set has actions
     project.afterEvaluate(p -> {
-      if(!main.alternateVersions().isEmpty()) {
+      if (!main.alternateVersions().isEmpty()) {
         final ProjectLayout layout = p.getLayout();
         final TaskProvider<Jar> jarTask = tasks.named(mainSet.getJarTaskName(), Jar.class);
         final SourceSetOutput mainOutput = mainSet.getOutput();
@@ -304,7 +312,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
 
       // If our primary JDK is the target, then let's add the variant's classes to the main test task
       tasks.named(JavaPlugin.TEST_TASK_NAME, Test.class, testTask -> {
-        if(actualVersion.get() >= target) {
+        if (actualVersion.get() >= target) {
           testTask.setTestClassesDirs(testTask.getTestClassesDirs().plus(testClassesDirs));
           testTask.setClasspath(testTask.getClasspath().plus(runtimeClasspath));
           testTask.dependsOn(variantCompile);
@@ -313,13 +321,36 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
 
       // But always add to the java version-specific test task
       tasks.matching(it -> it.getName().equals(Indra.testJava(target))).configureEach(task -> {
-        if(!(task instanceof Test)) return;
+        if (!(task instanceof Test))
+          return;
         final Test testTask = (Test) task;
 
         testTask.setTestClassesDirs(testTask.getTestClassesDirs().plus(testClassesDirs));
         testTask.setClasspath(testTask.getClasspath().plus(runtimeClasspath));
         testTask.dependsOn(variantCompile);
       });
+    });
+  }
+
+  private void configureEclipseProjectVersions(final Project project, final EclipseModel model, final IndraExtension indra, final SourceSetContainer sourceSets) {
+    project.afterEvaluate(p -> {
+      final int baseVersion = indra.javaVersions().target().get();
+      int sourceVersion = baseVersion;
+      for (final SourceSet set : sourceSets) {
+        final @Nullable MultireleaseSourceSet mr = set.getExtensions().findByType(MultireleaseSourceSet.class);
+        if (mr == null) continue;
+
+        for (final int candidate : mr.alternateVersions()) {
+          sourceVersion = Math.max(sourceVersion, candidate);
+        }
+      }
+
+
+      if (sourceVersion != baseVersion) {
+        final JavaVersion compatibility = JavaVersion.toVersion(sourceVersion);
+        model.getJdt().setSourceCompatibility(compatibility);
+        model.getJdt().setTargetCompatibility(compatibility);
+      }
     });
   }
 }
