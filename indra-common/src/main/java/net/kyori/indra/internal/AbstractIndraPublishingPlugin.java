@@ -147,12 +147,21 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
     final String username = repository.name() + "Username";
     final String password = repository.name() + "Password";
 
-    if(!project.hasProperty(username)) return false;
-    if(!project.hasProperty(password)) return false;
+    if(!project.hasProperty(username) || !project.hasProperty(password)) {
+      project.getLogger().info("indra-publishing: skipping repository {} because username or password was not set", repository.name());
+      return false;
+    }
 
-    if(repository.releases() && Versioning.isRelease(project)) return true;
-    if(repository.snapshots() && Versioning.isSnapshot(project)) return true;
+    if(repository.releases() && Versioning.isRelease(project)) {
+      project.getLogger().info("indra-publishing: adding repository {} because it accepts releases and this project is in a release state", repository.name());
+      return true;
+    }
+    if(repository.snapshots() && Versioning.isSnapshot(project)) {
+      project.getLogger().info("indra-publishing: adding repository {} because it accepts snapshots and this project is in a snapshot state", repository.name());
+      return true;
+    }
 
+    project.getLogger().info("indra-publishing: skipping repository {} because release/snapshot constraint not met", repository.name());
     return false;
   }
 
