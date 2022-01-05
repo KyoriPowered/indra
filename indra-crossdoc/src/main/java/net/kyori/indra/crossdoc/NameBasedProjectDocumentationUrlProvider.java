@@ -28,24 +28,13 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 
 /**
- * A documentation URL provider that generates a URL based on the project name.
+ * A documentation URL provider that generates a relative URL based on the project name.
  *
- * <p>The final URL will be in the format {@code <baseUrl>/<project name>[/<version>]}, where the configured prefix is stripped from the project name if it is present.</p>
+ * <p>The final URL will be in the format {@code <project name>[/<version>]}, where the configured prefix is stripped from the project name if it is present.</p>
  *
  * @since 2.1.0
  */
 public interface NameBasedProjectDocumentationUrlProvider extends ProjectDocumentationUrlProvider {
-  /**
-   * The base URL to prepend to the project name.
-   *
-   * <p>If this URL does not end with a '{@code /}', one will be appended automatically.</p>
-   *
-   * @return the base URL property
-   * @since 2.1.0
-   */
-  @Input
-  Property<String> getBaseUrl();
-
   /**
    * A version string that will be appended.
    *

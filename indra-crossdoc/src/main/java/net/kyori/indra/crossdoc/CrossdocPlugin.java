@@ -218,6 +218,6 @@ public class CrossdocPlugin implements ProjectPlugin {
   }
 
   private boolean hasJavadocTaskAndConfiguration(final Project project) {
-    return project.getTasks().getNames().contains(JavaPlugin.JAVADOC_TASK_NAME) && project.getTasks().getNames().contains(JavaPlugin.JAVADOC_ELEMENTS_CONFIGURATION_NAME);
+    return project.getTasks().getNames().contains(JavaPlugin.JAVADOC_TASK_NAME) && project.getConfigurations().getNames().contains(JavaPlugin.JAVADOC_ELEMENTS_CONFIGURATION_NAME);
   }
 }
