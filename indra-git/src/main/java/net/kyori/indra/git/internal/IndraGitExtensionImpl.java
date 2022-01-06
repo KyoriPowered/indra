@@ -35,6 +35,8 @@ import org.eclipse.jgit.lib.Constants;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevObject;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.gradle.api.Project;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.provider.Provider;
@@ -80,12 +82,14 @@ public class IndraGitExtensionImpl implements IndraGitExtension {
 
       final ObjectId headCommit = head.getLeaf().getObjectId();
 
-      for(final Ref tag : git.tagList().call()) {
-        @Nullable ObjectId tagId = tag.getPeeledObjectId();
-        if(tagId == null) tagId = tag.getObjectId();
+      try(final RevWalk walk = new RevWalk(git.getRepository())) {
+        for(final Ref tag : git.tagList().call()) {
+          final RevObject parsed = walk.peel(walk.parseAny(tag.getObjectId()));
+          final ObjectId commitId = parsed.toObjectId();
 
-        if(ObjectId.isEqual(tagId, headCommit)) {
-          return tag;
+          if(ObjectId.isEqual(commitId, headCommit)) {
+            return tag;
+          }
         }
       }
     } catch(final IOException | GitAPIException ex) {
