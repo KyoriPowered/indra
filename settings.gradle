@@ -1,17 +1,17 @@
-rootProject.name = "indra"
-
 pluginManagement {
   plugins {
-    kotlin("jvm") version "1.5.31"
+    id "org.jetbrains.kotlin.jvm" version "1.5.31"
   }
 }
 
-listOf(
+rootProject.name = "indra"
+
+[
   "indra-common",
   "indra-git",
   "indra-publishing-gradle-plugin",
   "indra-publishing-sonatype",
   "indra-crossdoc"
-).forEach {
+].each {
   include(it)
 }

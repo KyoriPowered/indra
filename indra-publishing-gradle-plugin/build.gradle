@@ -1,6 +1,6 @@
 dependencies {
-  implementation(project(":indra-common"))
-  implementation("com.gradle.publish:plugin-publish-plugin:0.14.0")
+  implementation project(":indra-common")
+  implementation "com.gradle.publish:plugin-publish-plugin:0.14.0"
 }
 
 indraPluginPublishing {
@@ -9,6 +9,6 @@ indraPluginPublishing {
     "net.kyori.indra.gradle.GradlePluginPublishingPlugin",
     "Indra Gradle Plugin Publishing",
     "Reasonable settings for Gradle plugin publishing",
-    listOf("publishing", "gradle-plugin", "boilerplate")
+    ["publishing", "gradle-plugin", "boilerplate"]
   )
 }

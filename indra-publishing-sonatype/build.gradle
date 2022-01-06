@@ -1,0 +1,15 @@
+dependencies {
+  implementation project(":indra-common")
+  implementation org.gradle.kotlin.dsl.ProjectExtensionsKt.gradleKotlinDsl(project) // needed for gradle-nexus-publish-plugin
+  implementation "io.github.gradle-nexus:publish-plugin:1.1.0"
+}
+
+indraPluginPublishing {
+  plugin(
+    "indra.publishing.sonatype",
+    "net.kyori.indra.sonatype.IndraSonatypePublishingPlugin",
+    "Indra Sonatype Publishing",
+    "Reasonable sonatype publishing configuration",
+    ["boilerplate", "publishing", "nexus", "sonatype"]
+  )
+}
