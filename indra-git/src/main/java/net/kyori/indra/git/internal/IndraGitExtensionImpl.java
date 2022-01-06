@@ -28,8 +28,6 @@ import java.util.Collections;
 import java.util.List;
 import javax.inject.Inject;
 import net.kyori.indra.git.IndraGitExtension;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.RefNotFoundException;
@@ -40,6 +38,8 @@ import org.eclipse.jgit.lib.Repository;
 import org.gradle.api.Project;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.provider.Provider;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class IndraGitExtensionImpl implements IndraGitExtension {
   private final Logger logger;
@@ -57,7 +57,7 @@ public class IndraGitExtensionImpl implements IndraGitExtension {
   }
 
   @Override
-  public @NonNull List<Ref> tags() {
+  public @NotNull List<Ref> tags() {
     final @Nullable Git git = this.git();
     if(git == null) return Collections.emptyList();
 

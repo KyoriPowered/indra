@@ -23,10 +23,10 @@
  */
 package net.kyori.indra;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.SetProperty;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Options configuring Java toolchain versioning.
@@ -42,7 +42,7 @@ public interface JavaToolchainVersions {
    * @return a property providing the target version
    * @since 1.1.1
    */
-  @NonNull Property<Integer> target();
+  @NotNull Property<Integer> target();
 
   /**
    * Set the target to compile Java for.
@@ -59,7 +59,7 @@ public interface JavaToolchainVersions {
    *
    * @return a property providing the minimum toolchain version
    */
-  @NonNull Property<Integer> minimumToolchain();
+  @NotNull Property<Integer> minimumToolchain();
 
   /**
    * Sets the minimum toolchain version.
@@ -80,7 +80,7 @@ public interface JavaToolchainVersions {
    * @return whether strict versions are enabled
    * @since 2.0.0
    */
-  @NonNull Property<Boolean> strictVersions();
+  @NotNull Property<Boolean> strictVersions();
 
   void strictVersions(final boolean strictVersions);
 
@@ -90,11 +90,11 @@ public interface JavaToolchainVersions {
    * @return a property containing the versions to test with
    * @since 2.0.0
    */
-  @NonNull SetProperty<Integer> testWith();
+  @NotNull SetProperty<Integer> testWith();
 
   /**
    * Add alternate versions that should be tested with, when strict versions are enabled.
-   * 
+   *
    * @param testVersions versions to test with
    * @since 2.0.0
    */
@@ -106,7 +106,7 @@ public interface JavaToolchainVersions {
    * @return a property providing preview feature enabled state
    * @since 2.0.0
    */
-  @NonNull Property<Boolean> previewFeaturesEnabled();
+  @NotNull Property<Boolean> previewFeaturesEnabled();
 
   /**
    * Set whether Java preview features are enabled on compile, test, and execution tasks.
@@ -121,5 +121,5 @@ public interface JavaToolchainVersions {
    *
    * @return a provider resolving the actual Java toolchain version to use
    */
-  @NonNull Provider<Integer> actualVersion();
+  @NotNull Provider<Integer> actualVersion();
 }

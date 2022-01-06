@@ -23,8 +23,8 @@
  */
 package net.kyori.indra.api.model;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.immutables.value.Value;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A simplified description of a continuous integration system.
@@ -39,7 +39,7 @@ public interface ContinuousIntegration {
    * @return the builder
    * @since 2.0.0
    */
-  static @NonNull Builder builder() {
+  static @NotNull Builder builder() {
     return new ContinuousIntegrationImpl.BuilderImpl();
   }
 
@@ -49,7 +49,7 @@ public interface ContinuousIntegration {
    * @return the CI system name
    * @since 2.0.0
    */
-  @NonNull String system();
+  @NotNull String system();
 
   /**
    * The URL pointing to a web interface for the CI system.
@@ -57,7 +57,7 @@ public interface ContinuousIntegration {
    * @return the URL
    * @since 2.0.0
    */
-  @NonNull String url();
+  @NotNull String url();
 
   /**
    * A builder for new continuous integration instances.
@@ -73,7 +73,7 @@ public interface ContinuousIntegration {
      * @since 2.0.0
      */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
-    @NonNull Builder from(final ContinuousIntegration instance);
+    @NotNull Builder from(final ContinuousIntegration instance);
 
     /**
      * Sets the name of the continuous integration system used.
@@ -83,7 +83,7 @@ public interface ContinuousIntegration {
      * @since 2.0.0
      */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
-    @NonNull Builder system(final @NonNull String system);
+    @NotNull Builder system(final @NotNull String system);
 
     /**
      * Sets the URL pointing to a web interface for the CI system.
@@ -93,7 +93,7 @@ public interface ContinuousIntegration {
      * @since 2.0.0
      */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
-    @NonNull Builder url(final @NonNull String url);
+    @NotNull Builder url(final @NotNull String url);
 
     /**
      * Creates a new {@link ContinuousIntegration} instance.
@@ -105,6 +105,6 @@ public interface ContinuousIntegration {
      * @since 2.0.0
      */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
-    @NonNull ContinuousIntegration build();
+    @NotNull ContinuousIntegration build();
   }
 }

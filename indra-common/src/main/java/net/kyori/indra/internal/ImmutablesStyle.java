@@ -27,9 +27,9 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.immutables.value.Value;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Supertype for compile-time generated data.
@@ -50,8 +50,8 @@ import org.immutables.value.Value;
   builderVisibility = Value.Style.BuilderVisibility.PACKAGE,
   deferCollectionAllocation = true,
   jdkOnly = true,
-  nullableAnnotation = "org.checkerframework.checker.nullness.qual.Nullable",
-  passAnnotations = {Nullable.class, NonNull.class}
+  nullableAnnotation = "org.jetbrains.annotations.Nullable",
+  passAnnotations = {Nullable.class, NotNull.class}
 )
 public @interface ImmutablesStyle {
 }

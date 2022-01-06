@@ -23,11 +23,11 @@
  */
 package net.kyori.indra.multirelease;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Action;
 import org.gradle.api.DomainObjectSet;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.SourceSet;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Information about multirelease variants of a source set.
@@ -43,7 +43,7 @@ public interface MultireleaseSourceSet {
    * @param set the source set
    * @return the multirelease extension
    */
-  static @NonNull MultireleaseSourceSet from(final @NonNull SourceSet set) {
+  static @NotNull MultireleaseSourceSet from(final @NotNull SourceSet set) {
     return set.getExtensions().getByType(MultireleaseSourceSet.class);
   }
 
@@ -52,7 +52,7 @@ public interface MultireleaseSourceSet {
    *
    * @return the alternate versions property
    */
-  @NonNull DomainObjectSet<Integer> alternateVersions();
+  @NotNull DomainObjectSet<Integer> alternateVersions();
 
   /**
    * Add alternate versions to this source set.
@@ -70,7 +70,7 @@ public interface MultireleaseSourceSet {
    * @return the module name property
    * @since 2.0.0
    */
-  @NonNull Property<String> moduleName();
+  @NotNull Property<String> moduleName();
 
   /**
    * The module name to explicitly pass if a modular multirelease jar is desired.
@@ -80,7 +80,7 @@ public interface MultireleaseSourceSet {
    * @param moduleName the name of the module that the different version variants should contribute to
    * @since 2.0.0
    */
-  default void moduleName(final @NonNull String moduleName) {
+  default void moduleName(final @NotNull String moduleName) {
     this.moduleName().set(moduleName);
   }
 
@@ -90,5 +90,5 @@ public interface MultireleaseSourceSet {
    * @param action an action that receives each source set
    * @since 2.0.0
    */
-  void configureVariants(final @NonNull Action<MultireleaseVariantDetails> action);
+  void configureVariants(final @NotNull Action<MultireleaseVariantDetails> action);
 }

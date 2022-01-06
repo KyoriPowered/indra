@@ -23,8 +23,8 @@
  */
 package net.kyori.indra.api.model;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.immutables.value.Value;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Project issue tracker information.
@@ -39,7 +39,7 @@ public interface Issues {
    * @return a new builder
    * @since 2.0.0
    */
-  static @NonNull Builder builder() {
+  static @NotNull Builder builder() {
     return new IssuesImpl.BuilderImpl();
   }
 
@@ -49,7 +49,7 @@ public interface Issues {
    * @return the issue tracking system name
    * @since 2.0.0
    */
-  @NonNull String system();
+  @NotNull String system();
 
   /**
    * The URL pointing to a web interface for the CI system.
@@ -57,7 +57,7 @@ public interface Issues {
    * @return the URL
    * @since 2.0.0
    */
-  @NonNull String url();
+  @NotNull String url();
 
   /**
    * A builder for new issue tracker instances.
@@ -73,7 +73,7 @@ public interface Issues {
      * @since 2.0.0
      */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
-    @NonNull Builder from(final Issues instance);
+    @NotNull Builder from(final Issues instance);
 
     /**
      * Sets the name of the issue tracking system used.
@@ -83,7 +83,7 @@ public interface Issues {
      * @since 2.0.0
      */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
-    @NonNull Builder system(final @NonNull String system);
+    @NotNull Builder system(final @NotNull String system);
 
     /**
      * Sets the URL pointing to a web interface for the CI system.
@@ -93,7 +93,7 @@ public interface Issues {
      * @since 2.0.0
      */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
-    @NonNull Builder url(final @NonNull String url);
+    @NotNull Builder url(final @NotNull String url);
 
     /**
      * Creates a new {@link Issues} instance.
@@ -104,6 +104,6 @@ public interface Issues {
      * @since 2.0.0
      */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
-    @NonNull Issues build();
+    @NotNull Issues build();
   }
 }

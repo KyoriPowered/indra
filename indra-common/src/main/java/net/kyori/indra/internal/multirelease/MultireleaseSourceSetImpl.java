@@ -28,12 +28,12 @@ import java.util.Set;
 import javax.inject.Inject;
 import net.kyori.indra.multirelease.MultireleaseSourceSet;
 import net.kyori.indra.multirelease.MultireleaseVariantDetails;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Action;
 import org.gradle.api.DomainObjectSet;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.SourceSet;
+import org.jetbrains.annotations.NotNull;
 
 import static java.util.Objects.requireNonNull;
 
@@ -51,12 +51,12 @@ class MultireleaseSourceSetImpl implements MultireleaseSourceSet {
   }
 
   @Override
-  public @NonNull DomainObjectSet<Integer> alternateVersions() {
+  public @NotNull DomainObjectSet<Integer> alternateVersions() {
     return this.alternateVersions;
   }
 
   @Override
-  public @NonNull Property<String> moduleName() {
+  public @NotNull Property<String> moduleName() {
     return this.moduleName;
   }
 
@@ -73,7 +73,7 @@ class MultireleaseSourceSetImpl implements MultireleaseSourceSet {
   }
 
   @Override
-  public void configureVariants(final @NonNull Action<MultireleaseVariantDetails> action) {
+  public void configureVariants(final @NotNull Action<MultireleaseVariantDetails> action) {
     this.alternateConfigurationActions.add(requireNonNull(action, "action"));
   }
 }

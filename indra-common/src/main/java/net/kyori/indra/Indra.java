@@ -27,8 +27,8 @@ import java.util.HashSet;
 import java.util.Set;
 import net.kyori.indra.internal.IndraExtensionImpl;
 import net.kyori.mammoth.Extensions;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.plugins.ExtensionContainer;
+import org.jetbrains.annotations.NotNull;
 
 public class Indra {
   public static final String EXTENSION_NAME = "indra";
@@ -55,7 +55,7 @@ public class Indra {
    * @param extensions the extensions container
    * @return the appropriate extension instance
    */
-  public static @NonNull IndraExtension extension(final @NonNull ExtensionContainer extensions) {
+  public static @NotNull IndraExtension extension(final @NotNull ExtensionContainer extensions) {
     return Extensions.findOrCreate(extensions, EXTENSION_NAME, IndraExtension.class, IndraExtensionImpl.class);
   }
 }

@@ -37,8 +37,6 @@ import net.kyori.indra.api.model.SourceCodeManagement;
 import net.kyori.indra.repository.RemoteRepository;
 import net.kyori.mammoth.Configurable;
 import net.kyori.mammoth.Properties;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.Action;
 import org.gradle.api.DomainObjectSet;
 import org.gradle.api.GradleException;
@@ -46,6 +44,8 @@ import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.process.CommandLineArgumentProvider;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -82,12 +82,12 @@ public class IndraExtensionImpl implements IndraExtension {
   }
 
   @Override
-  public @NonNull JavaToolchainVersions javaVersions() {
+  public @NotNull JavaToolchainVersions javaVersions() {
     return this.javaVersions;
   }
 
   @Override
-  public void javaVersions(final @NonNull Action<JavaToolchainVersions> action) {
+  public void javaVersions(final @NotNull Action<JavaToolchainVersions> action) {
     Configurable.configure(this.javaVersions, action);
   }
 
@@ -99,29 +99,29 @@ public class IndraExtensionImpl implements IndraExtension {
   // Metadata properties //
 
   @Override
-  public @NonNull Property<ContinuousIntegration> ci() {
+  public @NotNull Property<ContinuousIntegration> ci() {
     return this.ci;
   }
 
   @Override
-  public @NonNull Property<Issues> issues() {
+  public @NotNull Property<Issues> issues() {
     return this.issues;
   }
 
   @Override
-  public @NonNull Property<SourceCodeManagement> scm() {
+  public @NotNull Property<SourceCodeManagement> scm() {
     return this.scm;
   }
 
   @Override
-  public @NonNull Property<License> license() {
+  public @NotNull Property<License> license() {
     return this.license;
   }
 
   // Configuration for specific platforms //
 
   @Override
-  public void github(final @NonNull String user, final @NonNull String repo, final @Nullable Action<ApplyTo> applicable) {
+  public void github(final @NotNull String user, final @NotNull String repo, final @Nullable Action<ApplyTo> applicable) {
     final ApplyTo options = Configurable.configureIfNonNull(ApplyTo.defaults(), applicable);
 
     if(options.ci()) {
@@ -142,7 +142,7 @@ public class IndraExtensionImpl implements IndraExtension {
   }
 
   @Override
-  public void gitlab(final @NonNull String user, final @NonNull String repo, final @Nullable Action<ApplyTo> applicable) {
+  public void gitlab(final @NotNull String user, final @NotNull String repo, final @Nullable Action<ApplyTo> applicable) {
     final ApplyTo options = Configurable.configureIfNonNull(ApplyTo.defaults(), applicable);
 
     if(options.ci()) {
@@ -169,37 +169,37 @@ public class IndraExtensionImpl implements IndraExtension {
   final Set<Action<MavenPublication>> publishingActions = new HashSet<>();
 
   @Override
-  public void publishAllTo(final @NonNull String id, final @NonNull String url) {
+  public void publishAllTo(final @NotNull String id, final @NotNull String url) {
     this.repositories.add(RemoteRepository.all(id, url));
   }
 
   @Override
-  public void publishReleasesTo(final @NonNull String id, final @NonNull String url) {
+  public void publishReleasesTo(final @NotNull String id, final @NotNull String url) {
     this.repositories.add(RemoteRepository.releasesOnly(id, url));
   }
 
   @Override
-  public void publishSnapshotsTo(final @NonNull String id, final @NonNull String url) {
+  public void publishSnapshotsTo(final @NotNull String id, final @NotNull String url) {
     this.repositories.add(RemoteRepository.snapshotsOnly(id, url));
   }
 
   @Override
-  public void configurePublications(final @NonNull Action<MavenPublication> action) {
+  public void configurePublications(final @NotNull Action<MavenPublication> action) {
     this.publishingActions.add(requireNonNull(action, "action"));
   }
 
   @Override
-  public @NonNull Property<String> checkstyle() {
+  public @NotNull Property<String> checkstyle() {
     return this.checkstyle;
   }
 
   @Override
-  public @NonNull Property<Boolean> reproducibleBuilds() {
+  public @NotNull Property<Boolean> reproducibleBuilds() {
     return this.reproducibleBuilds;
   }
 
   @Override
-  public @NonNull Property<Boolean> includeJavaSoftwareComponentInPublications() {
+  public @NotNull Property<Boolean> includeJavaSoftwareComponentInPublications() {
     return this.includeJavaSoftwareComponentInPublications;
   }
 

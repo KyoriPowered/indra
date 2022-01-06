@@ -27,13 +27,13 @@ import javax.inject.Inject;
 import net.kyori.indra.JavaToolchainVersions;
 import net.kyori.indra.util.Versioning;
 import net.kyori.mammoth.Properties;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.provider.SetProperty;
+import org.jetbrains.annotations.NotNull;
 
 public class JavaToolchainVersionsImpl implements JavaToolchainVersions {
   private static final String STRICT_MULTIRELEASE_VERSIONS = "strictMultireleaseVersions";
@@ -72,7 +72,7 @@ public class JavaToolchainVersionsImpl implements JavaToolchainVersions {
   }
 
   @Override
-  public @NonNull Property<Integer> target() {
+  public @NotNull Property<Integer> target() {
     return this.target;
   }
 
@@ -82,7 +82,7 @@ public class JavaToolchainVersionsImpl implements JavaToolchainVersions {
   }
 
   @Override
-  public @NonNull Property<Integer> minimumToolchain() {
+  public @NotNull Property<Integer> minimumToolchain() {
     return this.minimumToolchain;
   }
 
@@ -92,7 +92,7 @@ public class JavaToolchainVersionsImpl implements JavaToolchainVersions {
   }
 
   @Override
-  public @NonNull Property<Boolean> strictVersions() {
+  public @NotNull Property<Boolean> strictVersions() {
     return this.strictVersions;
   }
 
@@ -102,7 +102,7 @@ public class JavaToolchainVersionsImpl implements JavaToolchainVersions {
   }
 
   @Override
-  public @NonNull SetProperty<Integer> testWith() {
+  public @NotNull SetProperty<Integer> testWith() {
     return this.testWith;
   }
 
@@ -114,7 +114,7 @@ public class JavaToolchainVersionsImpl implements JavaToolchainVersions {
   }
 
   @Override
-  public @NonNull Property<Boolean> previewFeaturesEnabled() {
+  public @NotNull Property<Boolean> previewFeaturesEnabled() {
     return this.enablePreviewFeatures;
   }
 
@@ -124,7 +124,7 @@ public class JavaToolchainVersionsImpl implements JavaToolchainVersions {
   }
 
   @Override
-  public @NonNull Provider<Integer> actualVersion() {
+  public @NotNull Provider<Integer> actualVersion() {
     return this.actualVersion;
   }
 }

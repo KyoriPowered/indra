@@ -24,9 +24,9 @@
 package net.kyori.indra;
 
 import java.util.function.Consumer;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
+import org.jetbrains.annotations.Nullable;
 
 public class IndraTesting {
   public static Project project() {

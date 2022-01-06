@@ -27,12 +27,12 @@ import com.gradle.publish.PluginBundleExtension;
 import com.gradle.publish.PluginConfig;
 import java.util.List;
 import javax.inject.Inject;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.plugin.devel.GradlePluginDevelopmentExtension;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class IndraPluginPublishingExtensionImpl implements IndraPluginPublishingExtension {
   private final GradlePluginDevelopmentExtension publishingExtension;
@@ -55,22 +55,22 @@ public class IndraPluginPublishingExtensionImpl implements IndraPluginPublishing
   }
 
   @Override
-  public @NonNull ListProperty<String> bundleTags() {
+  public @NotNull ListProperty<String> bundleTags() {
     return this.bundleTags;
   }
 
   @Override
-  public @NonNull Property<String> pluginIdBase() {
+  public @NotNull Property<String> pluginIdBase() {
     return this.pluginIdBase;
   }
 
   @Override
-  public @NonNull Property<String> website() {
+  public @NotNull Property<String> website() {
     return this.website;
   }
 
   @Override
-  public void plugin(final @NonNull String id, final @NonNull String mainClass, final @NonNull String displayName, final @Nullable String description, final @Nullable List<String> tags) {
+  public void plugin(final @NotNull String id, final @NotNull String mainClass, final @NotNull String displayName, final @Nullable String description, final @Nullable List<String> tags) {
     final String qualifiedId = this.pluginIdBase.get() + '.' + id;
     this.publishingExtension.getPlugins().create(id, plugin -> {
       plugin.setId(qualifiedId);

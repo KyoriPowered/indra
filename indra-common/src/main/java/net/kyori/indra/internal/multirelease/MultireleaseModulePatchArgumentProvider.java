@@ -28,7 +28,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.stream.Collectors;
 import net.kyori.mammoth.Properties;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
@@ -36,6 +35,7 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Optional;
 import org.gradle.process.CommandLineArgumentProvider;
+import org.jetbrains.annotations.Nullable;
 
 class MultireleaseModulePatchArgumentProvider implements CommandLineArgumentProvider {
   private final Property<String> moduleName;

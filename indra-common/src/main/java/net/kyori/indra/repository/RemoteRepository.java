@@ -25,11 +25,11 @@ package net.kyori.indra.repository;
 
 import java.net.URI;
 import net.kyori.indra.internal.ImmutablesStyle;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.artifacts.repositories.MavenRepositoryContentDescriptor;
 import org.immutables.value.Value;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A definition for a repository that can be added to projects.
@@ -50,7 +50,7 @@ public interface RemoteRepository {
    * @return a new repository description
    * @since 2.0.0
    */
-  static @NonNull RemoteRepository all(final String name, final URI url) {
+  static @NotNull RemoteRepository all(final String name, final URI url) {
     return new RemoteRepositoryImpl(name, url, true, true);
   }
 
@@ -62,7 +62,7 @@ public interface RemoteRepository {
    * @return a new repository description
    * @since 2.0.0
    */
-  static @NonNull RemoteRepository all(final String name, final String url) {
+  static @NotNull RemoteRepository all(final String name, final String url) {
     return all(name, URI.create(url));
   }
 
@@ -74,7 +74,7 @@ public interface RemoteRepository {
    * @return a new repository description
    * @since 2.0.0
    */
-  static @NonNull RemoteRepository releasesOnly(final String name, final URI url) {
+  static @NotNull RemoteRepository releasesOnly(final String name, final URI url) {
     return new RemoteRepositoryImpl(name, url, true, false);
   }
 
@@ -86,7 +86,7 @@ public interface RemoteRepository {
    * @return a new repository description
    * @since 2.0.0
    */
-  static @NonNull RemoteRepository releasesOnly(final String name, final String url) {
+  static @NotNull RemoteRepository releasesOnly(final String name, final String url) {
     return releasesOnly(name, URI.create(url));
   }
 
@@ -98,7 +98,7 @@ public interface RemoteRepository {
    * @return a new repository description
    * @since 2.0.0
    */
-  static @NonNull RemoteRepository snapshotsOnly(final String name, final URI url) {
+  static @NotNull RemoteRepository snapshotsOnly(final String name, final URI url) {
     return new RemoteRepositoryImpl(name, url, false, true);
   }
 
@@ -110,7 +110,7 @@ public interface RemoteRepository {
    * @return a new repository description
    * @since 2.0.0
    */
-  static @NonNull RemoteRepository snapshotsOnly(final String name, final String url) {
+  static @NotNull RemoteRepository snapshotsOnly(final String name, final String url) {
     return snapshotsOnly(name, URI.create(url));
   }
 
@@ -123,7 +123,7 @@ public interface RemoteRepository {
    * @since 2.0.0
    */
   @Value.Parameter
-  @NonNull String name();
+  @NotNull String name();
 
   /**
    * The URL providing the remote location of this repository.
@@ -132,7 +132,7 @@ public interface RemoteRepository {
    * @since 2.0.0
    */
   @Value.Parameter
-  @NonNull URI url();
+  @NotNull URI url();
 
   /**
    * Whether releases should be included in this repository.
@@ -165,7 +165,7 @@ public interface RemoteRepository {
    * @return the registered repository
    * @since 2.0.0
    */
-  default @NonNull MavenArtifactRepository addTo(final RepositoryHandler handler) {
+  default @NotNull MavenArtifactRepository addTo(final RepositoryHandler handler) {
     return handler.maven(it -> {
       it.setName(this.name());
       it.setUrl(this.url());

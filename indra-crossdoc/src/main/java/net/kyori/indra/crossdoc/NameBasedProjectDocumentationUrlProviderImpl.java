@@ -24,14 +24,14 @@
 package net.kyori.indra.crossdoc;
 
 import net.kyori.mammoth.Properties;
-import org.checkerframework.checker.nullness.qual.NonNull;
+import org.jetbrains.annotations.NotNull;
 
 abstract class NameBasedProjectDocumentationUrlProviderImpl implements ProjectDocumentationUrlProvider, NameBasedProjectDocumentationUrlProvider {
   public NameBasedProjectDocumentationUrlProviderImpl() {
   }
 
   @Override
-  public @NonNull String createUrl(final @NonNull String projectName, final @NonNull String projectPath) {
+  public @NotNull String createUrl(final @NotNull String projectName, final @NotNull String projectPath) {
     String actualProjectName = projectName;
     if (this.getProjectNamePrefix().isPresent()) {
       final String prefixToStrip = Properties.finalized(this.getProjectNamePrefix()).get();

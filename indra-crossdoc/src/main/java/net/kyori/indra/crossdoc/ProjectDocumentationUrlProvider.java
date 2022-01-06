@@ -23,8 +23,8 @@
  */
 package net.kyori.indra.crossdoc;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Project;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A provider that, given a project name will compute the eventual published URL, relative to a separately provided base URL.
@@ -43,5 +43,5 @@ public interface ProjectDocumentationUrlProvider {
    * @return the relative, public-facing URL for the Javadoc for a certain project
    * @since 2.1.0
    */
-  @NonNull String createUrl(final @NonNull String projectName, final @NonNull String projectPath);
+  @NotNull String createUrl(final @NotNull String projectName, final @NotNull String projectPath);
 }

@@ -23,6 +23,10 @@
  */
 package net.kyori.indra;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Objects;
 import net.kyori.indra.internal.IndraExtensionImpl;
 import net.kyori.indra.internal.multirelease.IndraMultireleasePlugin;
 import net.kyori.indra.repository.RemoteRepository;
@@ -30,7 +34,6 @@ import net.kyori.indra.repository.Repositories;
 import net.kyori.indra.util.Versioning;
 import net.kyori.mammoth.ProjectPlugin;
 import net.kyori.mammoth.Properties;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Action;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
@@ -62,11 +65,7 @@ import org.gradle.language.jvm.tasks.ProcessResources;
 import org.gradle.plugins.ide.api.GeneratorTask;
 import org.gradle.plugins.ide.eclipse.model.EclipseModel;
 import org.gradle.process.CommandLineArgumentProvider;
-
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Objects;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * The primary Indra plugin providing project configuration.
@@ -78,7 +77,7 @@ public class IndraPlugin implements ProjectPlugin {
   private static final String[] APT_TASKS = {"eclipseJdtApt", "eclipseJdt", "eclipseFactorypath"};
 
   @Override
-  public void apply(final @NonNull Project project, final @NonNull PluginContainer plugins, final @NonNull ExtensionContainer extensions, final @NonNull Convention convention, final @NonNull TaskContainer tasks) {
+  public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull Convention convention, final @NotNull TaskContainer tasks) {
     plugins.apply(JavaLibraryPlugin.class);
 
     final IndraExtensionImpl indra = (IndraExtensionImpl) Indra.extension(extensions);

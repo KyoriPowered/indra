@@ -24,10 +24,10 @@
 package net.kyori.indra.gradle;
 
 import java.util.List;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An extension providing helpers for plugin publishing.
@@ -41,7 +41,7 @@ public interface IndraPluginPublishingExtension {
    * @return a property providing the tags used for the overall bundle on the plugin portal
    * @since 2.0.0
    */
-  @NonNull ListProperty<String> bundleTags();
+  @NotNull ListProperty<String> bundleTags();
 
   /**
    * Set tags to be included on the plugin bundle.
@@ -69,7 +69,7 @@ public interface IndraPluginPublishingExtension {
    * @return the base for relative plugin ids
    * @since 2.0.0
    */
-  @NonNull Property<String> pluginIdBase();
+  @NotNull Property<String> pluginIdBase();
 
   /**
    * Set the base id that indra-declared plugin ids are relative to.
@@ -77,7 +77,7 @@ public interface IndraPluginPublishingExtension {
    * @param idBase the base for relative plugin ids
    * @since 2.0.0
    */
-  default void pluginIdBase(final @NonNull String idBase) {
+  default void pluginIdBase(final @NotNull String idBase) {
     this.pluginIdBase().set(idBase);
   }
 
@@ -87,7 +87,7 @@ public interface IndraPluginPublishingExtension {
    * @return the website property
    * @since 2.0.0
    */
-  @NonNull Property<String> website();
+  @NotNull Property<String> website();
 
   /**
    * Set the website to link to from this plugin's page on the plugin portal.
@@ -95,7 +95,7 @@ public interface IndraPluginPublishingExtension {
    * @param website the URL of the website
    * @since 2.0.0
    */
-  default void website(final @NonNull String website) {
+  default void website(final @NotNull String website) {
     this.website().set(website);
   }
 
@@ -109,7 +109,7 @@ public interface IndraPluginPublishingExtension {
    * @param displayName the display name for the plugin on the Gradle Plugin Portal
    * @since 2.0.0
    */
-  default void plugin(final @NonNull String id, final @NonNull String mainClass, final @NonNull String displayName) {
+  default void plugin(final @NotNull String id, final @NotNull String mainClass, final @NotNull String displayName) {
     this.plugin(id, mainClass, displayName, null);
   }
 
@@ -124,7 +124,7 @@ public interface IndraPluginPublishingExtension {
    * @param description the plugin description
    * @since 2.0.0
    */
-  default void plugin(final @NonNull String id, final @NonNull String mainClass, final @NonNull String displayName, final @Nullable String description) {
+  default void plugin(final @NotNull String id, final @NotNull String mainClass, final @NotNull String displayName, final @Nullable String description) {
     this.plugin(id, mainClass, displayName, description, null);
   }
 
@@ -142,5 +142,5 @@ public interface IndraPluginPublishingExtension {
    * @param tags tags used for the plugin on the plugin portal
    * @since 2.0.0
    */
-  void plugin(final @NonNull String id, final @NonNull String mainClass, final @NonNull String displayName, final @Nullable String description, final @Nullable List<String> tags);
+  void plugin(final @NotNull String id, final @NotNull String mainClass, final @NotNull String displayName, final @Nullable String description, final @Nullable List<String> tags);
 }

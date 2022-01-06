@@ -33,7 +33,6 @@ import net.kyori.indra.IndraExtension;
 import net.kyori.indra.multirelease.MultireleaseSourceSet;
 import net.kyori.indra.multirelease.MultireleaseVariantDetails;
 import net.kyori.mammoth.ProjectPlugin;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
 import org.gradle.api.JavaVersion;
@@ -67,6 +66,7 @@ import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.language.jvm.tasks.ProcessResources;
 import org.gradle.plugins.ide.eclipse.EclipsePlugin;
 import org.gradle.plugins.ide.eclipse.model.EclipseModel;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -87,7 +87,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
   private static final String RESOURCES_VARAINT = "resources"; // runtimeElements
 
   @Override
-  public void apply(final @NonNull Project project, final @NonNull PluginContainer plugins, final @NonNull ExtensionContainer extensions, final @NonNull Convention convention, final @NonNull TaskContainer tasks) {
+  public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull Convention convention, final @NotNull TaskContainer tasks) {
     // Once the source set container is created, configure the multirelease extension
     plugins.withType(JavaBasePlugin.class, $ -> {
       final SourceSetContainer sourceSets = extensions.getByType(SourceSetContainer.class);

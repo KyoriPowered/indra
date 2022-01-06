@@ -23,8 +23,8 @@
  */
 package net.kyori.indra.api.model;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.immutables.value.Value;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A representation of services that can be configured for a specific forge site (GitHub, GitLab, etc).
@@ -41,7 +41,7 @@ public interface ApplyTo {
    * @return the new instance
    * @since 2.0.0
    */
-  static @NonNull ApplyTo defaults() {
+  static @NotNull ApplyTo defaults() {
     return new ModifiableApplyTo();
   }
 
@@ -64,7 +64,7 @@ public interface ApplyTo {
    * @since 1.2.0
    */
   @SuppressWarnings({"NullableProblems", "override"}) // generated
-  @NonNull ApplyTo ci(final boolean ci);
+  @NotNull ApplyTo ci(final boolean ci);
 
   /**
    * Get whether issues configuration will be applied.
@@ -85,7 +85,7 @@ public interface ApplyTo {
    * @since 1.0.0
    */
   @SuppressWarnings({"NullableProblems", "override"}) // generated
-  @NonNull ApplyTo issues(final boolean issues);
+  @NotNull ApplyTo issues(final boolean issues);
 
   /**
    * Get whether scm configuration will be applied.
@@ -106,7 +106,7 @@ public interface ApplyTo {
    * @since 1.0.0
    */
   @SuppressWarnings({"NullableProblems", "override"}) // generated
-  @NonNull ApplyTo scm(final boolean scm);
+  @NotNull ApplyTo scm(final boolean scm);
 
   /**
    * Get whether publishing configuration will be applied.
@@ -127,5 +127,5 @@ public interface ApplyTo {
    * @since 1.0.0
    */
   @SuppressWarnings({"NullableProblems", "override"}) // generated
-  @NonNull ApplyTo publishing(final boolean publishing);
+  @NotNull ApplyTo publishing(final boolean publishing);
 }

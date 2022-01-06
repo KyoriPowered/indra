@@ -24,14 +24,14 @@
 package net.kyori.indra.util;
 
 import net.kyori.indra.git.IndraGitExtension;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.jgit.lib.Ref;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public final class Versioning {
-  public static int versionNumber(final @NonNull JavaVersion version) {
+  public static int versionNumber(final @NotNull JavaVersion version) {
     return version.ordinal() + 1;
   }
 
@@ -43,7 +43,7 @@ public final class Versioning {
     }
   }
 
-  public static String versionString(final @NonNull JavaVersion version) {
+  public static String versionString(final @NotNull JavaVersion version) {
     if(version == JavaVersion.VERSION_1_9) {
       return "9";
     } else if(version == JavaVersion.VERSION_1_10) {
@@ -53,7 +53,7 @@ public final class Versioning {
     }
   }
 
-  public static boolean isSnapshot(final @NonNull Project project) {
+  public static boolean isSnapshot(final @NotNull Project project) {
     return project.getVersion().toString().contains("-SNAPSHOT");
   }
 
@@ -70,7 +70,7 @@ public final class Versioning {
    * @param project the project to check
    * @return if the project is recognized as a release
    */
-  public static boolean isRelease(final @NonNull Project project) {
+  public static boolean isRelease(final @NotNull Project project) {
     final @Nullable IndraGitExtension git = project.getExtensions().findByType(IndraGitExtension.class);
     final @Nullable Ref tag = git == null ? null : git.headTag();
     return (tag != null || git == null) && !isSnapshot(project);

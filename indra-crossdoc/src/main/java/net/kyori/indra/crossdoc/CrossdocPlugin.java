@@ -24,7 +24,6 @@
 package net.kyori.indra.crossdoc;
 
 import net.kyori.mammoth.ProjectPlugin;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Action;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.NamedDomainObjectProvider;
@@ -50,6 +49,7 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.javadoc.Javadoc;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Generate offline links to Javadoc for other projects within the same multi-module build.
@@ -93,11 +93,11 @@ public class CrossdocPlugin implements ProjectPlugin {
 
   @Override
   public void apply(
-    final @NonNull Project project,
-    final @NonNull PluginContainer plugins,
-    final @NonNull ExtensionContainer extensions,
-    final @NonNull Convention convention,
-    final @NonNull TaskContainer tasks
+    final @NotNull Project project,
+    final @NotNull PluginContainer plugins,
+    final @NotNull ExtensionContainer extensions,
+    final @NotNull Convention convention,
+    final @NotNull TaskContainer tasks
   ) {
     // Register extension and attribute
     this.prepareAttributeSchema(project.getDependencies());

@@ -24,7 +24,6 @@
 package net.kyori.indra.git.task;
 
 import net.kyori.indra.git.internal.IndraGitService;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -34,6 +33,7 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Require that the project has no files that are uncommitted to SCM.

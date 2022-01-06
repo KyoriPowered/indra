@@ -1,5 +1,5 @@
 dependencies {
-  compileOnlyApi "org.checkerframework:checker-qual:3.13.0"
+  compileOnlyApi "org.jetbrains:annotations:23.0.0"
   api "net.kyori:mammoth:1.0.0"
 }
 

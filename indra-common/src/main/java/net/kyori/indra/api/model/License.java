@@ -23,9 +23,9 @@
  */
 package net.kyori.indra.api.model;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.immutables.value.Value;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * License information for the current project.
@@ -40,7 +40,7 @@ public interface License {
    * @return the license builder
    * @since 2.0.0
    */
-  static @NonNull Builder builder() {
+  static @NotNull Builder builder() {
     return new LicenseImpl.BuilderImpl();
   }
 
@@ -50,7 +50,7 @@ public interface License {
    * @return the Apache 2.0 license
    * @since 2.0.0
    */
-  static @NonNull License apache2() {
+  static @NotNull License apache2() {
     return License.builder()
       .spdx("Apache-2.0")
       .name("Apache License, Version 2.0")
@@ -64,7 +64,7 @@ public interface License {
    * @return the GPL-3.0-only license
    * @since 2.0.0
    */
-  static @NonNull License gpl3Only() {
+  static @NotNull License gpl3Only() {
     return License.builder()
       .spdx("GPL-3.0-only")
       .name("GNU General Public License version 3")
@@ -78,7 +78,7 @@ public interface License {
    * @return the GPL-3.0-or-later license
    * @since 2.1.0
    */
-  static @NonNull License gpl3OrLater() {
+  static @NotNull License gpl3OrLater() {
     return License.builder()
       .spdx("GPL-3.0-or-later")
       .name("GNU General Public License version 3 or later")
@@ -92,7 +92,7 @@ public interface License {
    * @return the LGPL-3.0-only license
    * @since 2.1.0
    */
-  static @NonNull License lgpl3Only() {
+  static @NotNull License lgpl3Only() {
     return License.builder()
       .spdx("LGPL-3.0-only")
       .name("GNU Lesser General Public License version 3")
@@ -106,7 +106,7 @@ public interface License {
    * @return the LGPL-3.0-or-later license
    * @since 2.1.0
    */
-  static @NonNull License lgpl3OrLater() {
+  static @NotNull License lgpl3OrLater() {
     return License.builder()
       .spdx("LGPL-3.0-or-later")
       .name("GNU Lesser General Public License version 3 or later")
@@ -120,7 +120,7 @@ public interface License {
    * @return the MIT license
    * @since 2.0.0
    */
-  static @NonNull License mit() {
+  static @NotNull License mit() {
     return License.builder()
       .spdx("MIT")
       .name("The MIT License")
@@ -134,7 +134,7 @@ public interface License {
    * @return the MPL-2 license
    * @since 2.1.0
    */
-  static @NonNull License mpl2() {
+  static @NotNull License mpl2() {
     return License.builder()
       .spdx("MPL-2.0")
       .name("Mozilla Public License 2.0")
@@ -157,7 +157,7 @@ public interface License {
    * @return the license display name
    * @since 2.0.0
    */
-  @NonNull String name();
+  @NotNull String name();
 
   /**
    * Get a URL to the text of this license.
@@ -165,7 +165,7 @@ public interface License {
    * @return a URL pointing to this license text
    * @since 2.0.0
    */
-  @NonNull String url();
+  @NotNull String url();
 
   /**
    * A builder for {@link License}s.
@@ -181,7 +181,7 @@ public interface License {
      * @since 2.0.0
      */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
-    @NonNull Builder from(final License instance);
+    @NotNull Builder from(final License instance);
 
     /**
      * Set the <a href="https://spdx.org/licenses/">SPDX</a> identifier that describes this license.
@@ -193,7 +193,7 @@ public interface License {
      * @since 2.0.0
      */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
-    @NonNull Builder spdx(final @NonNull String spdx);
+    @NotNull Builder spdx(final @NotNull String spdx);
 
     /**
      * Set the display name of this license.
@@ -203,7 +203,7 @@ public interface License {
      * @since 2.0.0
      */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
-    @NonNull Builder name(final @NonNull String name);
+    @NotNull Builder name(final @NotNull String name);
 
     /**
      * Set the URL of this license.
@@ -213,7 +213,7 @@ public interface License {
      * @since 2.0.0
      */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
-    @NonNull Builder url(final @NonNull String url);
+    @NotNull Builder url(final @NotNull String url);
 
     /**
      * Creates a new {@link License} instance.
@@ -224,6 +224,6 @@ public interface License {
      * @since 2.0.0
      */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
-    @NonNull License build();
+    @NotNull License build();
   }
 }

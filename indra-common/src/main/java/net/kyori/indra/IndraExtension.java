@@ -29,11 +29,11 @@ import net.kyori.indra.api.model.Issues;
 import net.kyori.indra.api.model.License;
 import net.kyori.indra.api.model.SourceCodeManagement;
 import net.kyori.mammoth.Configurable;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.gradle.api.Action;
 import org.gradle.api.provider.Property;
 import org.gradle.api.publish.maven.MavenPublication;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import static java.util.Objects.requireNonNull;
 
@@ -48,26 +48,26 @@ public interface IndraExtension {
    *
    * @since 2.0.0
    */
-  @NonNull JavaToolchainVersions javaVersions();
+  @NotNull JavaToolchainVersions javaVersions();
 
   /**
    * Configure the versioning configuration.
    *
    * @since 2.0.0
    */
-  void javaVersions(final @NonNull Action<JavaToolchainVersions> action);
+  void javaVersions(final @NotNull Action<JavaToolchainVersions> action);
 
-  @NonNull Property<ContinuousIntegration> ci();
+  @NotNull Property<ContinuousIntegration> ci();
 
-  default void ci(final @NonNull ContinuousIntegration ci) {
+  default void ci(final @NotNull ContinuousIntegration ci) {
     this.ci().set(ci);
   }
 
-  default void ci(final @NonNull Action<ContinuousIntegration.Builder> configureAction) {
+  default void ci(final @NotNull Action<ContinuousIntegration.Builder> configureAction) {
     this.ci().set(Configurable.configure(ContinuousIntegration.builder(), configureAction).build());
   }
 
-  default void jenkins(final @NonNull String url) {
+  default void jenkins(final @NotNull String url) {
     requireNonNull(url, "url");
 
     this.ci(ContinuousIntegration.builder()
@@ -76,33 +76,33 @@ public interface IndraExtension {
       .build());
   }
 
-  @NonNull Property<Issues> issues();
+  @NotNull Property<Issues> issues();
 
-  default void issues(final @NonNull Issues issues) {
+  default void issues(final @NotNull Issues issues) {
     this.issues().set(issues);
   }
 
-  default void issues(final @NonNull Action<Issues.Builder> configureAction) {
+  default void issues(final @NotNull Action<Issues.Builder> configureAction) {
     this.issues().set(Configurable.configure(Issues.builder(), configureAction).build());
   }
 
-  @NonNull Property<SourceCodeManagement> scm();
+  @NotNull Property<SourceCodeManagement> scm();
 
-  default void scm(final @NonNull SourceCodeManagement scm) {
+  default void scm(final @NotNull SourceCodeManagement scm) {
     this.scm().set(scm);
   }
 
-  default void scm(final @NonNull Action<SourceCodeManagement.Builder> configureAction) {
+  default void scm(final @NotNull Action<SourceCodeManagement.Builder> configureAction) {
     this.scm().set(Configurable.configure(SourceCodeManagement.builder(), configureAction).build());
   }
 
-  @NonNull Property<License> license();
+  @NotNull Property<License> license();
 
-  default void license(final @NonNull License license) {
+  default void license(final @NotNull License license) {
     this.license().set(license);
   }
 
-  default void license(final @NonNull Action<License.Builder> configureAction) {
+  default void license(final @NotNull Action<License.Builder> configureAction) {
     this.license().set(Configurable.configure(License.builder(), configureAction).build());
   }
 
@@ -134,27 +134,27 @@ public interface IndraExtension {
     this.license(License.mpl2());
   }
 
-  default void github(final @NonNull String user, final @NonNull String repo) {
+  default void github(final @NotNull String user, final @NotNull String repo) {
     this.github(user, repo, null);
   }
 
-  void github(final @NonNull String user, final @NonNull String repo, final @Nullable Action<ApplyTo> applicable);
+  void github(final @NotNull String user, final @NotNull String repo, final @Nullable Action<ApplyTo> applicable);
 
-  default void gitlab(final @NonNull String user, final @NonNull String repo) {
+  default void gitlab(final @NotNull String user, final @NotNull String repo) {
     this.gitlab(user, repo, null);
   }
 
-  void gitlab(final @NonNull String user, final @NonNull String repo, final @Nullable Action<ApplyTo> applicable);
+  void gitlab(final @NotNull String user, final @NotNull String repo, final @Nullable Action<ApplyTo> applicable);
 
   // Publishing repositories
 
-  void publishAllTo(final @NonNull String id, final @NonNull String url);
+  void publishAllTo(final @NotNull String id, final @NotNull String url);
 
-  void publishReleasesTo(final @NonNull String id, final @NonNull String url);
+  void publishReleasesTo(final @NotNull String id, final @NotNull String url);
 
-  void publishSnapshotsTo(final @NonNull String id, final @NonNull String url);
+  void publishSnapshotsTo(final @NotNull String id, final @NotNull String url);
 
-  void configurePublications(final @NonNull Action<MavenPublication> action);
+  void configurePublications(final @NotNull Action<MavenPublication> action);
 
   /**
    * A property representing the version of checkstyle to be used.
@@ -165,7 +165,7 @@ public interface IndraExtension {
    * @return the checkstyle version property
    * @since 2.0.0
    */
-  @NonNull Property<String> checkstyle();
+  @NotNull Property<String> checkstyle();
 
   /**
    * Set the version of checkstyle to be used.
@@ -174,7 +174,7 @@ public interface IndraExtension {
    * @see #checkstyle() for information on limitations
    * @since 2.0.0
    */
-  default void checkstyle(final @NonNull String checkstyleVersion) {
+  default void checkstyle(final @NotNull String checkstyleVersion) {
     this.checkstyle().set(checkstyleVersion);
   }
 
@@ -186,7 +186,7 @@ public interface IndraExtension {
    * @return the property configuring reproducible builds
    * @since 2.0.0
    */
-  @NonNull Property<Boolean> reproducibleBuilds();
+  @NotNull Property<Boolean> reproducibleBuilds();
 
   /**
    * Set whether options that support reproducible builds should be enabled.
@@ -210,7 +210,7 @@ public interface IndraExtension {
    * @return the property representing this option
    * @since 2.0.0
    */
-  @NonNull Property<Boolean> includeJavaSoftwareComponentInPublications();
+  @NotNull Property<Boolean> includeJavaSoftwareComponentInPublications();
 
   /**
    * Set whether the {@code java} component should be included in publications.

@@ -23,8 +23,8 @@
  */
 package net.kyori.indra.api.model;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.immutables.value.Value;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * SCM metadata information.
@@ -39,7 +39,7 @@ public interface SourceCodeManagement {
    * @return a new builder
    * @since 2.0.0
    */
-  static @NonNull Builder builder() {
+  static @NotNull Builder builder() {
     return new SourceCodeManagementImpl.BuilderImpl();
   }
 
@@ -51,7 +51,7 @@ public interface SourceCodeManagement {
    * @return the read-only project repository
    * @since 2.0.0
    */
-  @NonNull String connection();
+  @NotNull String connection();
 
   /**
    * Get a read-write access to the project's repository.
@@ -61,7 +61,7 @@ public interface SourceCodeManagement {
    * @return the read-write project repository
    * @since 2.0.0
    */
-  @NonNull String developerConnection();
+  @NotNull String developerConnection();
 
   /**
    * Get a web URL to view this project's repository.
@@ -69,7 +69,7 @@ public interface SourceCodeManagement {
    * @return the project's SCM web URL
    * @since 2.0.0
    */
-  @NonNull String url();
+  @NotNull String url();
 
   /**
    * A builder for {@link SourceCodeManagement} instances.
@@ -87,7 +87,7 @@ public interface SourceCodeManagement {
      * @since 2.0.0
      */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
-    @NonNull Builder connection(final @NonNull String connection);
+    @NotNull Builder connection(final @NotNull String connection);
 
     /**
      * Set a read-write access to the project's repository.
@@ -99,7 +99,7 @@ public interface SourceCodeManagement {
      * @since 2.0.0
      */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
-    @NonNull Builder developerConnection(final @NonNull String developerConnection);
+    @NotNull Builder developerConnection(final @NotNull String developerConnection);
 
     /**
      * Get a web URL to view this project's repository.
@@ -109,7 +109,7 @@ public interface SourceCodeManagement {
      * @since 2.0.0
      */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
-    @NonNull Builder url(final @NonNull String url);
+    @NotNull Builder url(final @NotNull String url);
 
     /**
      * Creates a new {@link SourceCodeManagement} instance.
@@ -120,6 +120,6 @@ public interface SourceCodeManagement {
      * @since 2.0.0
      */
     @SuppressWarnings({"NullableProblems", "override"}) // generated
-    @NonNull SourceCodeManagement build();
+    @NotNull SourceCodeManagement build();
   }
 }

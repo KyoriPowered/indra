@@ -25,9 +25,9 @@ package net.kyori.indra.repository;
 
 import groovy.lang.Closure;
 import java.util.Arrays;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.plugins.ExtensionAware;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Extensions for declaring additional custom repositories with factory methods.
@@ -38,11 +38,11 @@ public final class Repositories {
   private Repositories() {
   }
 
-  public static void registerRepositoryExtensions(final @NonNull RepositoryHandler handler, final @NonNull RemoteRepository@NonNull... repositories) {
+  public static void registerRepositoryExtensions(final @NotNull RepositoryHandler handler, final @NotNull RemoteRepository@NotNull... repositories) {
     registerRepositoryExtensions(handler, Arrays.asList(repositories));
   }
 
-  public static void registerRepositoryExtensions(final @NonNull RepositoryHandler handler, final @NonNull Iterable<RemoteRepository> repositories) {
+  public static void registerRepositoryExtensions(final @NotNull RepositoryHandler handler, final @NotNull Iterable<RemoteRepository> repositories) {
     for(final RemoteRepository repo : repositories) {
       ((ExtensionAware) handler).getExtensions().add(repo.name(), new Closure<Void>(null, handler) {
         public void doCall() {

@@ -27,13 +27,13 @@ import net.kyori.indra.git.internal.IndraGitExtensionImpl;
 import net.kyori.indra.git.internal.IndraGitService;
 import net.kyori.indra.git.task.RequireClean;
 import net.kyori.mammoth.ProjectPlugin;
-import org.checkerframework.checker.nullness.qual.NonNull;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.Convention;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskContainer;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * A plugin that exposes any git repository that might be in a project.
@@ -47,7 +47,7 @@ public class GitPlugin implements ProjectPlugin {
   public static final String REQUIRE_CLEAN_TASK = "requireClean";
 
   @Override
-  public void apply(@NonNull final Project project, @NonNull final PluginContainer plugins, @NonNull final ExtensionContainer extensions, @NonNull final Convention convention, @NonNull final TaskContainer tasks) {
+  public void apply(@NotNull final Project project, @NotNull final PluginContainer plugins, @NotNull final ExtensionContainer extensions, @NotNull final Convention convention, @NotNull final TaskContainer tasks) {
     // Register the service, then create an extension
     final Provider<IndraGitService> service = project.getGradle().getSharedServices().registerIfAbsent(SERVICE_NAME, IndraGitService.class, params -> {
       params.getParameters().getBaseDirectory().set(project.getRootDir());

@@ -24,12 +24,12 @@
 package net.kyori.indra.git;
 
 import java.util.List;
-import org.checkerframework.checker.nullness.qual.NonNull;
-import org.checkerframework.checker.nullness.qual.Nullable;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.gradle.api.java.archives.Manifest;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * An extension exposing git information.
@@ -81,7 +81,7 @@ public interface IndraGitExtension {
    * @return the tags on this repository, or an empty list if this project is not in a git repository
    * @since 2.0.0
    */
-  @NonNull List<Ref> tags();
+  @NotNull List<Ref> tags();
 
   /**
    * Get the tag pointing to the commit checked out as {@code HEAD}.
