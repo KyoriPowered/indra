@@ -25,6 +25,7 @@ package net.kyori.indra.crossdoc;
 
 import org.gradle.api.Action;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 
 /**
  * Configuration for the crossdoc plugin, applicable across multiple tasks.
@@ -41,6 +42,30 @@ public interface CrossdocExtension {
   Property<String> baseUrl();
 
   /**
+   * Set the base URL where the eventually published Javadoc will be hosted.
+   *
+   * <p>If this URL does not end with a '{@code /}', one will be appended automatically.</p>
+   *
+   * @param baseUrl the base URL
+   * @since 2.1.0
+   */
+  default void baseUrl(final String baseUrl) {
+    this.baseUrl().set(baseUrl);
+  }
+
+  /**
+   * Set the base URL where the eventually published Javadoc will be hosted.
+   *
+   * <p>If this URL does not end with a '{@code /}', one will be appended automatically.</p>
+   *
+   * @param baseUrl the base URL
+   * @since 2.1.0
+   */
+  default void baseUrl(final Provider<? extends String> baseUrl) {
+    this.baseUrl().set(baseUrl);
+  }
+
+  /**
    * The default provider to use for generating project documentation.
    *
    * <p>This property will default to a standard implementation appending the project version to the project name.</p>
@@ -48,10 +73,10 @@ public interface CrossdocExtension {
    * @return a property providing the project documentation url
    * @since 2.1.0
    */
-  Property<ProjectDocumentationUrlProvider> projectDocUrlProvider();
+  Property<ProjectDocumentationUrlProvider> projectDocumentationUrlProvider();
 
   /**
-   * Set the {@linkplain #projectDocUrlProvider() documentation provider} to a standard implementation.
+   * Set the {@linkplain #projectDocumentationUrlProvider() documentation provider} to a standard implementation.
    *
    * <p>The computed URLs will be in the format {@code <project name (stripped of prefix)>[/<version>]}.</p>
    *

@@ -50,7 +50,7 @@ class CrossdocExtensionImpl implements CrossdocExtension {
   }
 
   @Override
-  public Property<ProjectDocumentationUrlProvider> projectDocUrlProvider() {
+  public Property<ProjectDocumentationUrlProvider> projectDocumentationUrlProvider() {
     return this.docUrlProviderProperty;
   }
 

@@ -186,7 +186,7 @@ public class CrossdocPlugin implements ProjectPlugin {
       t.getLinkBaseUrl().set(extension.baseUrl());
       t.getLinkableArtifacts().from(jdLinks.map(it -> it.getArtifactFiles()));
       t.getTempLinkableArtifacts().set(jdLinks.map(it -> it.getArtifacts()));
-      t.getUrlProvider().set(extension.projectDocUrlProvider());
+      t.getUrlProvider().set(extension.projectDocumentationUrlProvider());
       final Provider<RegularFile> argsDest = project.getLayout().getBuildDirectory().file("tmp/" + t.getName() + "-args.txt");
       t.getOutputFile().set(argsDest);
     });
@@ -210,7 +210,7 @@ public class CrossdocPlugin implements ProjectPlugin {
     project.getTasks().register(COPY_JAVADOC_TASK_NAME, CopyJavadoc.class, t -> {
       t.getProjectName().set(project.provider(() -> project.getName()));
       t.getProjectPath().set(project.provider(() -> project.getPath()));
-      t.getDocumentationUrlProvider().set(extension.projectDocUrlProvider());
+      t.getDocumentationUrlProvider().set(extension.projectDocumentationUrlProvider());
 
       // todo: sensitive to tasks being created eagerly
       t.getJavadocFiles().from(project.getTasks().named(JavaPlugin.JAVADOC_TASK_NAME));
