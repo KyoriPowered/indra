@@ -30,7 +30,7 @@ import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.NamedDomainObjectProvider;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-import org.gradle.api.artifacts.ArtifactView;
+import org.gradle.api.artifacts.ArtifactCollection;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.component.ProjectComponentIdentifier;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
@@ -176,15 +176,16 @@ public class CrossdocPlugin implements ProjectPlugin {
 
   private void configureJavadocTask(final Project project, final CrossdocExtension extension, final NamedDomainObjectProvider<Configuration> offlineLinkedJavadoc) {
     // link to modules in project
-    final ArtifactView jdLinks = offlineLinkedJavadoc.get().getIncoming()
+    final Provider<ArtifactCollection> jdLinks = offlineLinkedJavadoc.map(oLJ -> oLJ.getIncoming()
       .artifactView(view -> {
         view.componentFilter(c -> c instanceof ProjectComponentIdentifier && ((ProjectComponentIdentifier) c).getBuild().isCurrentBuild()); // only in-project, and not included builds
         view.setLenient(true); // ignore artifacts with no javadoc elements variant
-      });
+      }).getArtifacts());
 
     final TaskProvider<GenerateOfflineLinks> generateLinks = project.getTasks().register(GENERATE_OFFLINE_LINKS_TASK_NAME, GenerateOfflineLinks.class, t -> {
       t.getLinkBaseUrl().set(extension.baseUrl());
-      t.getLinkableArtifacts().set(jdLinks.getArtifacts());
+      t.getLinkableArtifacts().from(jdLinks.map(it -> it.getArtifactFiles()));
+      t.getTempLinkableArtifacts().set(jdLinks.map(it -> it.getArtifacts()));
       t.getUrlProvider().set(extension.projectDocUrlProvider());
       final Provider<RegularFile> argsDest = project.getLayout().getBuildDirectory().file("tmp/" + t.getName() + "-args.txt");
       t.getOutputFile().set(argsDest);

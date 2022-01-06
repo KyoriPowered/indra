@@ -26,7 +26,9 @@ package net.kyori.indra.crossdoc;
 import net.kyori.mammoth.Properties;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-public abstract class NameBasedProjectDocumentationUrlProviderImpl implements ProjectDocumentationUrlProvider, NameBasedProjectDocumentationUrlProvider {
+abstract class NameBasedProjectDocumentationUrlProviderImpl implements ProjectDocumentationUrlProvider, NameBasedProjectDocumentationUrlProvider {
+  public NameBasedProjectDocumentationUrlProviderImpl() {
+  }
 
   @Override
   public @NonNull String createUrl(final @NonNull String projectName, final @NonNull String projectPath) {

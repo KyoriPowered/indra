@@ -30,12 +30,15 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.nio.charset.StandardCharsets;
 import org.gradle.api.DefaultTask;
-import org.gradle.api.artifacts.ArtifactCollection;
 import org.gradle.api.artifacts.component.ProjectComponentIdentifier;
 import org.gradle.api.artifacts.result.ResolvedArtifactResult;
+import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.InputFiles;
+import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
@@ -67,13 +70,17 @@ public abstract class GenerateOfflineLinks extends DefaultTask {
   @Nested
   public abstract Property<ProjectDocumentationUrlProvider> getUrlProvider();
 
+  // TEMP: workaround for gradle/gradle#19490
   /**
    * A collection of artifacts on the compile classpath, to generate links t.
    *
    * @return a property including linkable artifacts.
    */
-  @Input
-  public abstract Property<ArtifactCollection> getLinkableArtifacts();
+  @InputFiles
+  protected abstract ConfigurableFileCollection getLinkableArtifacts();
+
+  @Internal
+  protected abstract SetProperty<ResolvedArtifactResult> getTempLinkableArtifacts();
 
   /**
    * The output file that the generated arguments for the {@code javadoc} tool will be written to.
@@ -89,7 +96,7 @@ public abstract class GenerateOfflineLinks extends DefaultTask {
     final File outputFile = this.getOutputFile().get().getAsFile();
     outputFile.getParentFile().mkdirs();
     try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8))) {
-      for (final ResolvedArtifactResult it : this.getLinkableArtifacts().get()) {
+      for (final ResolvedArtifactResult it : this.getTempLinkableArtifacts().get()) {
         final File file = it.getFile();
         final ProjectComponentIdentifier identifier = (ProjectComponentIdentifier) it.getId().getComponentIdentifier();
         final String projectName = identifier.getProjectName();
