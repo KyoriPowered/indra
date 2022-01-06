@@ -81,10 +81,4 @@ subprojects {
     bundleTags("kyori", "standard")
     website("https://github.com/KyoriPowered/indra/wiki")
   }
-
-  tasks.named("test", Test) {
-    if (JavaVersion.current() > JavaVersion.VERSION_1_8) {
-      jvmArgs("--add-opens", "java.base/java.lang=ALL-UNNAMED")
-    }
-  }
 }
