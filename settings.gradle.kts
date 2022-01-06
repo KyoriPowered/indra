@@ -10,7 +10,8 @@ listOf(
   "indra-common",
   "indra-git",
   "indra-publishing-gradle-plugin",
-  "indra-publishing-sonatype"
+  "indra-publishing-sonatype",
+  "indra-crossdoc"
 ).forEach {
   include(it)
 }
