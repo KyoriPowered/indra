@@ -43,6 +43,7 @@ class MultireleaseSourceSetImpl implements MultireleaseSourceSet {
 
   private final DomainObjectSet<Integer> alternateVersions;
   private final Property<String> moduleName;
+  private final Property<Boolean> applyToJavadoc;
   final Set<Action<MultireleaseVariantDetails>> alternateConfigurationActions = new HashSet<>();
   final Set<Action<? super CheckModuleExports>> exportValidation = new HashSet<>();
 
@@ -50,6 +51,7 @@ class MultireleaseSourceSetImpl implements MultireleaseSourceSet {
   public MultireleaseSourceSetImpl(final ObjectFactory objects) {
     this.alternateVersions = objects.domainObjectSet(Integer.class);
     this.moduleName = objects.property(String.class);
+    this.applyToJavadoc = objects.property(Boolean.class).convention(false);
   }
 
   @Override
@@ -87,5 +89,10 @@ class MultireleaseSourceSetImpl implements MultireleaseSourceSet {
   @Override
   public void requireAllPackagesExported(final Action<? super CheckModuleExports> action) {
     this.exportValidation.add(action);
+  }
+
+  @Override
+  public Property<Boolean> applyToJavadoc() {
+    return this.applyToJavadoc;
   }
 }
