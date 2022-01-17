@@ -44,15 +44,17 @@ import static java.util.Objects.requireNonNull;
  */
 public interface IndraExtension {
   /**
-   * Options controlling Java toolchain versions.
+   * Options controlling JVM toolchain versions.
    *
+   * @return the java toolchain version configuration
    * @since 2.0.0
    */
   @NotNull JavaToolchainVersions javaVersions();
 
   /**
-   * Configure the versioning configuration.
+   * Configure the JVM versioning configuration.
    *
+   * @param action the action to apply to the JVM versioning configuration
    * @since 2.0.0
    */
   void javaVersions(final @NotNull Action<JavaToolchainVersions> action);
