@@ -32,6 +32,7 @@ import net.kyori.indra.Indra;
 import net.kyori.indra.IndraExtension;
 import net.kyori.indra.multirelease.MultireleaseSourceSet;
 import net.kyori.indra.multirelease.MultireleaseVariantDetails;
+import net.kyori.indra.task.CheckModuleExports;
 import net.kyori.indra.task.JDeps;
 import net.kyori.mammoth.ProjectPlugin;
 import org.gradle.api.Action;
@@ -132,6 +133,8 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
       sourceSets.matching(set -> !alternateNames.contains(set.getName())).all(base -> {
         final MultireleaseSourceSetImpl extension = (MultireleaseSourceSetImpl) MultireleaseSourceSet.from(base);
 
+        this.registerCheckExports(p, base, extension);
+
         // Get ourselves an array of versions in order
         final int[] versions = extension.alternateVersions().stream().mapToInt(Integer::intValue).toArray();
         Arrays.sort(versions);
@@ -207,6 +210,29 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
           this.configureMultireleaseJarManifestAttribute(tasks, base);
         }
       });
+    });
+  }
+
+  private void registerCheckExports(final Project project, final SourceSet base, final MultireleaseSourceSetImpl extension) {
+    if (extension.exportValidation.isEmpty()) {
+      return;
+    }
+
+    final TaskContainer tasks = project.getTasks();
+    final TaskProvider<?> checkModuleExports = tasks.register(base.getTaskName("check", "ModuleExports"), CheckModuleExports.class, task -> {
+      if (!tasks.getNames().contains(base.getJarTaskName())) {
+        task.setEnabled(false);
+        return;
+      }
+      task.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
+      task.getCheckedModule().set(tasks.named(base.getJarTaskName(), org.gradle.jvm.tasks.Jar.class).flatMap(j -> j.getArchiveFile()));
+      for (final Action<? super CheckModuleExports> action : extension.exportValidation) {
+        action.execute(task);
+      }
+    });
+
+    tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME, check -> {
+      check.dependsOn(checkModuleExports);
     });
   }
 
@@ -393,6 +419,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
 
     multirelease.configureVariants(details -> {
       provider.configure(jdeps -> {
+        jdeps.getModulePath().from(details.variant().getCompileClasspath().minus(details.base().getOutput()).minus(details.variant().getOutput()));
         jdeps.getModulePath().from(details.variant().getRuntimeClasspath().minus(details.base().getOutput()).minus(details.variant().getOutput()));
       });
     });
