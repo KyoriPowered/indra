@@ -28,7 +28,6 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.jar.Manifest;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.zip.ZipFile;
 import net.kyori.mammoth.test.TestContext;
@@ -51,9 +50,7 @@ class IndraPluginFunctionalTest {
 
     ctx.build("build"); // run build
 
-    System.out.println(Files.list(ctx.outputDirectory().resolve("build/libs")).map(Path::toString).collect(Collectors.joining(", ")));
-
-    assertTrue(Files.exists(ctx.outputDirectory().resolve("build/libs/simpleBuild-1.0.0-SNAPSHOT.jar")));
+    assertTrue(Files.exists(ctx.outputDirectory().resolve("build/libs/simplebuild-1.0.0-SNAPSHOT.jar")));
 
     // todo: check version of classfiles
     // todo: add a source file, resource, etc with utf-8 characters and confirm they compile properly
@@ -66,8 +63,7 @@ class IndraPluginFunctionalTest {
 
     ctx.build("build"); // run build
 
-    System.out.println(Files.list(ctx.outputDirectory().resolve("build/libs")).map(Path::toString).collect(Collectors.joining(", ")));
-    assertTrue(Files.exists(ctx.outputDirectory().resolve("build/libs/kotlinBuildscript-1.0.0-SNAPSHOT.jar")));
+    assertTrue(Files.exists(ctx.outputDirectory().resolve("build/libs/kotlinbuildscript-1.0.0-SNAPSHOT.jar")));
   }
 
   @IndraFunctionalTest
