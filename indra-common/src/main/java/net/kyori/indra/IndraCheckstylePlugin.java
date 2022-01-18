@@ -29,7 +29,6 @@ import java.util.Map;
 import net.kyori.mammoth.ProjectPlugin;
 import org.gradle.api.Project;
 import org.gradle.api.model.ObjectFactory;
-import org.gradle.api.plugins.Convention;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.plugins.quality.Checkstyle;
@@ -48,7 +47,7 @@ public class IndraCheckstylePlugin implements ProjectPlugin {
   private static final String CHECKSTYLE_CONFIGURATION = "checkstyle";
 
   @Override
-  public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull Convention convention, final @NotNull TaskContainer tasks) {
+  public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull TaskContainer tasks) {
     plugins.apply(CheckstylePlugin.class);
 
     tasks.register(CHECKSTYLE_ALL_TASK, task -> {

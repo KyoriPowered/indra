@@ -23,27 +23,24 @@
  */
 package net.kyori.indra;
 
-import net.kyori.mammoth.ProjectPlugin;
-import org.cadixdev.gradle.licenser.LicenseExtension;
-import org.cadixdev.gradle.licenser.Licenser;
-import org.gradle.api.Project;
-import org.gradle.api.plugins.ExtensionContainer;
-import org.gradle.api.plugins.PluginContainer;
-import org.gradle.api.tasks.TaskContainer;
-import org.jetbrains.annotations.NotNull;
+import java.lang.reflect.Method;
+import org.junit.jupiter.api.DisplayNameGenerator;
 
-public class IndraLicenseHeaderPlugin implements ProjectPlugin {
-  private static final String HEADER_FILE_NAME = "license_header.txt";
-
+/**
+ * An extension of the standard display name generator that only uses method names for test display names.
+ *
+ * <p>This is better suited for test directory selection.</p>
+ *
+ * @since 1.1.0
+ */
+public final class FunctionalTestDisplayNameGenerator extends DisplayNameGenerator.Standard {
   @Override
-  public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull TaskContainer tasks) {
-    plugins.apply(Licenser.class);
-
-    // Configure sensible defaults
-    extensions.configure(LicenseExtension.class, extension -> {
-      extension.header(project.getRootProject().file(HEADER_FILE_NAME));
-      extension.include(Indra.SOURCE_FILES);
-      extension.getNewLine().set(false);
-    });
+  public String generateDisplayNameForMethod(final Class<?> testClass, final Method testMethod) {
+    final String name = testMethod.getName();
+    if (name.startsWith("test") && name.length() > 5) {
+      return Character.toLowerCase(name.charAt(4)) + name.substring(5);
+    } else {
+      return name;
+    }
   }
 }

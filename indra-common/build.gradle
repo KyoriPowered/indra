@@ -1,5 +1,6 @@
 plugins {
   id "org.jetbrains.kotlin.jvm"
+  id "java-test-fixtures"
 }
 
 kotlin {
@@ -14,6 +15,10 @@ kotlin {
   }
 }
 
+license {
+  exclude { it.file.absolutePath.startsWith(project.file('src/test/resources').absolutePath) }
+}
+
 dependencies {
   compileOnlyApi "org.immutables:value:2.8.8:annotations"
   annotationProcessor "org.immutables:value:2.8.8"
@@ -21,7 +26,8 @@ dependencies {
   compileOnlyApi "org.jetbrains:annotations:23.0.0"
   api project(":indra-git")
   implementation "gradle.plugin.org.cadixdev.gradle:licenser:0.6.1"
-  api "net.kyori:mammoth:1.0.0"
+  api "net.kyori:mammoth:$mammothVersion"
+  testFixturesApi testImplementation("net.kyori:mammoth-test:$mammothVersion")
 }
 
 indraPluginPublishing {
@@ -56,4 +62,9 @@ indraPluginPublishing {
     "Reasonable publishing configuration and repository aliases",
     ["boilerplate", "publishing", "nexus"]
   )
+}
+
+components.java {
+  withVariantsFromConfiguration(configurations.testFixturesApiElements) { skip() }
+  withVariantsFromConfiguration(configurations.testFixturesRuntimeElements) { skip() }
 }

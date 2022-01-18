@@ -43,7 +43,6 @@ import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.file.SourceDirectorySet;
-import org.gradle.api.plugins.Convention;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
@@ -87,7 +86,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
   private static final String RESOURCES_VARAINT = "resources"; // runtimeElements
 
   @Override
-  public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull Convention convention, final @NotNull TaskContainer tasks) {
+  public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull TaskContainer tasks) {
     // Once the source set container is created, configure the multirelease extension
     plugins.withType(JavaBasePlugin.class, $ -> {
       final SourceSetContainer sourceSets = extensions.getByType(SourceSetContainer.class);

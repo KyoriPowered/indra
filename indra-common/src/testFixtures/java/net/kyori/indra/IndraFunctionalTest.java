@@ -23,27 +23,25 @@
  */
 package net.kyori.indra;
 
-import net.kyori.mammoth.ProjectPlugin;
-import org.cadixdev.gradle.licenser.LicenseExtension;
-import org.cadixdev.gradle.licenser.Licenser;
-import org.gradle.api.Project;
-import org.gradle.api.plugins.ExtensionContainer;
-import org.gradle.api.plugins.PluginContainer;
-import org.gradle.api.tasks.TaskContainer;
-import org.jetbrains.annotations.NotNull;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import net.kyori.mammoth.test.GradleFunctionalTest;
+import net.kyori.mammoth.test.GradleParameters;
+import net.kyori.mammoth.test.TestVariant;
+import net.kyori.mammoth.test.TestVariantResource;
+import org.junit.jupiter.api.Tag;
 
-public class IndraLicenseHeaderPlugin implements ProjectPlugin {
-  private static final String HEADER_FILE_NAME = "license_header.txt";
-
-  @Override
-  public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull TaskContainer tasks) {
-    plugins.apply(Licenser.class);
-
-    // Configure sensible defaults
-    extensions.configure(LicenseExtension.class, extension -> {
-      extension.header(project.getRootProject().file(HEADER_FILE_NAME));
-      extension.include(Indra.SOURCE_FILES);
-      extension.getNewLine().set(false);
-    });
-  }
+@GradleFunctionalTest
+@GradleParameters({"--warning-mode", "fail", "--stacktrace"})
+@TestVariant(gradleVersion = "6.9.2")
+@TestVariant(gradleVersion = "7.3.3")
+@TestVariantResource(value = "injected-gradle-versions", optional = true)
+@Tag("functional")
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+public @interface IndraFunctionalTest {
 }

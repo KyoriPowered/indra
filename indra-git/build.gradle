@@ -1,7 +1,9 @@
 dependencies {
   compileOnlyApi "org.jetbrains:annotations:23.0.0"
   api "org.eclipse.jgit:org.eclipse.jgit:5.11.0.+"
-  api "net.kyori:mammoth:1.0.0"
+  api "net.kyori:mammoth:$mammothVersion"
+  testImplementation "net.kyori:mammoth-test:$mammothVersion"
+  // testImplementation testFixtures(project(":indra-common"))
 }
 
 indraPluginPublishing {
