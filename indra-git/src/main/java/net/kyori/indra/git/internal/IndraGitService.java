@@ -23,8 +23,12 @@
  */
 package net.kyori.indra.git.internal;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -33,6 +37,8 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
 import org.gradle.api.Project;
 import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 import org.gradle.api.services.BuildService;
 import org.gradle.api.services.BuildServiceParameters;
 import org.jetbrains.annotations.Nullable;
@@ -43,6 +49,8 @@ import org.jetbrains.annotations.Nullable;
  * @since 2.0.0
  */
 public abstract class IndraGitService implements BuildService<IndraGitService.Parameters>, AutoCloseable {
+  private static final Logger LOGGER = Logging.getLogger(IndraGitService.class);
+
   private volatile boolean open = true;
   private final Map<File, GitWrapper> projectRepos = new ConcurrentHashMap<>();
 
@@ -62,6 +70,7 @@ public abstract class IndraGitService implements BuildService<IndraGitService.Pa
    *
    * <p>If this project is not managed by git, this will return {@code null}.</p>
    *
+   * @param project the project to get a repository for
    * @return the build's git repository.
    * @since 2.0.0
    */
@@ -87,40 +96,78 @@ public abstract class IndraGitService implements BuildService<IndraGitService.Pa
       File targetDir = realProjectDir;
       do {
         if(isGitDir(targetDir)) {
+          LOGGER.debug("indra-git: Examining directory {} for {}", targetDir, project.getDisplayName());
           final GitWrapper potentialExisting = this.projectRepos.get(targetDir);
           if(potentialExisting != null) {
+            LOGGER.info("indra-git: Found existing git repository for {} starting in directory {} via {}", project.getDisplayName(), rawProjectDir, targetDir);
             // Once values make it into the map, they are the only possibility
             this.projectRepos.put(rawProjectDir, potentialExisting);
             return potentialExisting.git;
           }
 
           try {
-            final Git repo = Git.open(targetDir);
+            final @Nullable File realGit = resolveGit(targetDir);
+            if (realGit == null) continue;
+            final Git repo = Git.open(realGit);
 
             GitWrapper repoWrapper = new GitWrapper(repo);
             final GitWrapper existing = this.projectRepos.putIfAbsent(targetDir, repoWrapper);
             if(existing != null) { // only maintain one instance
               repo.close();
               repoWrapper = existing;
+            } else {
+              LOGGER.info("indra-git: Located and initialized repository for project {} in {}, with git directory at {}", project.getDisplayName(), targetDir, repo.getRepository().getDirectory());
             }
 
             this.projectRepos.put(rawProjectDir, repoWrapper);
             return repoWrapper.git;
-          } catch(final RepositoryNotFoundException ignored) {
+          } catch(final RepositoryNotFoundException ex) {
+            LOGGER.debug("indra-git: Unable to open repository found in {} for {}", targetDir, project.getDisplayName(), ex);
             // continue up the directory tree
           }
+        } else {
+          LOGGER.debug("indra-git: Skipping directory {} while locating repository for {}", targetDir, project.getDisplayName());
         }
       } while((!rootProjectDir.equals(targetDir)) && (targetDir = targetDir.getParentFile()) != null);
       // At this point we're not found
       this.projectRepos.put(rawProjectDir, GitWrapper.NOT_FOUND);
     } catch(final IOException ex) {
-      project.getLogger().warn("Failed to open git repository for {}:", project.getDisplayName(), ex);
+      LOGGER.warn("indra-git: Failed to open git repository for {}:", project.getDisplayName(), ex);
     }
+    LOGGER.info("indra-git: No git repository found for {}", project.getDisplayName());
     return null;
   }
 
+  private static final String GIT_DIR = ".git";
+  private static final String GITDIR_PREFIX = "gitdir:";
+
   private static boolean isGitDir(final File file) {
-    return new File(file, ".git").exists();
+    return new File(file, GIT_DIR).exists();
+  }
+
+  private static File resolveGit(File projectDir) throws IOException {
+    // The `.git` folder is not always a folder, sometimes it's also a file
+    // We only support checked-out working trees, so we don't have to consider the bare repository case here
+    // https://git-scm.com/docs/gitrepository-layout
+    if (!projectDir.getName().equals(GIT_DIR)) {
+      return resolveGit(new File(projectDir, ".git"));
+    } else {
+      projectDir = projectDir.getCanonicalFile();
+      if (projectDir.isDirectory()) {
+        return projectDir;
+      } else if (projectDir.isFile()) {
+        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(projectDir), StandardCharsets.UTF_8))) {
+          String line;
+          while ((line = reader.readLine()) != null) {
+            if (line.startsWith(GITDIR_PREFIX)) {
+              return new File(projectDir.getParentFile(), line.substring(GITDIR_PREFIX.length()).trim());
+            }
+          }
+        }
+      }
+      LOGGER.warn("indra-git: Unable to determine actual git directory from {}", projectDir);
+      return null;
+    }
   }
 
   @Override
