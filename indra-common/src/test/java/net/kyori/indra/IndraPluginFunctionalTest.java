@@ -30,6 +30,8 @@ import java.nio.file.Path;
 import java.util.jar.Manifest;
 import java.util.stream.Stream;
 import java.util.zip.ZipFile;
+import net.kyori.indra.test.FunctionalTestDisplayNameGenerator;
+import net.kyori.indra.test.IndraFunctionalTest;
 import net.kyori.mammoth.test.TestContext;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;

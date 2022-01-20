@@ -22,22 +22,31 @@ description = "KyoriPowered organizational build standards and utilities"
 
 subprojects {
   apply plugin: "java-gradle-plugin"
-  apply plugin: "com.gradle.plugin-publish"
   apply plugin: "net.kyori.indra"
   apply plugin: "net.kyori.indra.license-header"
-  apply plugin: "net.kyori.indra.publishing.gradle-plugin"
   apply plugin: "com.diffplug.eclipse.apt"
-
-  dependencies {
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
-    testImplementation "org.junit.jupiter:junit-jupiter-params:5.7.2"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
-  }
   
   repositories {
     mavenCentral()
     sonatypeSnapshots()
     gradlePluginPortal()
+  }
+  
+  dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter-api:5.7.2"
+    testImplementation "org.junit.jupiter:junit-jupiter-params:5.7.2"
+    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.7.2"
+  }
+
+  
+  if (!project.findProperty('indra.skipPublishing')) {
+    apply plugin: "com.gradle.plugin-publish"
+    apply plugin: "net.kyori.indra.publishing.gradle-plugin"
+
+    indraPluginPublishing {
+      bundleTags("kyori", "standard")
+      website("https://github.com/KyoriPowered/indra/wiki")
+    }
   }
 
   indra {
@@ -74,10 +83,5 @@ subprojects {
 
     publishSnapshotsTo("stellardrift", "https://repo.stellardrift.ca/repository/snapshots/")
     
-  }
-
-  indraPluginPublishing {
-    bundleTags("kyori", "standard")
-    website("https://github.com/KyoriPowered/indra/wiki")
   }
 }

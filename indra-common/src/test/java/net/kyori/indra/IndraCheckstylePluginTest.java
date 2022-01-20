@@ -24,6 +24,8 @@
 package net.kyori.indra;
 
 import java.io.IOException;
+import net.kyori.indra.test.IndraFunctionalTest;
+import net.kyori.indra.test.IndraTesting;
 import net.kyori.mammoth.test.TestContext;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.component.ModuleComponentIdentifier;

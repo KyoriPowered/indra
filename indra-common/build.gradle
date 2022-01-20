@@ -1,6 +1,5 @@
 plugins {
   id "org.jetbrains.kotlin.jvm"
-  id "java-test-fixtures"
 }
 
 kotlin {
@@ -27,7 +26,7 @@ dependencies {
   api project(":indra-git")
   implementation "gradle.plugin.org.cadixdev.gradle:licenser:0.6.1"
   api "net.kyori:mammoth:$mammothVersion"
-  testFixturesApi testImplementation("net.kyori:mammoth-test:$mammothVersion")
+  testImplementation project(":indra-testlib")
 }
 
 indraPluginPublishing {
@@ -62,9 +61,4 @@ indraPluginPublishing {
     "Reasonable publishing configuration and repository aliases",
     ["boilerplate", "publishing", "nexus"]
   )
-}
-
-components.java {
-  withVariantsFromConfiguration(configurations.testFixturesApiElements) { skip() }
-  withVariantsFromConfiguration(configurations.testFixturesRuntimeElements) { skip() }
 }

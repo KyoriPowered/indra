@@ -21,26 +21,23 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra;
+package net.kyori.indra.test;
 
-import java.lang.reflect.Method;
-import org.junit.jupiter.api.DisplayNameGenerator;
+import java.util.function.Consumer;
+import org.gradle.api.Project;
+import org.gradle.testfixtures.ProjectBuilder;
+import org.jetbrains.annotations.Nullable;
 
-/**
- * An extension of the standard display name generator that only uses method names for test display names.
- *
- * <p>This is better suited for test directory selection.</p>
- *
- * @since 1.1.0
- */
-public final class FunctionalTestDisplayNameGenerator extends DisplayNameGenerator.Standard {
-  @Override
-  public String generateDisplayNameForMethod(final Class<?> testClass, final Method testMethod) {
-    final String name = testMethod.getName();
-    if (name.startsWith("test") && name.length() > 5) {
-      return Character.toLowerCase(name.charAt(4)) + name.substring(5);
-    } else {
-      return name;
+public class IndraTesting {
+  public static Project project() {
+    return project(null);
+  }
+
+  public static Project project(final @Nullable Consumer<ProjectBuilder> consumer) {
+    final ProjectBuilder builder = ProjectBuilder.builder();
+    if(consumer != null) {
+      consumer.accept(builder);
     }
+    return builder.build();
   }
 }

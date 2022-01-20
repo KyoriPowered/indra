@@ -1,0 +1,7 @@
+dependencies {
+    api "net.kyori:mammoth-test:$mammothVersion"
+}
+
+javadoc {
+    enabled = false
+}

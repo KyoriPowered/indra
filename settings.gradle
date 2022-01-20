@@ -11,6 +11,7 @@ rootProject.name = "indra"
   "indra-git",
   "indra-publishing-gradle-plugin",
   "indra-publishing-sonatype",
+  "indra-testlib",
   "indra-crossdoc"
 ].each {
   include(it)
