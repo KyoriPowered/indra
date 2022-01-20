@@ -59,7 +59,7 @@ jobs:
                 const req = https.request({hostname: GRADLE_API, path: endpoint, method: 'GET'}, (res) => {
                   // res.setEncoding('utf8');
                   res.on('data', (chunk) => { data += chunk });
-                }
+                });
                 req.end();
                 return data;
               }
