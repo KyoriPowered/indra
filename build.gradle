@@ -28,7 +28,6 @@ subprojects {
   
   repositories {
     mavenCentral()
-    sonatypeSnapshots()
     gradlePluginPortal()
   }
   
