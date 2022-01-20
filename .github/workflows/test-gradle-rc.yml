@@ -52,14 +52,15 @@ jobs:
               core.notice('Declared override: ' + override);
               target = override;
             } else {
-              // Attempt to fetch content
-              const client = http2.connect(GRADLE_API);
               
               function readToText(endpoint) {
+                // Attempt to fetch content
+                const client = http2.connect(GRADLE_API);
                 const req = client.request({ ':path': endpoint });
                 req.setEncoding('utf8');
                 let data = '';
                 req.on('data', (chunk) => { data += chunk });
+                req.on('end', () => client.close());
                 req.end();
                 return data;
               }
@@ -68,7 +69,6 @@ jobs:
               if (desc != '') {
                 desc = readToText(NIGHTLY_ENDPOINT);
               }
-              client.close();
               
               if (desc != '') { // successful
                  core.notice('Descriptor was: ' + desc);
