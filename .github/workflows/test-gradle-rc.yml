@@ -39,9 +39,9 @@ jobs:
         with:
           script: |
             const fs = require('fs');
-            const http2 = require('http2');
+            const https = require('https');
             
-            const GRADLE_API = "https://services.gradle.org";
+            const GRADLE_API = "services.gradle.org";
             const RC_ENDPOINT = "/versions/release-candidate";
             const NIGHTLY_ENDPOINT = "/versions/nightly";
             
@@ -55,12 +55,11 @@ jobs:
               
               function readToText(endpoint) {
                 // Attempt to fetch content
-                const client = http2.connect(GRADLE_API);
-                const req = client.request({ ':path': endpoint });
-                req.setEncoding('utf8');
                 let data = '';
-                req.on('data', (chunk) => { data += chunk });
-                req.on('end', () => client.close());
+                const req = https.request({hostname: GRADLE_API, path: endpoint, method: 'GET'}, (res) => {
+                  // res.setEncoding('utf8');
+                  res.on('data', (chunk) => { data += chunk });
+                }
                 req.end();
                 return data;
               }
