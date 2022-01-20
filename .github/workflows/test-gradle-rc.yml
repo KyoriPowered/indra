@@ -37,7 +37,7 @@ jobs:
         uses: "actions/github-script@v5"
         with:
           script: |
-            const fs = require('fs/promises');
+            const fs = require('fs');
             const http2 = require('http2');
             
             const GRADLE_API = "https://services.gradle.org";
@@ -79,8 +79,8 @@ jobs:
               core.exportVariable('TARGET_GRADLE_VERSION', target);
               
               let targetDir = 'indra-testlib/src/main/resources/'
-              await fs.mkdir(dir, {recursive: true});
-              await fs.writeFile(targetDir + 'injected-gradle-versions', target + '\n'); 
+              fs.mkdirSync(dir, {recursive: true});
+              fs.writeFileSync(targetDir + 'injected-gradle-versions', target + '\n'); 
             } else {
               core.notice('No RC or nightly Gradle build found');
             }
