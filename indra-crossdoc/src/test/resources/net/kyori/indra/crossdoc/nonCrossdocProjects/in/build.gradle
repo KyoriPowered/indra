@@ -1,0 +1,11 @@
+import org.gradle.api.JavaVersion
+
+subprojects {
+  apply plugin: 'java-library'
+  
+  java {
+    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+  }
+  
+  java.withJavadocJar()
+}

@@ -1,0 +1,9 @@
+plugins {
+  id 'net.kyori.indra.crossdoc'
+}
+
+indraCrossdoc.baseUrl 'https://jd.example.com/'
+
+dependencies {
+  api project(':unapplied')
+}
