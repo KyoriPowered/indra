@@ -14,10 +14,6 @@ kotlin {
   }
 }
 
-license {
-  exclude { it.file.absolutePath.startsWith(project.file('src/test/resources').absolutePath) }
-}
-
 dependencies {
   compileOnlyApi "org.immutables:value:2.8.8:annotations"
   annotationProcessor "org.immutables:value:2.8.8"

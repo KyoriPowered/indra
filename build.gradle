@@ -49,6 +49,10 @@ subprojects {
     }
   }
 
+  license {
+    exclude { it.file.absolutePath.startsWith(project.file('src/test/resources').absolutePath) }
+  }
+
   indra {
     github("KyoriPowered", "indra") {
       ci true
