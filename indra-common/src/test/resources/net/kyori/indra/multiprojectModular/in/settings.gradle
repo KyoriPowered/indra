@@ -1,0 +1,18 @@
+rootProject.name = 'multiprojectModular'
+
+dependencyResolutionManagement {
+  repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+  repositories {
+    mavenCentral()
+  }
+}
+
+[
+  "core",
+  "multirelease-module-consumer",
+  "module-consumer",
+  "non-modular-consumer"
+].each {
+  include it
+  findProject(":$it").projectDir = file("subprojects/$it")
+}

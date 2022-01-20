@@ -1,0 +1,13 @@
+plugins {
+  id 'net.kyori.indra'
+}
+
+java {
+  modularity.inferModulePath = true
+}
+
+indra.javaVersions().target(11)
+
+dependencies {
+  implementation project(':core')
+}

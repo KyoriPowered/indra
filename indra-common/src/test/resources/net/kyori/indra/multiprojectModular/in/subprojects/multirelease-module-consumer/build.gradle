@@ -1,0 +1,16 @@
+plugins {
+  id 'net.kyori.indra'
+}
+
+java {
+  modularity.inferModulePath = true
+}
+
+dependencies {
+  implementation project(':core')
+}
+
+sourceSets.main.multirelease {
+  moduleName 'testproject.consumer.multirelease'
+  alternateVersions 9, 11
+}

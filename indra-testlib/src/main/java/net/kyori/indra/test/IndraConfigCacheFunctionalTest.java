@@ -21,23 +21,22 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra;
+package net.kyori.indra.test;
 
-import java.util.function.Consumer;
-import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
-import org.jetbrains.annotations.Nullable;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+import net.kyori.mammoth.test.GradleParameters;
 
-public class IndraTesting {
-  public static Project project() {
-    return project(null);
-  }
-
-  public static Project project(final @Nullable Consumer<ProjectBuilder> consumer) {
-    final ProjectBuilder builder = ProjectBuilder.builder();
-    if(consumer != null) {
-      consumer.accept(builder);
-    }
-    return builder.build();
-  }
+/**
+ * A functional test that runs the build with the configuration cache enabled.
+ */
+@GradleParameters({"--warning-mode", "fail", "--stacktrace", "--configuration-cache"})
+@IndraFunctionalTestBase
+@Documented
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
+public @interface IndraConfigCacheFunctionalTest {
 }

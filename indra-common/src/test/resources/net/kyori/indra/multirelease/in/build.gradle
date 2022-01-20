@@ -1,0 +1,14 @@
+plugins {
+  id 'net.kyori.indra'
+}
+
+group = 'com.example'
+version = '1.0.0-SNAPSHOT'
+
+sourceSets {
+  main {
+    multirelease {
+      alternateVersions 9, 17
+    }
+  }
+}

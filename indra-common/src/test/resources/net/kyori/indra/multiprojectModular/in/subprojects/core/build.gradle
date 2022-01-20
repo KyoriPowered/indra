@@ -1,0 +1,20 @@
+plugins {
+  id 'net.kyori.indra'
+}
+
+java {
+  modularity.inferModulePath = true
+}
+
+dependencies {
+  compileOnlyApi 'org.jetbrains:annotations:23.0.0'
+}
+
+sourceSets {
+  main {
+    multirelease {
+      moduleName 'testproject.core'
+      alternateVersions 9
+    }
+  }
+}

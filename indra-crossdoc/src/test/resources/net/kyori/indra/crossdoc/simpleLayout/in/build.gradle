@@ -1,0 +1,15 @@
+plugins {
+  id 'net.kyori.indra.crossdoc' apply false
+}
+
+subprojects {
+  apply plugin: 'net.kyori.indra.crossdoc'
+  apply plugin: 'java-library'
+  
+  java {
+    sourceCompatibility = targetCompatibility = JavaVersion.VERSION_1_8
+  }
+  
+  indraCrossdoc.baseUrl 'https://jd.example.com/'
+  java.withJavadocJar()
+}

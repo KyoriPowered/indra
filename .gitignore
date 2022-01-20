@@ -16,3 +16,6 @@
 /*/bin/
 /.project
 /.settings/
+
+# Testing
+indra-testlib/src/main/resources/injected-gradle-versions

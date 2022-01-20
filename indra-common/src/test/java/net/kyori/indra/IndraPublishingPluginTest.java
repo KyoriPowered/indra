@@ -23,6 +23,7 @@
  */
 package net.kyori.indra;
 
+import net.kyori.indra.test.IndraTesting;
 import org.gradle.api.Project;
 import org.junit.jupiter.api.Test;
 

@@ -40,7 +40,6 @@ import org.gradle.api.attributes.DocsType;
 import org.gradle.api.attributes.Usage;
 import org.gradle.api.file.RegularFile;
 import org.gradle.api.model.ObjectFactory;
-import org.gradle.api.plugins.Convention;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlugin;
@@ -96,7 +95,6 @@ public class CrossdocPlugin implements ProjectPlugin {
     final @NotNull Project project,
     final @NotNull PluginContainer plugins,
     final @NotNull ExtensionContainer extensions,
-    final @NotNull Convention convention,
     final @NotNull TaskContainer tasks
   ) {
     // Register extension and attribute

@@ -23,8 +23,22 @@
  */
 package net.kyori.indra;
 
+import java.io.IOException;
+import net.kyori.indra.test.IndraConfigCacheFunctionalTest;
+import net.kyori.indra.test.IndraTesting;
+import net.kyori.mammoth.test.TestContext;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
+import org.gradle.api.artifacts.result.ResolvedArtifactResult;
+import org.gradle.api.internal.project.ProjectInternal;
+import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 class IndraCheckstylePluginTest {
   private static final String PLUGIN = "net.kyori.indra.checkstyle";
@@ -33,5 +47,45 @@ class IndraCheckstylePluginTest {
   void testPluginSimplyApplies() {
     final Project project = IndraTesting.project();
     project.getPluginManager().apply(PLUGIN);
+  }
+
+  @Test
+  void testPluginForcesCheckstyleVersion() {
+    final Project project = IndraTesting.project();
+    project.getPlugins().apply(PLUGIN);
+
+    final String configurationVersion = "8.45.1";
+    final String extensionVersion = "9.2.1";
+    project.getRepositories().mavenCentral();
+    project.getDependencies().add("checkstyle", "com.puppycrawl.tools:checkstyle:" + configurationVersion);
+    Indra.extension(project.getExtensions()).checkstyle(extensionVersion);
+
+    ((ProjectInternal) project).evaluate(); // trigger afterEvaluate (if this stops working, we can move up to functional tests)
+
+    for (final ResolvedArtifactResult artifact : project.getConfigurations().getByName("checkstyle").getIncoming().getArtifacts()) {
+      final ModuleComponentIdentifier id = (ModuleComponentIdentifier) artifact.getId().getComponentIdentifier();
+      if (id.getGroup().equals("com.puppycrawl.tools") && id.getModule().equals("checkstyle")) {
+        assertEquals(extensionVersion, id.getVersion());
+        return;
+      }
+    }
+
+    fail("Checkstyle could not be found among resolved artifacts");
+  }
+
+  @DisplayName("checkstyle")
+  @IndraConfigCacheFunctionalTest
+  void testGoogleChecks(final TestContext ctx) throws IOException {
+    ctx.copyInput("build.gradle");
+    ctx.copyInput("settings.gradle");
+    ctx.copyInput(".checkstyle/checkstyle.xml");
+    ctx.copyInput("src/main/java/CheckstyleTest.java");
+
+    final BuildResult result = ctx.build("checkstyleAll");
+    assertEquals(TaskOutcome.SUCCESS, result.task(":checkstyleMain").getOutcome());
+
+    ctx.copyInput("src/main/java/CheckstyleViolations.java");
+
+    assertDoesNotThrow(() -> ctx.runner("checkstyleAll").buildAndFail());
   }
 }

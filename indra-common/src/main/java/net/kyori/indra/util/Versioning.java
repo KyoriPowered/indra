@@ -73,7 +73,7 @@ public final class Versioning {
   public static boolean isRelease(final @NotNull Project project) {
     final @Nullable IndraGitExtension git = project.getExtensions().findByType(IndraGitExtension.class);
     final @Nullable Ref tag = git == null ? null : git.headTag();
-    return (tag != null || git == null) && !isSnapshot(project);
+    return (tag != null || git == null || !git.isPresent()) && !isSnapshot(project);
   }
 
   private Versioning() {

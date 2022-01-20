@@ -39,7 +39,6 @@ import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.plugins.BasePluginConvention;
-import org.gradle.api.plugins.Convention;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -77,12 +76,12 @@ public class IndraPlugin implements ProjectPlugin {
   private static final String[] APT_TASKS = {"eclipseJdtApt", "eclipseJdt", "eclipseFactorypath"};
 
   @Override
-  public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull Convention convention, final @NotNull TaskContainer tasks) {
+  public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull TaskContainer tasks) {
     plugins.apply(JavaLibraryPlugin.class);
 
     final IndraExtensionImpl indra = (IndraExtensionImpl) Indra.extension(extensions);
 
-    convention.getPlugin(BasePluginConvention.class).setArchivesBaseName(project.getName().toLowerCase());
+    project.getConvention().getPlugin(BasePluginConvention.class).setArchivesBaseName(project.getName().toLowerCase());
 
     extensions.configure(JavaPluginExtension.class, java -> {
       java.getToolchain().getLanguageVersion().set(indra.javaVersions().actualVersion().map(JavaLanguageVersion::of));
