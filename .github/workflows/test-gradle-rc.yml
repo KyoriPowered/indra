@@ -79,7 +79,7 @@ jobs:
               core.exportVariable('TARGET_GRADLE_VERSION', target);
               
               let targetDir = 'indra-testlib/src/main/resources/'
-              fs.mkdirSync(dir, {recursive: true});
+              fs.mkdirSync(targetDir, {recursive: true});
               fs.writeFileSync(targetDir + 'injected-gradle-versions', target + '\n'); 
             } else {
               core.notice('No RC or nightly Gradle build found');
