@@ -1,0 +1,103 @@
+name: "Run tests against latest Gradle RC/nightly"
+
+on:
+  schedule:
+    - cron: '3 1 * * 5'
+  workflow_dispatch:
+    inputs:
+      gradle-version:
+        description: "A specific Gradle version to test against"
+        default: "-"
+        required: false
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.event.number || github.ref }}"
+  cancel-in-progress: true
+  
+env:
+  RUNTIME_VERSION: 11
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: ["ubuntu-latest", "windows-latest"]
+    runs-on: "${{ matrix.os }}"
+    steps:
+      - name: "checkout repository"
+        uses: "actions/checkout@v2"
+      - name: "validate gradle wrapper"
+        uses: "gradle/wrapper-validation-action@v1"
+      - name: "setup jdk ${{ env.RUNTIME_VERSION }}"
+        uses: "actions/setup-java@v2"
+        with:
+          distribution: "temurin"
+          java-version: "${{ env.RUNTIME_VERSION }}"
+      - name: "determine target version"
+        uses: "actions/github-script@v5"
+        with:
+          script: |
+            const fs = require('fs/promises');
+            const http2 = require('http2');
+            
+            const GRADLE_API = "https://services.gradle.org";
+            const RC_ENDPOINT = "/versions/release-candidate";
+            const NIGHTLY_ENDPOINT = "/versions/nightly";
+            
+            const override = core.getInput('gradle-version');
+            
+            let target = null;
+            if (override != '-') {
+              target = override;
+            } else {
+              // Attempt to fetch content
+              const client = http2.connect(GRADLE_API);
+              
+              function readToText(endpoint) {
+                const req = client.request({ ':path': endpoint });
+                req.setEncoding('utf8');
+                let data = '';
+                req.on('data', (chunk) => { data += chunk });
+                req.end();
+                return data;
+              }
+              
+              let desc = readToText(RC_ENDPOINT);
+              if (desc != '') {
+                desc = readToText(NIGHTLY_ENDPOINT);
+              }
+              client.close();
+              
+              if (desc != '') { // successful
+                 target = JSON.parse(desc).version
+              }
+            }
+           
+            if (target != null) {
+              core.notice('Testing with Gradle version ' + target);
+              // Then persist the found version
+              core.exportVariable('TARGET_GRADLE_VERSION', target);
+              
+              let targetDir = 'indra-testlib/src/main/resources/'
+              await fs.mkdir(dir, {recursive: true});
+              await fs.writeFile(targetDir + 'injected-gradle-versions', target + '\n'); 
+            } else {
+              core.notice('No RC or nightly Gradle build found');
+            }
+      - name: "run gradle build"
+        uses: "gradle/gradle-build-action@v2"
+        with:
+          arguments: "build"
+      - name: "archive test results"
+        if: "${{ always() }}"
+        uses: "actions/upload-artifact@v2"
+        with:
+          name: "${{ runner.os }}-test-results"
+          path: |
+            build/reports/
+            */build/reports/
+      - name: "run build with target gradle version"
+        uses: "gradle/gradle-build-action@v2"
+        with:
+          gradle-version: "${{ env.TARGET_GRADLE_VERSION }}"
+          arguments: "build"

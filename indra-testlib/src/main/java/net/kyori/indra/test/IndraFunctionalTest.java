@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Tag;
 @GradleParameters({"--warning-mode", "fail", "--stacktrace"})
 @TestVariant(gradleVersion = "6.9.2")
 @TestVariant(gradleVersion = "7.3.3")
-@TestVariantResource(value = "injected-gradle-versions", optional = true)
+@TestVariantResource(value = "/injected-gradle-versions", optional = true)
 @Tag("functional")
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
