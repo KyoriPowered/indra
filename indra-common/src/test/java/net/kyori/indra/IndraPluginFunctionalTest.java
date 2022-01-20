@@ -31,7 +31,7 @@ import java.util.jar.Manifest;
 import java.util.stream.Stream;
 import java.util.zip.ZipFile;
 import net.kyori.indra.test.FunctionalTestDisplayNameGenerator;
-import net.kyori.indra.test.IndraFunctionalTest;
+import net.kyori.indra.test.IndraConfigCacheFunctionalTest;
 import net.kyori.mammoth.test.TestContext;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
@@ -45,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DisplayNameGeneration(FunctionalTestDisplayNameGenerator.class)
 class IndraPluginFunctionalTest {
 
-  @IndraFunctionalTest
+  @IndraConfigCacheFunctionalTest
   void testSimpleBuild(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");
@@ -58,7 +58,7 @@ class IndraPluginFunctionalTest {
     // todo: add a source file, resource, etc with utf-8 characters and confirm they compile properly
   }
 
-  @IndraFunctionalTest
+  @IndraConfigCacheFunctionalTest
   void testKotlinBuildscript(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle.kts");
     ctx.copyInput("settings.gradle.kts");
@@ -68,7 +68,7 @@ class IndraPluginFunctionalTest {
     assertTrue(Files.exists(ctx.outputDirectory().resolve("build/libs/kotlinbuildscript-1.0.0-SNAPSHOT.jar")));
   }
 
-  @IndraFunctionalTest
+  @IndraConfigCacheFunctionalTest
   void testMultiprojectModular(final TestContext ctx) throws IOException {
     ctx.copyInput("settings.gradle");
 
@@ -92,7 +92,7 @@ class IndraPluginFunctionalTest {
     assertDoesNotThrow(() -> ctx.build("build"));
   }
 
-  @IndraFunctionalTest
+  @IndraConfigCacheFunctionalTest
   void testMultirelease(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");

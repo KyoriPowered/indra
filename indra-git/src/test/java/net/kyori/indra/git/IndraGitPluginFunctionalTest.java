@@ -25,7 +25,7 @@ package net.kyori.indra.git;
 
 import java.io.IOException;
 import net.kyori.indra.test.FunctionalTestDisplayNameGenerator;
-import net.kyori.indra.test.IndraFunctionalTest;
+import net.kyori.indra.test.IndraConfigCacheFunctionalTest;
 import net.kyori.mammoth.test.TestContext;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.gradle.testkit.runner.BuildResult;
@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class IndraGitPluginFunctionalTest {
 
   // Just test the interactions with Gradle API here, really
-  @IndraFunctionalTest
+  @IndraConfigCacheFunctionalTest
   void testGitApplication(final TestContext ctx) throws IOException, GitAPIException {
     IndraGitPluginTest.initRepo(ctx.outputDirectory());
     ctx.copyInput("build.gradle");

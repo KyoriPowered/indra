@@ -30,10 +30,13 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import net.kyori.mammoth.test.GradleParameters;
 
-@GradleParameters({"--warning-mode", "fail", "--stacktrace"})
+/**
+ * A functional test that runs the build with the configuration cache enabled.
+ */
+@GradleParameters({"--warning-mode", "fail", "--stacktrace", "--configuration-cache"})
 @IndraFunctionalTestBase
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
-public @interface IndraFunctionalTest {
+public @interface IndraConfigCacheFunctionalTest {
 }

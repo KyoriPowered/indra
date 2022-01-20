@@ -28,12 +28,21 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-import net.kyori.mammoth.test.GradleParameters;
+import net.kyori.mammoth.test.GradleFunctionalTest;
+import net.kyori.mammoth.test.TestVariant;
+import net.kyori.mammoth.test.TestVariantResource;
+import org.junit.jupiter.api.Tag;
 
-@GradleParameters({"--warning-mode", "fail", "--stacktrace"})
-@IndraFunctionalTestBase
+/**
+ * A base annotation for both operations that use the configuration cache and those that don't.
+ */
+@GradleFunctionalTest
+@TestVariant(gradleVersion = "6.9.2")
+@TestVariant(gradleVersion = "7.3.3")
+@TestVariantResource(value = "/injected-gradle-versions", optional = true)
+@Tag("functional")
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.ANNOTATION_TYPE})
-public @interface IndraFunctionalTest {
+@Target({ElementType.ANNOTATION_TYPE})
+public @interface IndraFunctionalTestBase {
 }
