@@ -23,6 +23,7 @@
  */
 package net.kyori.indra.multirelease;
 
+import net.kyori.indra.task.CheckModuleExports;
 import org.gradle.api.Action;
 import org.gradle.api.DomainObjectSet;
 import org.gradle.api.provider.Property;
@@ -91,4 +92,20 @@ public interface MultireleaseSourceSet {
    * @since 2.0.0
    */
   void configureVariants(final @NotNull Action<MultireleaseVariantDetails> action);
+  /**
+   * Register a task to validate that all packages in the module this source set defines are exported.
+   *
+   * @since 2.1.0
+   */
+  void requireAllPackagesExported();
+
+  /**
+   * Register a task to validate that packages in the module this source set defines are exported.
+   *
+   * <p>The task is provided to allow for additional configuration, such as exclusions to required exported packages.</p>
+   *
+   * @param action an action to configure the created task
+   * @since 2.1.0
+   */
+  void requireAllPackagesExported(final @NotNull Action<? super CheckModuleExports> action);
 }

@@ -32,6 +32,8 @@ import net.kyori.indra.Indra;
 import net.kyori.indra.IndraExtension;
 import net.kyori.indra.multirelease.MultireleaseSourceSet;
 import net.kyori.indra.multirelease.MultireleaseVariantDetails;
+import net.kyori.indra.task.CheckModuleExports;
+import net.kyori.indra.task.JDeps;
 import net.kyori.mammoth.ProjectPlugin;
 import org.gradle.api.Action;
 import org.gradle.api.GradleException;
@@ -62,6 +64,7 @@ import org.gradle.api.tasks.testing.Test;
 import org.gradle.jvm.toolchain.JavaCompiler;
 import org.gradle.jvm.toolchain.JavaLanguageVersion;
 import org.gradle.jvm.toolchain.JavaToolchainService;
+import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.gradle.language.jvm.tasks.ProcessResources;
 import org.gradle.plugins.ide.eclipse.EclipsePlugin;
 import org.gradle.plugins.ide.eclipse.model.EclipseModel;
@@ -118,6 +121,8 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
         final String derivedSetName = MultireleaseSourceSetImpl.versionName(parent, version);
         alternateNames.add(derivedSetName);
       });
+
+      this.registerValidateModule(project, Indra.extension(project.getExtensions()), parent, multireleaseExtension);
     });
 
     project.afterEvaluate(p -> {
@@ -127,6 +132,8 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
       // Now that the dust has settled, link all the pieces together
       sourceSets.matching(set -> !alternateNames.contains(set.getName())).all(base -> {
         final MultireleaseSourceSetImpl extension = (MultireleaseSourceSetImpl) MultireleaseSourceSet.from(base);
+
+        this.registerCheckExports(p, base, extension);
 
         // Get ourselves an array of versions in order
         final int[] versions = extension.alternateVersions().stream().mapToInt(Integer::intValue).toArray();
@@ -203,6 +210,29 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
           this.configureMultireleaseJarManifestAttribute(tasks, base);
         }
       });
+    });
+  }
+
+  private void registerCheckExports(final Project project, final SourceSet base, final MultireleaseSourceSetImpl extension) {
+    if (extension.exportValidation.isEmpty()) {
+      return;
+    }
+
+    final TaskContainer tasks = project.getTasks();
+    final TaskProvider<?> checkModuleExports = tasks.register(base.getTaskName("check", "ModuleExports"), CheckModuleExports.class, task -> {
+      if (!tasks.getNames().contains(base.getJarTaskName())) {
+        task.setEnabled(false);
+        return;
+      }
+      task.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
+      task.getCheckedModule().set(tasks.named(base.getJarTaskName(), org.gradle.jvm.tasks.Jar.class).flatMap(j -> j.getArchiveFile()));
+      for (final Action<? super CheckModuleExports> action : extension.exportValidation) {
+        action.execute(task);
+      }
+    });
+
+    tasks.named(LifecycleBasePlugin.CHECK_TASK_NAME, check -> {
+      check.dependsOn(checkModuleExports);
     });
   }
 
@@ -350,6 +380,48 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
         model.getJdt().setSourceCompatibility(compatibility);
         model.getJdt().setTargetCompatibility(compatibility);
       }
+    });
+  }
+
+  private void registerValidateModule(final Project project, final IndraExtension indra, final SourceSet set, final MultireleaseSourceSet multirelease) {
+    // Use JDeps to validate the module
+    final JavaToolchainService toolchains = project.getExtensions().getByType(JavaToolchainService.class);
+    final Provider<Integer> maxMultirelase = project.provider(() -> multirelease.alternateVersions()).map(alternates -> {
+        int target = -1;
+        for (final int alternate : alternates) {
+          target = Math.max(target, alternate);
+        }
+        return target;
+    });
+    final TaskProvider<JDeps> provider = project.getTasks().register(set.getTaskName("validate", "Module"), JDeps.class, jdeps -> {
+      jdeps.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
+      jdeps.onlyIf(t -> multirelease.moduleName().isPresent());
+      jdeps.getJavaLauncher().set(toolchains.launcherFor(spec -> spec.getLanguageVersion().set(indra.javaVersions().actualVersion().zip(maxMultirelase, (actual, alternate) -> {
+        return JavaLanguageVersion.of(Math.max(actual, alternate));
+      })))); // max toolchain version
+      jdeps.getMultireleaseVersion().set(maxMultirelase.map(item -> {
+        if (item == null || item == -1) {
+          return null;
+        }
+        return item;
+      }));
+      jdeps.getModulePath().from(set.getRuntimeClasspath().minus(set.getOutput()));
+      jdeps.getModulePath().from(set.getCompileClasspath());
+      final TaskContainer tasks = project.getTasks();
+      if (tasks.getNames().contains(set.getJarTaskName())) {
+        jdeps.getModulePath().from(tasks.named(set.getJarTaskName(), Jar.class).map(t -> t.getOutputs()));
+      } else {
+        jdeps.getModulePath().from(set.getOutput());
+      }
+      jdeps.getArguments().addAll("--check");
+      jdeps.getArguments().add(multirelease.moduleName());
+    });
+
+    multirelease.configureVariants(details -> {
+      provider.configure(jdeps -> {
+        jdeps.getModulePath().from(details.variant().getCompileClasspath().minus(details.base().getOutput()).minus(details.variant().getOutput()));
+        jdeps.getModulePath().from(details.variant().getRuntimeClasspath().minus(details.base().getOutput()).minus(details.variant().getOutput()));
+      });
     });
   }
 }

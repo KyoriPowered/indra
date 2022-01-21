@@ -21,6 +21,7 @@ dependencies {
   compileOnlyApi "org.jetbrains:annotations:23.0.0"
   api project(":indra-git")
   implementation "gradle.plugin.org.cadixdev.gradle:licenser:0.6.1"
+  implementation "org.ow2.asm:asm:9.2"
   api "net.kyori:mammoth:$mammothVersion"
   testImplementation project(":indra-testlib")
 }

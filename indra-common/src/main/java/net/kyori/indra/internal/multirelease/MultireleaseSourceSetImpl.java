@@ -28,6 +28,7 @@ import java.util.Set;
 import javax.inject.Inject;
 import net.kyori.indra.multirelease.MultireleaseSourceSet;
 import net.kyori.indra.multirelease.MultireleaseVariantDetails;
+import net.kyori.indra.task.CheckModuleExports;
 import org.gradle.api.Action;
 import org.gradle.api.DomainObjectSet;
 import org.gradle.api.model.ObjectFactory;
@@ -43,6 +44,7 @@ class MultireleaseSourceSetImpl implements MultireleaseSourceSet {
   private final DomainObjectSet<Integer> alternateVersions;
   private final Property<String> moduleName;
   final Set<Action<MultireleaseVariantDetails>> alternateConfigurationActions = new HashSet<>();
+  final Set<Action<? super CheckModuleExports>> exportValidation = new HashSet<>();
 
   @Inject
   public MultireleaseSourceSetImpl(final ObjectFactory objects) {
@@ -75,5 +77,15 @@ class MultireleaseSourceSetImpl implements MultireleaseSourceSet {
   @Override
   public void configureVariants(final @NotNull Action<MultireleaseVariantDetails> action) {
     this.alternateConfigurationActions.add(requireNonNull(action, "action"));
+  }
+
+  @Override
+  public void requireAllPackagesExported() {
+    this.requireAllPackagesExported(task -> {});
+  }
+
+  @Override
+  public void requireAllPackagesExported(final Action<? super CheckModuleExports> action) {
+    this.exportValidation.add(action);
   }
 }
