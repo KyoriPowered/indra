@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import net.kyori.indra.Indra;
 import net.kyori.indra.IndraExtension;
+import net.kyori.indra.internal.ModularityDetecter;
 import net.kyori.indra.multirelease.MultireleaseSourceSet;
 import net.kyori.indra.multirelease.MultireleaseVariantDetails;
 import net.kyori.indra.task.CheckModuleExports;
@@ -48,7 +49,9 @@ import org.gradle.api.file.SourceDirectorySet;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.plugins.PluginContainer;
+import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.SourceSet;
@@ -67,7 +70,11 @@ import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.gradle.language.jvm.tasks.ProcessResources;
 import org.gradle.plugins.ide.eclipse.EclipsePlugin;
+import org.gradle.plugins.ide.eclipse.model.Classpath;
+import org.gradle.plugins.ide.eclipse.model.ClasspathEntry;
 import org.gradle.plugins.ide.eclipse.model.EclipseModel;
+import org.gradle.plugins.ide.eclipse.model.Library;
+import org.gradle.plugins.ide.eclipse.model.ProjectDependency;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -87,6 +94,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
   private static final String MULTI_RELEASE_PATH = "META-INF/versions/";
   private static final String CLASSES_VARIANT = "classes"; // apiElements and runtimeElements
   private static final String RESOURCES_VARAINT = "resources"; // runtimeElements
+  private static final String ECLIPSE_MODULE_ATTRIBUTE = "module"; // value: boolean
 
   @Override
   public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull TaskContainer tasks) {
@@ -101,7 +109,10 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
       });
 
       plugins.withType(EclipsePlugin.class, $$ -> {
-        this.configureEclipseProjectVersions(project, extensions.getByType(EclipseModel.class), Indra.extension(extensions), sourceSets);
+        final EclipseModel eclipse = extensions.getByType(EclipseModel.class);
+        final IndraExtension indra = Indra.extension(extensions);
+        this.configureEclipseProjectVersions(project, eclipse, indra, sourceSets);
+        this.configureEclipseModulePath(project, eclipse, sourceSets);
       });
     });
   }
@@ -379,6 +390,37 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
         final JavaVersion compatibility = JavaVersion.toVersion(sourceVersion);
         model.getJdt().setSourceCompatibility(compatibility);
         model.getJdt().setTargetCompatibility(compatibility);
+      }
+    });
+  }
+
+  private void configureEclipseModulePath(final Project project, final EclipseModel eclipse, final SourceSetContainer sourceSets) {
+    final Provider<Boolean> inferModulePath = project.getExtensions().getByType(JavaPluginExtension.class).getModularity().getInferModulePath();
+    final Property<Boolean> declaresModule = project.getObjects().property(Boolean.class).convention(project.provider(() -> {
+      for (final SourceSet set : sourceSets) {
+        final MultireleaseSourceSet mr = set.getExtensions().findByType(MultireleaseSourceSet.class);
+        if (mr != null && mr.moduleName().isPresent()) {
+          return true;
+        }
+      }
+      return false;
+    }));
+    declaresModule.finalizeValueOnRead();
+    eclipse.getClasspath().getFile().whenMerged(model -> {
+      final Classpath cp = (Classpath) model;
+      for (final ClasspathEntry entry : cp.getEntries()) {
+        if (entry instanceof Library) {
+          final Library library = (Library) entry;
+          final File libraryFile = library.getLibrary().getFile();
+          if (ModularityDetecter.isModule(libraryFile, inferModulePath.get())) {
+            library.getEntryAttributes().put(ECLIPSE_MODULE_ATTRIBUTE, "true");
+          }
+        } else if (entry instanceof ProjectDependency) {
+          // Assume all project dependencies should be on the module path if the source set has a declared module name
+          if (declaresModule.get()) {
+            ((ProjectDependency) entry).getEntryAttributes().put(ECLIPSE_MODULE_ATTRIBUTE, "true");
+          }
+        }
       }
     });
   }
