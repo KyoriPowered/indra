@@ -69,7 +69,6 @@ jobs:
               }
               
               if (desc != '') { // successful
-                 core.notice('Descriptor was: ' + desc);
                  target = JSON.parse(desc).version
               }
             }
@@ -85,8 +84,9 @@ jobs:
             } else {
               core.notice('No RC or nightly Gradle build found');
             }
-      - name: "run gradle build testing ${{ steps.determine-target.outputs.target }}"
+      - name: "run gradle build / added tests on ${{ steps.determine-target.outputs.target }}"
         uses: "gradle/gradle-build-action@v2"
+        if: "${{ steps.determine-target.outputs.target }}"
         with:
           arguments: "build"
       - name: "archive test results"
@@ -97,8 +97,9 @@ jobs:
           path: |
             build/reports/
             */build/reports/
-      - name: "run build with target gradle version"
+      - name: "run gradle build / compiling on ${{ steps.determine-target.outputs.target }}"
         uses: "gradle/gradle-build-action@v2"
+        if: "${{ steps.determine-target.outputs.target }}"
         with:
           gradle-version: "${{ steps.determine-target.outputs.target }}"
-          arguments: "build"
+          arguments: "build --warning-mode=all"
