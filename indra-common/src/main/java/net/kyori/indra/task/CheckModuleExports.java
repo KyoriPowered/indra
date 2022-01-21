@@ -119,7 +119,7 @@ public abstract class CheckModuleExports extends DefaultTask {
 
     final Set<String> exportProblems = this.checkExports(exports, knownPackages, exclusions);
     if (!exportProblems.isEmpty()) {
-      this.getLogger().error("Some packages in {} were not exported when they were experted to be:", inspected);
+      this.getLogger().error("Some packages in {} were not exported when they were expected to be:", inspected);
       for (final String problem : exportProblems) {
         this.getLogger().error("- {}", problem);
       }
