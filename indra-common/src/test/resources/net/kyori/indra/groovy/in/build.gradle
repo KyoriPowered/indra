@@ -1,0 +1,19 @@
+plugins {
+  id 'net.kyori.indra'
+  id 'groovy'
+}
+
+group = 'com.example'
+version = '1.0.0-SNAPSHOT'
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  implementation 'org.codehaus.groovy:groovy-all:3.0.9'
+}
+
+tasks.withType(GroovyCompile) {
+  println name
+}

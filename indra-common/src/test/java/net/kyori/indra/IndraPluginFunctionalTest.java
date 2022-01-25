@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.jar.Manifest;
 import java.util.stream.Stream;
+import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import net.kyori.indra.test.FunctionalTestDisplayNameGenerator;
 import net.kyori.indra.test.IndraConfigCacheFunctionalTest;
@@ -36,11 +37,14 @@ import net.kyori.mammoth.test.TestContext;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.DisplayNameGeneration;
+import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Opcodes;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.fail;
 
 @DisplayNameGeneration(FunctionalTestDisplayNameGenerator.class)
 class IndraPluginFunctionalTest {
@@ -49,13 +53,42 @@ class IndraPluginFunctionalTest {
   void testSimpleBuild(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");
+    ctx.copyInput("src/main/java/pkg/Test.java");
 
     ctx.build("build"); // run build
 
-    assertTrue(Files.exists(ctx.outputDirectory().resolve("build/libs/simplebuild-1.0.0-SNAPSHOT.jar")));
+    final Path builtJar = ctx.outputDirectory().resolve("build/libs/simplebuild-1.0.0-SNAPSHOT.jar");
+    assertTrue(Files.exists(builtJar));
+    assertBytecodeVersionEquals(builtJar, "pkg/Test.class", 52);
 
-    // todo: check version of classfiles
     // todo: add a source file, resource, etc with utf-8 characters and confirm they compile properly
+  }
+
+  @IndraConfigCacheFunctionalTest
+  void testGroovy(final TestContext ctx) throws IOException {
+    ctx.copyInput("build.gradle");
+    ctx.copyInput("settings.gradle");
+    ctx.copyInput("src/main/groovy/pkg/Test.groovy");
+
+    final BuildResult result = ctx.build("build"); // run build
+    System.out.println(result.getOutput());
+
+    final Path builtJar = ctx.outputDirectory().resolve("build/libs/groovy-1.0.0-SNAPSHOT.jar");
+    assertTrue(Files.exists(builtJar));
+    assertBytecodeVersionEquals(builtJar, "pkg/Test.class", 52);
+  }
+
+  @IndraConfigCacheFunctionalTest
+  void testScala(final TestContext ctx) throws IOException {
+    ctx.copyInput("build.gradle");
+    ctx.copyInput("settings.gradle");
+    ctx.copyInput("src/main/scala/pkg/Main.scala");
+
+    ctx.build("build"); // run build
+
+    final Path builtJar = ctx.outputDirectory().resolve("build/libs/scala-1.0.0-SNAPSHOT.jar");
+    assertTrue(Files.exists(builtJar));
+    assertBytecodeVersionEquals(builtJar, "pkg/Main.class", 52);
   }
 
   @IndraConfigCacheFunctionalTest
@@ -125,6 +158,40 @@ class IndraPluginFunctionalTest {
       });
     }
 
+    assertBytecodeVersionEquals(jar, "pkg/Actor.class", 52);
+    assertBytecodeVersionEquals(jar, "META-INF/versions/9/pkg/Actor.class",53);
+    assertBytecodeVersionEquals(jar, "META-INF/versions/17/pkg/Actor.class", 61);
+
     // TODO: test that multirelease tests work
+  }
+
+  private static void assertBytecodeVersionEquals(final Path jarPath, final String resource, final int bytecodeVersion) throws IOException {
+    final VersionCollector collector = new VersionCollector();
+    try (final ZipFile jar = new ZipFile(jarPath.toFile())) {
+      final ZipEntry entry = jar.getEntry(resource);
+      assertNotNull(entry, () -> "Could not find an entry " + resource + " in " + jarPath);
+
+      try (final InputStream is = jar.getInputStream(entry)) {
+        final ClassReader reader = new ClassReader(is);
+        reader.accept(collector, ClassReader.SKIP_CODE);
+      }
+    }
+    if (collector.version == -1) {
+      fail("Did not get a bytecode version from " + resource);
+    }
+    assertEquals(bytecodeVersion, collector.version, () -> "Expected bytecode version to be " + bytecodeVersion);
+  }
+
+  static final class VersionCollector extends org.objectweb.asm.ClassVisitor {
+    int version = -1;
+
+    public VersionCollector() {
+      super(Opcodes.ASM9);
+    }
+
+    @Override
+    public void visit(final int version, final int access, final String name, final String signature, final String superName, final String[] interfaces) {
+      this.version = version;
+    }
   }
 }

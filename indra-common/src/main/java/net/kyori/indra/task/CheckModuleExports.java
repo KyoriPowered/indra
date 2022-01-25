@@ -34,6 +34,7 @@ import java.util.Set;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
+import net.kyori.indra.internal.ModularityDetecter;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.InvalidUserDataException;
@@ -100,7 +101,7 @@ public abstract class CheckModuleExports extends DefaultTask {
     try (final ZipFile jar = new ZipFile(inspected)) {
       for (final Enumeration<? extends ZipEntry> entries = jar.entries(); entries.hasMoreElements();) {
         final ZipEntry check = entries.nextElement();
-        if (isModuleInfo(check.getName())) {
+        if (ModularityDetecter.isModuleInfo(check.getName())) {
           exports.addAll(this.exports(jar.getInputStream(check))); // todo: this just merges all multi-release module descriptors, should we refine our logic further?
           moduleInfoSeen = true;
         } else if (!check.isDirectory()) {
@@ -140,10 +141,6 @@ public abstract class CheckModuleExports extends DefaultTask {
       }
     }
     return problems;
-  }
-
-  private static boolean isModuleInfo(final @NotNull String path) {
-    return "module-info.class".equals(path) || (path.startsWith(MULTIRELEASE_PATH_PREFIX) && path.endsWith("module-info.class")); // todo: stricter multi-release handling
   }
 
   @VisibleForTesting

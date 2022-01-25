@@ -25,12 +25,18 @@ package net.kyori.indra.internal.multirelease;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import net.kyori.indra.Indra;
 import net.kyori.indra.IndraExtension;
 import net.kyori.indra.internal.ModularityDetecter;
+import net.kyori.indra.internal.language.GroovySupport;
+import net.kyori.indra.internal.language.JavaSupport;
+import net.kyori.indra.internal.language.LanguageSupport;
+import net.kyori.indra.internal.language.ScalaSupport;
 import net.kyori.indra.multirelease.MultireleaseSourceSet;
 import net.kyori.indra.multirelease.MultireleaseVariantDetails;
 import net.kyori.indra.task.CheckModuleExports;
@@ -46,6 +52,7 @@ import org.gradle.api.artifacts.dsl.DependencyHandler;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.ProjectLayout;
 import org.gradle.api.file.SourceDirectorySet;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
@@ -64,7 +71,6 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.AbstractCompile;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.testing.Test;
-import org.gradle.jvm.toolchain.JavaCompiler;
 import org.gradle.jvm.toolchain.JavaLanguageVersion;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
@@ -90,16 +96,25 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
   // Based on guidance at https://blog.gradle.org/mrjars
   // and an example at https://github.com/melix/mrjar-gradle
 
+  private static final List<Class<? extends LanguageSupport>> SUPPORTED_LANGUAGES = Collections.unmodifiableList(Arrays.asList(
+    JavaSupport.class,
+    GroovySupport.class,
+    ScalaSupport.class
+  ));
+
   private static final String MULTI_RELEASE_ATTRIBUTE = "Multi-Release";
   private static final String MULTI_RELEASE_PATH = "META-INF/versions/";
   private static final String CLASSES_VARIANT = "classes"; // apiElements and runtimeElements
   private static final String RESOURCES_VARAINT = "resources"; // runtimeElements
   private static final String ECLIPSE_MODULE_ATTRIBUTE = "module"; // value: boolean
 
+  private LanguageSupport[] languageSupports;
+
   @Override
   public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull TaskContainer tasks) {
     // Once the source set container is created, configure the multirelease extension
     plugins.withType(JavaBasePlugin.class, $ -> {
+      this.languageSupports = this.initLanguageSupports(project, project.getObjects());
       final SourceSetContainer sourceSets = extensions.getByType(SourceSetContainer.class);
       this.configureMultiRelease(project, tasks, project.getDependencies(), sourceSets);
 
@@ -117,6 +132,24 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
     });
   }
 
+  private LanguageSupport[] initLanguageSupports(final Project project, final ObjectFactory objects) {
+    final JavaToolchainService toolchains = project.getExtensions().getByType(JavaToolchainService.class);
+    final LanguageSupport[] languages = new LanguageSupport[SUPPORTED_LANGUAGES.size()];
+    for (int i = 0; i < SUPPORTED_LANGUAGES.size(); i++) {
+      languages[i] = objects.newInstance(SUPPORTED_LANGUAGES.get(i), toolchains); // TODO: toolchains is injectable in newer Gradle versions (7.x)
+    }
+    return languages;
+  }
+
+  private void configureLanguages(final Project project, final SourceSet set, final Provider<Integer> toolchainVersion, final Provider<Integer> targetVersion) {
+    for (final LanguageSupport lang : this.languageSupports) {
+      lang.registerApplyCallback(project, p -> {
+        lang.configureCompileTasks(p, set, toolchainVersion, targetVersion);
+        lang.configureDocTasks(p, set, toolchainVersion, targetVersion);
+      });
+    }
+  }
+
   private void configureMultiRelease(final Project project, final TaskContainer tasks, final DependencyHandler dependencies, final SourceSetContainer sourceSets) {
     final Set<String> alternateNames = ConcurrentHashMap.newKeySet();
     // Perform early setup for things that need to be visible in buildscripts
@@ -125,7 +158,9 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
         // ignore source sets we create ourself
         return;
       }
+      final IndraExtension indra = Indra.extension(project.getExtensions());
       final MultireleaseSourceSet multireleaseExtension = parent.getExtensions().create(MultireleaseSourceSet.class, "multirelease", MultireleaseSourceSetImpl.class, project.getObjects());
+      this.configureLanguages(project, parent, indra.javaVersions().actualVersion(), indra.javaVersions().target());
 
       multireleaseExtension.alternateVersions().whenObjectAdded(version -> {
         // Ideally we'd be able to initialize the source set here, but for some reason gradle won't let us do that...
@@ -133,12 +168,11 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
         alternateNames.add(derivedSetName);
       });
 
-      this.registerValidateModule(project, Indra.extension(project.getExtensions()), parent, multireleaseExtension);
+      this.registerValidateModule(project, indra, parent, multireleaseExtension);
     });
 
     project.afterEvaluate(p -> {
       final IndraExtension indra = Indra.extension(p.getExtensions());
-      final JavaToolchainService javaToolchains = p.getExtensions().getByType(JavaToolchainService.class);
 
       // Now that the dust has settled, link all the pieces together
       sourceSets.matching(set -> !alternateNames.contains(set.getName())).all(base -> {
@@ -174,6 +208,8 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
           }
 
           final SourceSet variant = sourceSets.maybeCreate(MultireleaseSourceSetImpl.versionName(base, version));
+          // Configure language levels
+
           // Source + resource directories
           variant.getJava().setSrcDirs(this.applySourceDirectories(version, base.getJava().getSrcDirs()));
           variant.getResources().setSrcDirs(this.applySourceDirectories(version, base.getResources().getSrcDirs()));
@@ -190,14 +226,14 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
           for (int i = 0; i < idx; ++i) {
             modulePatch.getClassDirectories().from(sourceSets.named(MultireleaseSourceSetImpl.versionName(base, versions[i])).map(SourceSet::getOutput));
           }
-          final Provider<JavaCompiler> compiler = javaToolchains.compilerFor(spec -> {
-            spec.getLanguageVersion().set(indra.javaVersions().actualVersion().map(activeEnv -> JavaLanguageVersion.of(Math.max(activeEnv, version)))); // make sure our JVM is always compatible
-          });
 
+          this.configureLanguages(
+            project,
+            variant,
+            indra.javaVersions().actualVersion().map(standard -> Math.max(standard, version)),
+            project.provider(() -> version)
+          );
           final TaskProvider<JavaCompile> compileJava = tasks.named(variant.getCompileJavaTaskName(), JavaCompile.class, task -> {
-            task.getOptions().getRelease().set(version);
-            task.getJavaCompiler().set(compiler);
-
             task.getOptions().getCompilerArgumentProviders().add(modulePatch);
           });
 
