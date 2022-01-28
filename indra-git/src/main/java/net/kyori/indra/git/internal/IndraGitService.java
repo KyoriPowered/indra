@@ -35,6 +35,8 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
+import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.lib.RepositoryBuilder;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
@@ -109,7 +111,7 @@ public abstract class IndraGitService implements BuildService<IndraGitService.Pa
           try {
             final @Nullable File realGit = resolveGit(targetDir);
             if (realGit == null) continue;
-            final Git repo = Git.open(realGit);
+            final Repository repo = new RepositoryBuilder().setWorkTree(targetDir).setGitDir(realGit).setMustExist(true).build();
 
             GitWrapper repoWrapper = new GitWrapper(repo);
             final GitWrapper existing = this.projectRepos.putIfAbsent(targetDir, repoWrapper);
@@ -117,7 +119,7 @@ public abstract class IndraGitService implements BuildService<IndraGitService.Pa
               repo.close();
               repoWrapper = existing;
             } else {
-              LOGGER.info("indra-git: Located and initialized repository for project {} in {}, with git directory at {}", displayName, targetDir, repo.getRepository().getDirectory());
+              LOGGER.info("indra-git: Located and initialized repository for project {} in {}, with git directory at {}", displayName, targetDir, repo.getDirectory());
             }
 
             this.projectRepos.put(rawProjectDir, repoWrapper);
@@ -143,7 +145,7 @@ public abstract class IndraGitService implements BuildService<IndraGitService.Pa
   private static final String GITDIR_PREFIX = "gitdir:";
 
   private static boolean isGitDir(final File file) {
-    return new File(file, GIT_DIR).exists();
+    return new File(file, GIT_DIR).exists(); // can be either directory, or file with gitdir: content
   }
 
   private static File resolveGit(File projectDir) throws IOException {
@@ -177,8 +179,8 @@ public abstract class IndraGitService implements BuildService<IndraGitService.Pa
     final Set<GitWrapper> repos = new HashSet<>(this.projectRepos.values());
     this.projectRepos.clear();
     for(final GitWrapper wrapper : repos) {
-      if(wrapper.git != null) {
-        wrapper.git.close();
+      if(wrapper.repository != null) {
+        wrapper.repository.close();
       }
     }
   }
@@ -187,9 +189,11 @@ public abstract class IndraGitService implements BuildService<IndraGitService.Pa
     static final GitWrapper NOT_FOUND = new GitWrapper(null);
 
     final @Nullable Git git;
+    final @Nullable Repository repository;
 
-    GitWrapper(final @Nullable Git repo) {
-      this.git = repo;
+    GitWrapper(final @Nullable Repository repo) {
+      this.repository = repo;
+      this.git = repo == null ? null : Git.wrap(repo);
     }
   }
 }
