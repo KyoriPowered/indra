@@ -23,15 +23,13 @@
  */
 package net.kyori.indra;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Objects;
 import net.kyori.indra.internal.IndraExtensionImpl;
+import net.kyori.indra.internal.language.LanguageSupport;
 import net.kyori.indra.internal.multirelease.IndraMultireleasePlugin;
 import net.kyori.indra.repository.RemoteRepository;
 import net.kyori.indra.repository.Repositories;
-import net.kyori.indra.util.Versioning;
 import net.kyori.mammoth.ProjectPlugin;
 import net.kyori.mammoth.Properties;
 import org.gradle.api.Action;
@@ -56,6 +54,7 @@ import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.external.javadoc.JavadocOptionFileOption;
+import org.gradle.external.javadoc.MinimalJavadocOptions;
 import org.gradle.external.javadoc.StandardJavadocDocletOptions;
 import org.gradle.jvm.toolchain.JavaLanguageVersion;
 import org.gradle.jvm.toolchain.JavaToolchainService;
@@ -63,7 +62,6 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.gradle.language.jvm.tasks.ProcessResources;
 import org.gradle.plugins.ide.api.GeneratorTask;
 import org.gradle.plugins.ide.eclipse.model.EclipseModel;
-import org.gradle.process.CommandLineArgumentProvider;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -90,30 +88,12 @@ public class IndraPlugin implements ProjectPlugin {
 
     tasks.withType(JavaCompile.class, task -> {
       final CompileOptions options = task.getOptions();
-      options.setEncoding(StandardCharsets.UTF_8.name());
       options.getCompilerArgs().addAll(Arrays.asList(
         // Generate metadata for reflection on method parameters
         "-parameters",
         // Enable all warnings
         "-Xlint:all"
       ));
-
-      // JDK 9+ only arguments
-      final Property<Integer> minimumToolchainProp = indra.javaVersions().minimumToolchain();
-      //noinspection Convert2Lambda // Gradle will only cache with an anonymous class
-      options.getCompilerArgumentProviders().add(new CommandLineArgumentProvider() {
-        @Override
-        public Iterable<String> asArguments() {
-          if(minimumToolchainProp.get() >= 9) {
-            return Arrays.asList(
-              "-Xdoclint",
-              "-Xdoclint:-missing"
-            );
-          } else {
-            return Collections.emptyList();
-          }
-        }
-      });
 
       // Enable preview features if option is set in extension
       options.getCompilerArgumentProviders().add(indra.previewFeatureArgumentProvider());
@@ -124,17 +104,40 @@ public class IndraPlugin implements ProjectPlugin {
     });
 
     tasks.withType(Javadoc.class, task -> {
-      task.options(options -> {
-        options.setEncoding(StandardCharsets.UTF_8.name());
+      // Apply preview feature flag
+      final MinimalJavadocOptions minimalOpts = task.getOptions();
+      if(minimalOpts instanceof StandardJavadocDocletOptions) {
+        final StandardJavadocDocletOptions options = (StandardJavadocDocletOptions) minimalOpts;
+        final JavadocOptionFileOption<Boolean> enablePreview = options.addBooleanOption("-enable-preview");
+        final JavadocOptionFileOption<Boolean> doclintMissing = options.addBooleanOption("Xdoclint:-missing");
+        final JavadocOptionFileOption<Boolean> html5 = options.addBooleanOption("html5");
+        final JavadocOptionFileOption<Boolean> noModuleDirectories = options.addBooleanOption("-no-module-directories");
+        final Property<Boolean> previewFeaturesEnabledProp = indra.javaVersions().previewFeaturesEnabled();
+        task.doFirst(new Action<Task>() {
+          @Override
+          public void execute(final Task t) {
+            final int actual = ((Javadoc) t).getJavadocTool().get().getMetadata().getLanguageVersion().asInt();
 
-        if(options instanceof StandardJavadocDocletOptions) {
-          ((StandardJavadocDocletOptions) options).charSet(StandardCharsets.UTF_8.name());
-        }
-      });
+            if(actual >= 9) {
+              if(actual < 12) {
+                // Apply workaround for https://bugs.openjdk.java.net/browse/JDK-8215291
+                // This will probably never be backported......
+                noModuleDirectories.setValue(true);
+              }
+              if(actual >= 12) {
+                enablePreview.setValue(previewFeaturesEnabledProp.get());
+              }
+
+              doclintMissing.setValue(true);
+              html5.setValue(true);
+            }
+          }
+        });
+      }
     });
 
     tasks.withType(ProcessResources.class, task -> {
-      task.setFilteringCharset(StandardCharsets.UTF_8.name());
+      task.setFilteringCharset(LanguageSupport.DEFAULT_ENCODING);
     });
 
     extensions.configure(JavaPluginExtension.class, extension -> {
@@ -161,63 +164,12 @@ public class IndraPlugin implements ProjectPlugin {
         javaPlugin.setTargetCompatibility(JavaVersion.toVersion(versionProp.get()));
       });
 
-      tasks.withType(JavaCompile.class).configureEach(compile -> {
-        final Property<Integer> release = compile.getOptions().getRelease();
-        if(!release.isPresent() && indra.javaVersions().actualVersion().get() >= 9) {
-          release.set(indra.javaVersions().target());
-        }
-      });
-
       if(indra.reproducibleBuilds().get()) {
         tasks.withType(AbstractArchiveTask.class).configureEach(archive -> {
           archive.setPreserveFileTimestamps(false);
           archive.setReproducibleFileOrder(true);
         });
       }
-
-      tasks.withType(Javadoc.class).configureEach(jd -> {
-        if(jd.getOptions() instanceof StandardJavadocDocletOptions) {
-          final StandardJavadocDocletOptions options = (StandardJavadocDocletOptions) jd.getOptions();
-          final JavadocOptionFileOption<Boolean> doclintMissing = options.addBooleanOption("Xdoclint:-missing");
-          final JavadocOptionFileOption<Boolean> html5 = options.addBooleanOption("html5");
-          final JavadocOptionFileOption<String> release = options.addStringOption("-release");
-          final JavadocOptionFileOption<Boolean> enablePreview = options.addBooleanOption("-enable-preview");
-          final JavadocOptionFileOption<Boolean> noModuleDirectories = options.addBooleanOption("-no-module-directories");
-
-          final JavaToolchainVersions versions = indra.javaVersions();
-          final Property<Integer> targetProp = versions.target();
-          final Property<Integer> minimumProp = versions.minimumToolchain();
-          final Property<Boolean> previewFeaturesEnabledProp = versions.previewFeaturesEnabled();
-          jd.doFirst(new Action<Task>() {
-            @Override
-            public void execute(final Task t) {
-              final int target = targetProp.get();
-              final int minimum = minimumProp.get();
-              final int actual = jd.getJavadocTool().get().getMetadata().getLanguageVersion().asInt();
-
-              // Java 16 automatically links with the API documentation anyways
-              if(actual < 16) {
-                options.links(jdkApiDocs(target));
-              }
-
-              if(minimum >= 9) {
-                if(actual < 12) {
-                  // Apply workaround for https://bugs.openjdk.java.net/browse/JDK-8215291
-                  // Hopefully this gets backported some day... (JDK-8215291)
-                  noModuleDirectories.setValue(true);
-                }
-
-                release.setValue(Integer.toString(target));
-                doclintMissing.setValue(true);
-                html5.setValue(true);
-                enablePreview.setValue(previewFeaturesEnabledProp.get());
-              } else {
-                options.setSource(Versioning.versionString(target));
-              }
-            }
-          });
-        }
-      });
 
       // Set up testing on the selected Java versions
       final JavaToolchainService toolchains = extensions.getByType(JavaToolchainService.class);
@@ -242,7 +194,6 @@ public class IndraPlugin implements ProjectPlugin {
       });
     });
 
-    // TODO: Repository extensions in Kotlin buildscript
     Repositories.registerRepositoryExtensions(project.getRepositories(), RemoteRepository.SONATYPE_SNAPSHOTS);
   }
 
@@ -268,13 +219,4 @@ public class IndraPlugin implements ProjectPlugin {
     });
   }
 
-  private static String jdkApiDocs(final int javaVersion) {
-    final String template;
-    if(javaVersion >= 11) {
-      template = "https://docs.oracle.com/en/java/javase/%s/docs/api";
-    } else {
-      template = "https://docs.oracle.com/javase/%s/docs/api";
-    }
-    return String.format(template, javaVersion);
-  }
 }

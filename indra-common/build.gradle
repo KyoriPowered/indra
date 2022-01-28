@@ -14,6 +14,21 @@ kotlin {
   }
 }
 
+sourceSets {
+  kotlinSupport
+}
+
+tasks.named('jar').configure {
+  from(sourceSets.kotlinSupport.output)
+}
+
+pluginUnderTestMetadata {
+  // Use a packaged form of our plugin to support our classpath hackery
+  // def oldFrom = pluginClasspath.from
+  pluginClasspath.from = tasks.named('jar').map { it.outputs }
+  pluginClasspath.from sourceSets.main.runtimeClasspath
+}
+
 dependencies {
   compileOnlyApi "org.immutables:value:2.8.8:annotations"
   annotationProcessor "org.immutables:value:2.8.8"
@@ -24,6 +39,11 @@ dependencies {
   implementation "org.ow2.asm:asm:9.2"
   api "net.kyori:mammoth:$mammothVersion"
   testImplementation project(":indra-testlib")
+  
+  // Kotlin plugin dep
+  kotlinSupportCompileOnly "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
+  kotlinSupportCompileOnly(gradleApi())
+  compileOnly(sourceSets.kotlinSupport.output)
 }
 
 indraPluginPublishing {
