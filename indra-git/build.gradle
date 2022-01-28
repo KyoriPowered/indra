@@ -1,6 +1,6 @@
 dependencies {
   compileOnlyApi "org.jetbrains:annotations:23.0.0"
-  api "org.eclipse.jgit:org.eclipse.jgit:5.11.0.+"
+  api "org.eclipse.jgit:org.eclipse.jgit:5.13.0.+" // stay on 5.x series, 6+ requires Java 11
   api "net.kyori:mammoth:$mammothVersion"
   testImplementation project(":indra-testlib")
 }
