@@ -26,17 +26,21 @@ package net.kyori.indra;
 import java.util.Arrays;
 import java.util.Objects;
 import net.kyori.indra.internal.IndraExtensionImpl;
+import net.kyori.indra.internal.SonatypeRepositoriesImpl;
 import net.kyori.indra.internal.language.LanguageSupport;
 import net.kyori.indra.internal.multirelease.IndraMultireleasePlugin;
 import net.kyori.indra.repository.RemoteRepository;
 import net.kyori.indra.repository.Repositories;
+import net.kyori.indra.repository.SonatypeRepositories;
 import net.kyori.mammoth.ProjectPlugin;
 import net.kyori.mammoth.Properties;
 import org.gradle.api.Action;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.plugins.BasePluginConvention;
+import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -194,7 +198,20 @@ public class IndraPlugin implements ProjectPlugin {
       });
     });
 
-    Repositories.registerRepositoryExtensions(project.getRepositories(), RemoteRepository.SONATYPE_SNAPSHOTS);
+    this.registerRepositoryExtensions(project.getRepositories());
+  }
+
+  private void registerRepositoryExtensions(final RepositoryHandler repositories) {
+    // Sonatype OSSRH (new, support for more hosts)
+    ((ExtensionAware) repositories).getExtensions().create(
+      SonatypeRepositories.class,
+      SonatypeRepositories.EXTENSION_NAME,
+      SonatypeRepositoriesImpl.class,
+      repositories
+    );
+
+    // Legacy repository handling
+    Repositories.registerRepositoryExtensions(repositories, RemoteRepository.SONATYPE_SNAPSHOTS);
   }
 
   private void applyIdeConfigurationOptions(final PluginManager manager, final ExtensionContainer extensions, final TaskContainer tasks) {
