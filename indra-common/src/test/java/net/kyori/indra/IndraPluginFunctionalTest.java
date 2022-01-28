@@ -33,6 +33,7 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import net.kyori.indra.test.FunctionalTestDisplayNameGenerator;
 import net.kyori.indra.test.IndraConfigCacheFunctionalTest;
+import net.kyori.indra.test.IndraFunctionalTest;
 import net.kyori.mammoth.test.TestContext;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
@@ -89,6 +90,19 @@ class IndraPluginFunctionalTest {
     final Path builtJar = ctx.outputDirectory().resolve("build/libs/scala-1.0.0-SNAPSHOT.jar");
     assertTrue(Files.exists(builtJar));
     assertBytecodeVersionEquals(builtJar, "pkg/Main.class", 52);
+  }
+
+  @IndraFunctionalTest
+  void testKotlinBuild(final TestContext ctx) throws IOException {
+    ctx.copyInput("build.gradle");
+    ctx.copyInput("settings.gradle");
+    ctx.copyInput("src/main/kotlin/pkg/Test.kt");
+
+    ctx.build("build"); // run build
+
+    final Path builtJar = ctx.outputDirectory().resolve("build/libs/kotlin-1.0.0-SNAPSHOT.jar");
+    assertTrue(Files.exists(builtJar));
+    assertBytecodeVersionEquals(builtJar, "pkg/Test.class", 52);
   }
 
   @IndraConfigCacheFunctionalTest

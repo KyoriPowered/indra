@@ -35,6 +35,7 @@ import net.kyori.indra.IndraExtension;
 import net.kyori.indra.internal.ModularityDetecter;
 import net.kyori.indra.internal.language.GroovySupport;
 import net.kyori.indra.internal.language.JavaSupport;
+import net.kyori.indra.internal.language.KotlinSupport;
 import net.kyori.indra.internal.language.LanguageSupport;
 import net.kyori.indra.internal.language.ScalaSupport;
 import net.kyori.indra.multirelease.MultireleaseSourceSet;
@@ -99,7 +100,8 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
   private static final List<Class<? extends LanguageSupport>> SUPPORTED_LANGUAGES = Collections.unmodifiableList(Arrays.asList(
     JavaSupport.class,
     GroovySupport.class,
-    ScalaSupport.class
+    ScalaSupport.class,
+    KotlinSupport.class
   ));
 
   private static final String MULTI_RELEASE_ATTRIBUTE = "Multi-Release";
