@@ -23,6 +23,7 @@
  */
 package net.kyori.indra.git.internal;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
@@ -37,20 +38,19 @@ import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevObject;
 import org.eclipse.jgit.revwalk.RevWalk;
-import org.gradle.api.Project;
 import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 import org.gradle.api.provider.Provider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class IndraGitExtensionImpl implements IndraGitExtension {
-  private final Logger logger;
+  private static final Logger LOGGER = Logging.getLogger(IndraGitExtensionImpl.class);
   private final Provider<Git> service;
 
   @Inject
-  public IndraGitExtensionImpl(final Project project, final Provider<IndraGitService> service) {
-    this.logger = project.getLogger();
-    this.service = service.map(s -> s.git(project));
+  public IndraGitExtensionImpl(final File projectDir, final String displayName, final Provider<IndraGitService> service) {
+    this.service = service.map(s -> s.git(projectDir, displayName));
   }
 
   @Override
@@ -66,7 +66,7 @@ public class IndraGitExtensionImpl implements IndraGitExtension {
     try {
       return git.tagList().call();
     } catch(final GitAPIException ex) {
-      this.logger.error("Failed to query git for a list of tags:", ex);
+      LOGGER.error("Failed to query git for a list of tags:", ex);
       return Collections.emptyList();
     }
   }
@@ -93,7 +93,7 @@ public class IndraGitExtensionImpl implements IndraGitExtension {
         }
       }
     } catch(final IOException | GitAPIException ex) {
-      this.logger.error("Failed to resolve current HEAD tag:", ex);
+      LOGGER.error("Failed to resolve current HEAD tag:", ex);
     }
     return null;
   }
@@ -109,7 +109,7 @@ public class IndraGitExtensionImpl implements IndraGitExtension {
       // there is no HEAD when in a git repo without a commit
       return null;
     } catch(final GitAPIException ex) {
-      this.logger.error("Failed to query git for a 'describe' result:", ex);
+      LOGGER.error("Failed to query git for a 'describe' result:", ex);
       return null;
     }
   }
@@ -134,7 +134,7 @@ public class IndraGitExtensionImpl implements IndraGitExtension {
 
       return ref.getTarget();
     } catch(final IOException ex) {
-      this.logger.error("Failed to query current branch name from git:", ex);
+      LOGGER.error("Failed to query current branch name from git:", ex);
       return null;
     }
   }
@@ -150,7 +150,7 @@ public class IndraGitExtensionImpl implements IndraGitExtension {
 
       return head.getObjectId();
     } catch(final IOException ex) {
-      this.logger.error("Failed to query git for the current HEAD commit:", ex);
+      LOGGER.error("Failed to query git for the current HEAD commit:", ex);
       return null;
     }
   }

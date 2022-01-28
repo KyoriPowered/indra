@@ -29,6 +29,7 @@ import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
+import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
@@ -44,16 +45,24 @@ import org.jetbrains.annotations.Nullable;
  * @since 2.0.0
  */
 public abstract class RequireClean extends DefaultTask {
-  public RequireClean() {
-    this.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
-  }
-
   @Internal
   public abstract Property<IndraGitService> getGit();
 
+  @Internal
+  protected abstract DirectoryProperty getProjectDirectory();
+
+  @Internal
+  protected abstract Property<String> getProjectDisplayName();
+
+  public RequireClean() {
+    this.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
+    this.getProjectDirectory().fileValue(this.getProject().getProjectDir());
+    this.getProjectDisplayName().convention(this.getProject().getDisplayName());
+  }
+
   @TaskAction
   public void check() {
-    final @Nullable Git git = this.getGit().get().git(this.getProject());
+    final @Nullable Git git = this.getGit().get().git(this.getProjectDirectory().get().getAsFile(), this.getProjectDisplayName().get());
     if(git == null) return;
 
     try {

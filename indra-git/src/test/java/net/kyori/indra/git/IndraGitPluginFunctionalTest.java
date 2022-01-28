@@ -46,6 +46,15 @@ class IndraGitPluginFunctionalTest {
     final BuildResult result = ctx.build("printGitStatus");
 
     assertTrue(result.getOutput().contains("Git present: true"), "Plugin application not detected");
+  }
 
+  @IndraConfigCacheFunctionalTest
+  void testOnSettings(final TestContext ctx) throws IOException, GitAPIException {
+    IndraGitPluginTest.initRepo(ctx.outputDirectory());
+    ctx.copyInput("settings.gradle");
+
+    final BuildResult result = ctx.build("help");
+
+    assertTrue(result.getOutput().contains("Git present: true"), "Plugin application not detected on Settings");
   }
 }

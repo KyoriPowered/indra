@@ -1,0 +1,7 @@
+plugins {
+  id 'net.kyori.indra.git'
+}
+
+rootProject.name = 'onSettings'
+
+println "Git present: ${indraGit.present}"

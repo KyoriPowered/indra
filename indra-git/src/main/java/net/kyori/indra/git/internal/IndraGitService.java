@@ -35,12 +35,12 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.errors.RepositoryNotFoundException;
-import org.gradle.api.Project;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.logging.Logging;
 import org.gradle.api.services.BuildService;
 import org.gradle.api.services.BuildServiceParameters;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -70,36 +70,37 @@ public abstract class IndraGitService implements BuildService<IndraGitService.Pa
    *
    * <p>If this project is not managed by git, this will return {@code null}.</p>
    *
-   * @param project the project to get a repository for
+   * @param projectDir the project directory to locate a git repo in
+   * @param displayName the display name for the context being queried
    * @return the build's git repository.
    * @since 2.0.0
    */
-  public @Nullable Git git(final Project project) {
+  public @Nullable Git git(final File projectDir, final @NotNull String displayName) {
     if(!this.open) {
       throw new IllegalStateException("Tried to access git repository after close");
     }
-    final @Nullable GitWrapper wrapper = this.projectRepos.get(project.getProjectDir());
+    final @Nullable GitWrapper wrapper = this.projectRepos.get(projectDir);
     if(wrapper != null) return wrapper.git; // found
 
     // Attempt to compute a repository based on the project info
     // Travel up the directory tree to try and locate projects
-    final File rawProjectDir = project.getProjectDir();
+    final File rawProjectDir = projectDir;
     final File rootProjectDir;
     final File realProjectDir;
     try {
       rootProjectDir = this.getParameters().getBaseDirectory().get().getAsFile().getCanonicalFile();
       realProjectDir = rawProjectDir.getCanonicalFile();
       if(!realProjectDir.getPath().startsWith(rootProjectDir.getPath())) {
-        throw new IllegalArgumentException("Project directory " + rawProjectDir + " was no within the root project!");
+        throw new IllegalArgumentException("Project directory " + rawProjectDir + " was not within the root project!");
       }
 
       File targetDir = realProjectDir;
       do {
         if(isGitDir(targetDir)) {
-          LOGGER.debug("indra-git: Examining directory {} for {}", targetDir, project.getDisplayName());
+          LOGGER.debug("indra-git: Examining directory {} for {}", targetDir, displayName);
           final GitWrapper potentialExisting = this.projectRepos.get(targetDir);
           if(potentialExisting != null) {
-            LOGGER.info("indra-git: Found existing git repository for {} starting in directory {} via {}", project.getDisplayName(), rawProjectDir, targetDir);
+            LOGGER.info("indra-git: Found existing git repository for {} starting in directory {} via {}", displayName, rawProjectDir, targetDir);
             // Once values make it into the map, they are the only possibility
             this.projectRepos.put(rawProjectDir, potentialExisting);
             return potentialExisting.git;
@@ -116,25 +117,25 @@ public abstract class IndraGitService implements BuildService<IndraGitService.Pa
               repo.close();
               repoWrapper = existing;
             } else {
-              LOGGER.info("indra-git: Located and initialized repository for project {} in {}, with git directory at {}", project.getDisplayName(), targetDir, repo.getRepository().getDirectory());
+              LOGGER.info("indra-git: Located and initialized repository for project {} in {}, with git directory at {}", displayName, targetDir, repo.getRepository().getDirectory());
             }
 
             this.projectRepos.put(rawProjectDir, repoWrapper);
             return repoWrapper.git;
           } catch(final RepositoryNotFoundException ex) {
-            LOGGER.debug("indra-git: Unable to open repository found in {} for {}", targetDir, project.getDisplayName(), ex);
+            LOGGER.debug("indra-git: Unable to open repository found in {} for {}", targetDir, displayName, ex);
             // continue up the directory tree
           }
         } else {
-          LOGGER.debug("indra-git: Skipping directory {} while locating repository for {}", targetDir, project.getDisplayName());
+          LOGGER.debug("indra-git: Skipping directory {} while locating repository for {}", targetDir, displayName);
         }
       } while((!rootProjectDir.equals(targetDir)) && (targetDir = targetDir.getParentFile()) != null);
       // At this point we're not found
       this.projectRepos.put(rawProjectDir, GitWrapper.NOT_FOUND);
     } catch(final IOException ex) {
-      LOGGER.warn("indra-git: Failed to open git repository for {}:", project.getDisplayName(), ex);
+      LOGGER.warn("indra-git: Failed to open git repository for {}:", displayName, ex);
     }
-    LOGGER.info("indra-git: No git repository found for {}", project.getDisplayName());
+    LOGGER.info("indra-git: No git repository found for {}", displayName);
     return null;
   }
 
