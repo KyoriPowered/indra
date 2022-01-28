@@ -74,7 +74,6 @@ public class JavaSupport implements LanguageSupport {
           return null;
         }
       }));
-
       options.getCompilerArgumentProviders().add(new IndraCompileArgumentProvider(toolchainVersion));
     });
   }
@@ -92,6 +91,7 @@ public class JavaSupport implements LanguageSupport {
         final StandardJavadocDocletOptions options = (StandardJavadocDocletOptions) minimalOpts;
         options.charSet(DEFAULT_ENCODING);
 
+        task.getInputs().property("targetVersion", targetVersion);
         task.doFirst(new IndraJavadocPrepareAction(targetVersion, options));
       }
     });
@@ -119,17 +119,11 @@ public class JavaSupport implements LanguageSupport {
 
   static final class IndraJavadocPrepareAction implements Action<Task> {
     private final @NotNull Provider<Integer> targetVersion;
-    private final JavadocOptionFileOption<Boolean> doclintMissing;
-    private final JavadocOptionFileOption<Boolean> html5;
     private final JavadocOptionFileOption<String> release;
-    private final JavadocOptionFileOption<Boolean> noModuleDirectories;
 
     IndraJavadocPrepareAction(final @NotNull Provider<Integer> targetVersion, final StandardJavadocDocletOptions initOptions) {
       this.targetVersion = targetVersion;
-      this.doclintMissing = initOptions.addBooleanOption("Xdoclint:-missing");
-      this.html5 = initOptions.addBooleanOption("html5");
       this.release = initOptions.addStringOption("-release");
-      this.noModuleDirectories = initOptions.addBooleanOption("-no-module-directories");
     }
 
     @Override
@@ -142,14 +136,7 @@ public class JavaSupport implements LanguageSupport {
         options.links(jdkApiDocs(target));
       }
       if (actual >= 9) {
-        if (actual < 12) {
-          // Apply workaround for https://bugs.openjdk.java.net/browse/JDK-8215291
-          // Hopefully this gets backported some day... (JDK-8215291)
-          this.noModuleDirectories.setValue(true);
-        }
         this.release.setValue(Integer.toString(target));
-        this.doclintMissing.setValue(true);
-        this.html5.setValue(true);
       } else {
         options.setSource(Versioning.versionString(target));
       }
