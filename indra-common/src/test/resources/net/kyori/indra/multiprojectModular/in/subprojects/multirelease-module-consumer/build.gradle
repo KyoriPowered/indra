@@ -13,4 +13,5 @@ dependencies {
 sourceSets.main.multirelease {
   moduleName 'testproject.consumer.multirelease'
   alternateVersions 9, 11
+  applyToJavadoc true
 }

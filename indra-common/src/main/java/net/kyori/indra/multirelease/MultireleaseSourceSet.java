@@ -92,6 +92,7 @@ public interface MultireleaseSourceSet {
    * @since 2.0.0
    */
   void configureVariants(final @NotNull Action<MultireleaseVariantDetails> action);
+
   /**
    * Register a task to validate that all packages in the module this source set defines are exported.
    *
@@ -108,4 +109,25 @@ public interface MultireleaseSourceSet {
    * @since 2.1.0
    */
   void requireAllPackagesExported(final @NotNull Action<? super CheckModuleExports> action);
+  /**
+   * Configure whether multi-release contents are exposed to Javadoc generation.
+   *
+   * <p>This includes adding a module descriptor to Javadoc that may otherwise only be present in multi-release variants.</p>
+   *
+   * @return a property controlling whether Javadoc generation should be multi-release aware
+   * @since 2.1.0
+   */
+  Property<Boolean> applyToJavadoc();
+
+  /**
+   * Configure whether multi-release contents are exposed to Javadoc generation.
+   *
+   * <p>This includes adding a module descriptor to Javadoc that may otherwise only be present in multi-release variants.</p>
+   *
+   * @param applyToJavadoc whether Javadoc generation should be multi-release aware
+   * @since 2.1.0
+   */
+  default void applyToJavadoc(final boolean applyToJavadoc) {
+    this.applyToJavadoc().set(applyToJavadoc);
+  }
 }

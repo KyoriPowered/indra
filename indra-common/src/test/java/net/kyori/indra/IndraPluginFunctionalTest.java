@@ -124,8 +124,8 @@ class IndraPluginFunctionalTest {
     ctx.copyInput("subprojects/core/j9/module-info.java", "subprojects/core/src/main/java9/module-info.java");
 
     ctx.copyInput("subprojects/module-consumer/build.gradle");
-    ctx.copyInput("subprojects/module-consumer/ModuleConsumer.java", "subrojects/module-consumer/src/main/java/testproject/consumer/ModuleConsumer.java");
-    ctx.copyInput("subprojects/module-consumer/module-info.java", "subrojects/module-consumer/src/main/java/module-info.java");
+    ctx.copyInput("subprojects/module-consumer/ModuleConsumer.java", "subprojects/module-consumer/src/main/java/testproject/consumer/ModuleConsumer.java");
+    ctx.copyInput("subprojects/module-consumer/module-info.java", "subprojects/module-consumer/src/main/java/module-info.java");
 
     ctx.copyInput("subprojects/multirelease-module-consumer/build.gradle");
     ctx.copyInput("subprojects/multirelease-module-consumer/j8/Main.java", "subprojects/multirelease-module-consumer/src/main/java/testproject/consumer/multirelease/Main.java");
