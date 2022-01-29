@@ -30,6 +30,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import javax.inject.Inject;
 import net.kyori.indra.Indra;
 import net.kyori.indra.IndraExtension;
 import net.kyori.indra.internal.ModularityDetecter;
@@ -50,7 +51,9 @@ import org.gradle.api.NamedDomainObjectProvider;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
+import org.gradle.api.attributes.LibraryElements;
 import org.gradle.api.file.ConfigurableFileCollection;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.ProjectLayout;
@@ -116,6 +119,12 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
   private static final String ECLIPSE_MODULE_ATTRIBUTE = "module"; // value: boolean
 
   private LanguageSupport[] languageSupports;
+  private final ObjectFactory objects;
+
+  @Inject
+  public IndraMultireleasePlugin(final ObjectFactory objects) {
+    this.objects = objects;
+  }
 
   @Override
   public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull TaskContainer tasks) {
@@ -202,6 +211,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
 
       this.configureLanguages(project, parent, indra.javaVersions().actualVersion(), indra.javaVersions().target(), docsRuntimeVersion, docsTargetVersion);
 
+
       multireleaseExtension.alternateVersions().whenObjectAdded(version -> {
         // Ideally we'd be able to initialize the source set here, but for some reason gradle won't let us do that...
         final String derivedSetName = MultireleaseSourceSetImpl.versionName(parent, version);
@@ -217,6 +227,8 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
       // Now that the dust has settled, link all the pieces together
       sourceSets.matching(set -> !alternateNames.contains(set.getName())).all(base -> {
         final MultireleaseSourceSetImpl extension = (MultireleaseSourceSetImpl) MultireleaseSourceSet.from(base);
+
+        this.usePackagedDependenciesWhenModularJavadocRequired(p.getConfigurations(), base, extension);
 
         this.registerCheckExports(p, base, extension);
 
@@ -297,6 +309,14 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
           this.configureMultireleaseJarManifestAttribute(tasks, base);
         }
       });
+    });
+  }
+
+  private void usePackagedDependenciesWhenModularJavadocRequired(final ConfigurationContainer configurations, final SourceSet base, final MultireleaseSourceSetImpl extension) {
+    configurations.named(base.getCompileClasspathConfigurationName(), config -> {
+      if (extension.applyToJavadoc().get()) {
+        config.getAttributes().attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE, this.objects.named(LibraryElements.class, LibraryElements.JAR));
+      }
     });
   }
 
@@ -415,6 +435,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
     // Configure modular javadoc
     final Property<Boolean> modularJavadoc = main.applyToJavadoc();
     final ConfigurableFileCollection modulePatch = project.getObjects().fileCollection();
+    modulePatch.from(mainSet.getAllJava());
     final TaskCollection<Task> javadocTasks = tasks.matching(t -> t.getName().equals(mainSet.getJavadocTaskName()) && t instanceof Javadoc);
     main.configureVariants(details -> {
       javadocTasks.configureEach(t -> {
