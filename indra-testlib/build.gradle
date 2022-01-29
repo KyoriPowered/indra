@@ -5,3 +5,11 @@ dependencies {
 javadoc {
     enabled = false
 }
+
+sourceSets {
+  main {
+    multirelease {
+      alternateVersions 16
+    }
+  }
+}

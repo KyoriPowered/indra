@@ -57,6 +57,7 @@ subprojects {
       ci true
     }
     mitLicense()
+    javaVersions().testWith(8, 11, 17)
 
     configurePublications {
       pom {
