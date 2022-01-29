@@ -6,7 +6,8 @@ group 'com.example'
 version '1.0.0-SNAPSHOT'
 
 repositories {
-  sonatypeSnapshots()
+  sonatype.ossSnapshots()
+  sonatype.s01Snapshots()
 }
 
 indra {
