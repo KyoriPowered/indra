@@ -45,7 +45,7 @@ public class KotlinSupport implements LanguageSupport {
   private static final String SENTINEL_CLASS = "org.jetbrains.kotlin.gradle.tasks.KotlinCompile";
 
   private final JavaToolchainService toolchains;
-  private final ThreadLocal<KotlinInvoker> childClass = ThreadLocal.withInitial(() -> null);
+  private final ThreadLocal<KotlinInvoker> childClass = new ThreadLocal<>();
   private final Map<org.gradle.api.Plugin<?>, KotlinInvoker> invokers = new WeakHashMap<>();
 
   @Inject
