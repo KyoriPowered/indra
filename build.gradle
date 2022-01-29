@@ -47,6 +47,15 @@ subprojects {
       website("https://github.com/KyoriPowered/indra/wiki")
     }
   }
+  
+  if ('true'.equals(project.findProperty("skipFunctionalTests"))) {
+      tasks.named('test') {
+          useJUnitPlatform {
+              excludeTags 'functional'
+          }
+      }
+  }
+    
 
   license {
     exclude { it.file.absolutePath.startsWith(project.file('src/test/resources').absolutePath) }
