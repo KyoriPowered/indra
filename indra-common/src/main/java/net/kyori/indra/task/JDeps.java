@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import javax.inject.Inject;
+import net.kyori.indra.util.Versioning;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.JavaVersion;
@@ -134,7 +135,7 @@ public abstract class JDeps extends DefaultTask {
    */
   public JDeps() {
     this.getJavaLauncher().convention(this.getToolchains()
-      .launcherFor(spec -> spec.getLanguageVersion().set(JavaLanguageVersion.of(JavaVersion.current().toString()))));
+      .launcherFor(spec -> spec.getLanguageVersion().set(JavaLanguageVersion.of(Versioning.versionNumber(JavaVersion.current())))));
       this.getMultireleaseVersion().finalizeValueOnRead();
   }
 
