@@ -80,6 +80,7 @@ public class IndraPlugin implements ProjectPlugin {
   @Override
   public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull TaskContainer tasks) {
     plugins.apply(JavaLibraryPlugin.class);
+    plugins.apply("de.jjohannes.missing-metadata-guava"); // Fix Guava references
 
     final IndraExtensionImpl indra = (IndraExtensionImpl) Indra.extension(extensions);
 
