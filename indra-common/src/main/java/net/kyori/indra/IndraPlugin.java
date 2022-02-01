@@ -66,6 +66,7 @@ import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.gradle.language.jvm.tasks.ProcessResources;
 import org.gradle.plugins.ide.api.GeneratorTask;
 import org.gradle.plugins.ide.eclipse.model.EclipseModel;
+import org.gradle.util.GradleVersion;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -80,7 +81,11 @@ public class IndraPlugin implements ProjectPlugin {
   @Override
   public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull TaskContainer tasks) {
     plugins.apply(JavaLibraryPlugin.class);
-    plugins.apply("de.jjohannes.missing-metadata-guava"); // Fix Guava references
+    if (GradleVersion.current().compareTo(GradleVersion.version("7.0")) >= 0) {
+      // Fix Guava references
+      // Gradle <7.0 doesn't provide the necessary attributes for this to work effectively
+      plugins.apply("de.jjohannes.missing-metadata-guava");
+    }
 
     final IndraExtensionImpl indra = (IndraExtensionImpl) Indra.extension(extensions);
 
