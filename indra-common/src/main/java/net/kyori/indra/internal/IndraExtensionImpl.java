@@ -51,7 +51,7 @@ import static java.util.Objects.requireNonNull;
 
 public class IndraExtensionImpl implements IndraExtension {
 
-  private static final String DEFAULT_CHECKSTYLE_VERSION = "8.42";
+  private static final String DEFAULT_CHECKSTYLE_VERSION = "9.3";
 
   private final Property<ContinuousIntegration> ci;
   private final Property<Issues> issues;
