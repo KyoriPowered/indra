@@ -1,0 +1,37 @@
+plugins {
+  id 'net.kyori.indra.checkstyle'
+}
+
+def configurationVersion = '8.45.1'
+def extensionVersion = '9.2.1'
+
+repositories {
+  mavenCentral()
+}
+
+dependencies {
+  checkstyle "com.puppycrawl.tools:checkstyle:$configurationVersion"
+}
+
+net.kyori.indra.Indra.extension(project.extensions).checkstyle(extensionVersion)
+
+def artifacts = configurations.checkstyle.incoming.artifacts
+task resolveCheckstyle {
+  inputs.files(artifacts.artifactFiles)
+  
+  doFirst {
+    def found = artifacts.find { artifact ->
+      def id = artifact.id.componentIdentifier
+      if (id.group.equals("com.puppycrawl.tools") && id.module.equals("checkstyle")) {
+        assert extensionVersion == id.version
+        return true
+      }
+      return false
+    }
+   
+    if (!found) {
+      throw new GradleException("Checkstyle could not be found among resolved artifacts")
+    }
+  }
+  
+}

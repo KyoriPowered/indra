@@ -28,9 +28,6 @@ import net.kyori.indra.test.IndraConfigCacheFunctionalTest;
 import net.kyori.indra.test.IndraTesting;
 import net.kyori.mammoth.test.TestContext;
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
-import org.gradle.api.artifacts.result.ResolvedArtifactResult;
-import org.gradle.api.internal.project.ProjectInternal;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.DisplayName;
@@ -38,7 +35,6 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.fail;
 
 class IndraCheckstylePluginTest {
   private static final String PLUGIN = "net.kyori.indra.checkstyle";
@@ -49,28 +45,12 @@ class IndraCheckstylePluginTest {
     project.getPluginManager().apply(PLUGIN);
   }
 
-  @Test
-  void testPluginForcesCheckstyleVersion() {
-    final Project project = IndraTesting.project();
-    project.getPlugins().apply(PLUGIN);
+  @DisplayName("forcesCheckstyleVersion")
+  @IndraConfigCacheFunctionalTest
+  void testForcesCheckstyleVersion(final TestContext ctx) throws IOException {
+    ctx.copyInput("build.gradle");
 
-    final String configurationVersion = "8.45.1";
-    final String extensionVersion = "9.2.1";
-    project.getRepositories().mavenCentral();
-    project.getDependencies().add("checkstyle", "com.puppycrawl.tools:checkstyle:" + configurationVersion);
-    Indra.extension(project.getExtensions()).checkstyle(extensionVersion);
-
-    ((ProjectInternal) project).evaluate(); // trigger afterEvaluate (if this stops working, we can move up to functional tests)
-
-    for (final ResolvedArtifactResult artifact : project.getConfigurations().getByName("checkstyle").getIncoming().getArtifacts()) {
-      final ModuleComponentIdentifier id = (ModuleComponentIdentifier) artifact.getId().getComponentIdentifier();
-      if (id.getGroup().equals("com.puppycrawl.tools") && id.getModule().equals("checkstyle")) {
-        assertEquals(extensionVersion, id.getVersion());
-        return;
-      }
-    }
-
-    fail("Checkstyle could not be found among resolved artifacts");
+    assertDoesNotThrow(() -> ctx.build("resolveCheckstyle"), "Checkstyle did not match expected version");
   }
 
   @DisplayName("checkstyle")
