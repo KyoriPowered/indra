@@ -30,7 +30,7 @@ pluginUnderTestMetadata {
 }
 
 dependencies {
-  compileOnlyApi "org.immutables:value:2.8.8:annotations"
+  compileOnlyApi "org.immutables:value:2.9.0:annotations"
   annotationProcessor "org.immutables:value:2.9.0"
   compileOnlyApi "org.immutables:builder:2.9.0"
   compileOnlyApi "org.jetbrains:annotations:23.0.0"
