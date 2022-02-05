@@ -10,6 +10,10 @@ repositories {
   mavenCentral()
 }
 
+sourceSets {
+  api
+}
+
 dependencies {
   implementation 'org.scala-lang:scala-library:2.13.8' // TODO: in newer Gradle versions, test Scala 3?
 }
