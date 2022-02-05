@@ -30,9 +30,9 @@ pluginUnderTestMetadata {
 }
 
 dependencies {
-  compileOnlyApi "org.immutables:value:2.8.8:annotations"
-  annotationProcessor "org.immutables:value:2.8.8"
-  compileOnlyApi "org.immutables:builder:2.8.8"
+  compileOnlyApi "org.immutables:value:2.9.0:annotations"
+  annotationProcessor "org.immutables:value:2.9.0"
+  compileOnlyApi "org.immutables:builder:2.9.0"
   compileOnlyApi "org.jetbrains:annotations:23.0.0"
   api project(":indra-git")
   implementation "de.jjohannes.gradle:missing-metadata-guava:0.5" // https://github.com/jjohannes/missing-metadata-guava

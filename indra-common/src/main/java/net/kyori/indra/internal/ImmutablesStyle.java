@@ -51,6 +51,7 @@ import org.jetbrains.annotations.Nullable;
   deferCollectionAllocation = true,
   jdkOnly = true,
   nullableAnnotation = "org.jetbrains.annotations.Nullable",
+  fallbackNullableAnnotation = Nullable.class,
   passAnnotations = {Nullable.class, NotNull.class}
 )
 public @interface ImmutablesStyle {
