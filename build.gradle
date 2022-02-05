@@ -3,16 +3,16 @@ import net.kyori.indra.gradle.IndraPluginPublishingExtension
 
 buildscript {
     ext {
-        indraVersion = "2.0.6"
+        indraVersion = "2.1.1"
     }
 }
 
 plugins {
   id "net.kyori.indra" version "$indraVersion" apply false
   id "net.kyori.indra.publishing.gradle-plugin" version "$indraVersion" apply false
-  id "com.gradle.plugin-publish" version "0.18.0" apply false
-  id "com.github.ben-manes.versions" version "0.39.0"
-  id "com.diffplug.eclipse.apt" version "3.33.1" apply false
+  id "com.gradle.plugin-publish" version "0.20.0" apply false
+  id "com.github.ben-manes.versions" version "0.42.0"
+  id "com.diffplug.eclipse.apt" version "3.35.0" apply false
   id "eclipse"
 }
 
