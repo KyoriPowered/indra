@@ -59,7 +59,8 @@ public class GroovySupport implements LanguageSupport {
   @Override
   public void configureCompileTasks(final Project project, final SourceSet sourceSet, final Provider<Integer> toolchainVersion, final Provider<Integer> bytecodeVersion) {
     final Provider<JavaLauncher> launcher = this.toolchains.launcherFor(spec -> spec.getLanguageVersion().set(bytecodeVersion.map(v -> JavaLanguageVersion.of(v))));
-    project.getTasks().named(sourceSet.getCompileTaskName(GROOVY), GroovyCompile.class, groovyCompile -> {
+    final String expectedName = sourceSet.getCompileTaskName(GROOVY);
+    project.getTasks().withType(GroovyCompile.class).matching(it -> it.getName().equals(expectedName)).configureEach(groovyCompile -> {
       groovyCompile.getOptions().getRelease().set(bytecodeVersion);
       if (HAS_GRADLE_7_2) {
         // The Groovy plugin doesn't allow cross-compiling, so we have to use the specific target JDK

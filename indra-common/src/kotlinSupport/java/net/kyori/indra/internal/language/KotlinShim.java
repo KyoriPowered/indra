@@ -43,7 +43,8 @@ public final class KotlinShim {
     final @NotNull Provider<Integer> bytecodeVersion
   ) {
     final Provider<JavaLauncher> launcher = toolchains.launcherFor(spec -> spec.getLanguageVersion().set(bytecodeVersion.map(v -> JavaLanguageVersion.of(v))));
-    tasks.named(sourceSet.getCompileTaskName("kotlin"), UsesKotlinJavaToolchain.class, task -> {
+    final String expectedName = sourceSet.getCompileTaskName("kotlin");
+    tasks.withType(UsesKotlinJavaToolchain.class).matching(it -> it.getName().equals(expectedName)).configureEach(task -> {
       task.getKotlinJavaToolchain().getToolchain().use(launcher);
       if (task instanceof KotlinCompile) {
         final KotlinCompile kc = (KotlinCompile) task;
