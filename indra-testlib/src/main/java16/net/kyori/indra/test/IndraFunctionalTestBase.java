@@ -38,7 +38,7 @@ import org.junit.jupiter.api.Tag;
  */
 @GradleFunctionalTest
 // @TestVariant(gradleVersion = "6.9.2") // Java 16+: Gradle 6.9 is not supported
-@TestVariant(gradleVersion = "7.3.3")
+@TestVariant(gradleVersion = "7.4")
 @TestVariantResource(value = "/injected-gradle-versions", optional = true)
 @Tag("functional")
 @Documented
