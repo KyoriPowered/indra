@@ -1,6 +1,6 @@
 dependencies {
   implementation project(":indra-common")
-  implementation "com.gradle.publish:plugin-publish-plugin:0.20.0"
+  implementation "com.gradle.publish:plugin-publish-plugin:0.21.0"
 }
 
 indraPluginPublishing {
