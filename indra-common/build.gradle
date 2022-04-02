@@ -42,7 +42,7 @@ dependencies {
   testImplementation project(":indra-testlib")
   
   // Kotlin plugin dep
-  kotlinSupportCompileOnly "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.10"
+  kotlinSupportCompileOnly "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.20"
   kotlinSupportCompileOnly(gradleApi())
   compileOnly(sourceSets.kotlinSupport.output)
 }
