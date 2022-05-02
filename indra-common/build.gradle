@@ -37,7 +37,7 @@ dependencies {
   api project(":indra-git")
   implementation "de.jjohannes.gradle:missing-metadata-guava:31.1" // https://github.com/jjohannes/missing-metadata-guava
   implementation "gradle.plugin.org.cadixdev.gradle:licenser:0.6.1"
-  implementation "org.ow2.asm:asm:9.2"
+  implementation "org.ow2.asm:asm:9.3"
   api "net.kyori:mammoth:$mammothVersion"
   testImplementation project(":indra-testlib")
   
