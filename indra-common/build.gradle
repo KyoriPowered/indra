@@ -35,14 +35,14 @@ dependencies {
   compileOnlyApi "org.immutables:builder:2.9.0"
   compileOnlyApi "org.jetbrains:annotations:23.0.0"
   api project(":indra-git")
-  implementation "de.jjohannes.gradle:missing-metadata-guava:31.1" // https://github.com/jjohannes/missing-metadata-guava
+  implementation "de.jjohannes.gradle:missing-metadata-guava:31.1.1" // https://github.com/jjohannes/missing-metadata-guava
   implementation "gradle.plugin.org.cadixdev.gradle:licenser:0.6.1"
   implementation "org.ow2.asm:asm:9.3"
   api "net.kyori:mammoth:$mammothVersion"
   testImplementation project(":indra-testlib")
   
   // Kotlin plugin dep
-  kotlinSupportCompileOnly "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.20"
+  kotlinSupportCompileOnly "org.jetbrains.kotlin:kotlin-gradle-plugin:1.6.21"
   kotlinSupportCompileOnly(gradleApi())
   compileOnly(sourceSets.kotlinSupport.output)
 }
