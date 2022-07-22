@@ -24,15 +24,21 @@
 package net.kyori.indra.gradle;
 
 import com.gradle.publish.PluginBundleExtension;
-import com.gradle.publish.PluginConfig;
-import java.util.List;
-import javax.inject.Inject;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.plugin.devel.GradlePluginDevelopmentExtension;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import javax.inject.Inject;
 
 public class IndraPluginPublishingExtensionImpl implements IndraPluginPublishingExtension {
   private final GradlePluginDevelopmentExtension publishingExtension;
@@ -81,18 +87,19 @@ public class IndraPluginPublishingExtensionImpl implements IndraPluginPublishing
       }
     });
 
-    final PluginConfig plugin = this.pluginBundleExtension.getPlugins().maybeCreate(id);
-
-    plugin.setId(qualifiedId);
-    if(description != null) {
-      plugin.setDescription(description);
+    if (tags != null && !tags.isEmpty()) {
+      final Map<String, Collection<String>> bundleTags = new HashMap<>(this.pluginBundleExtension.getPluginTags());
+      final Collection<String> existing = bundleTags.putIfAbsent(id, tags);
+      if (existing != null) {
+          final Set<String> combinedTags = new LinkedHashSet<>(existing.size() + tags.size());
+          combinedTags.addAll(existing);
+          combinedTags.addAll(tags);
+          bundleTags.put(id, combinedTags);
+      }
+      this.pluginBundleExtension.setPluginTags(bundleTags);
     }
-    plugin.setDisplayName(displayName);
-    if(tags != null && !tags.isEmpty()) {
-      plugin.setTags(tags);
-    }
 
-    if(tags != null && this.pluginBundleExtension.getTags().isEmpty()) {
+    if (tags != null && this.pluginBundleExtension.getTags().isEmpty()) {
       this.pluginBundleExtension.setTags(tags);
     }
   }
