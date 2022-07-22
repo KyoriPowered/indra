@@ -231,15 +231,21 @@ public class IndraPlugin implements ProjectPlugin {
         }
         // To handle updating dependencies properly, we need to overwrite the factorypath, not just add to it.
         tasks.named("eclipseFactorypath", GeneratorTask.class, t -> {
-          t.doFirst($ -> {
-            if (t.getInputFile().exists()) {
-              t.getInputFile().delete();
-            }
-          });
+          t.doFirst(new CleanFactorypath());
         });
       });
 
     });
+  }
+
+  static class CleanFactorypath implements Action<Task> {
+    @Override
+    public void execute(final Task arg0) {
+      final GeneratorTask<?> generator = (GeneratorTask<?>) arg0;
+      if (generator.getInputFile().exists()) {
+        generator.getInputFile().delete();
+      }
+    }
   }
 
 }

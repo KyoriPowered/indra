@@ -52,8 +52,8 @@ public class JavaToolchainVersionsImpl implements JavaToolchainVersions {
     this.minimumToolchain = objects.property(Integer.class).convention(11);
     this.strictVersions = objects.property(Boolean.class)
       .convention(
-        providers.gradleProperty(STRICT_MULTIRELEASE_VERSIONS).forUseAtConfigurationTime()
-          .orElse(providers.environmentVariable(CI).forUseAtConfigurationTime()) // set by GH Actions and Travis
+        Properties.forUseAtConfigurationTime(providers.gradleProperty(STRICT_MULTIRELEASE_VERSIONS))
+          .orElse(Properties.forUseAtConfigurationTime(providers.environmentVariable(CI))) // set by GH Actions and Travis
           .map(Boolean::parseBoolean)
           .orElse(false)
       );
