@@ -33,7 +33,7 @@ class NameBasedProjectDocumentationUrlProviderTest {
   private NameBasedProjectDocumentationUrlProvider tested;
 
   @BeforeEach
-  private void setUp() {
+  void setUp() {
     this.tested = IndraTesting.project().getObjects().newInstance(NameBasedProjectDocumentationUrlProviderImpl.class);
   }
 
