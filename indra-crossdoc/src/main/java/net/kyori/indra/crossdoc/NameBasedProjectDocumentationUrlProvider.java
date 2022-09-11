@@ -56,4 +56,13 @@ public interface NameBasedProjectDocumentationUrlProvider extends ProjectDocumen
   @Input
   @Optional
   Property<String> getProjectNamePrefix();
+
+  /**
+   * Get whether to normalize project names by lowercasing them.
+   *
+   * @return the lowercase property
+   * @since 2.2.0
+   */
+  @Input
+  Property<Boolean> getLowercaseProjectName();
 }
