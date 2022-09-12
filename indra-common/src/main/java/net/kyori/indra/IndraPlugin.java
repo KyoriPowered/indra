@@ -116,7 +116,7 @@ public class IndraPlugin implements ProjectPlugin {
     tasks.withType(Javadoc.class, task -> {
       // Apply preview feature flag
       final MinimalJavadocOptions minimalOpts = task.getOptions();
-      if(minimalOpts instanceof StandardJavadocDocletOptions) {
+      if (minimalOpts instanceof StandardJavadocDocletOptions) {
         final StandardJavadocDocletOptions options = (StandardJavadocDocletOptions) minimalOpts;
         final JavadocOptionFileOption<Boolean> enablePreview = options.addBooleanOption("-enable-preview");
         final JavadocOptionFileOption<Boolean> doclintMissing = options.addBooleanOption("Xdoclint:-missing");
@@ -128,13 +128,13 @@ public class IndraPlugin implements ProjectPlugin {
           public void execute(final Task t) {
             final int actual = ((Javadoc) t).getJavadocTool().get().getMetadata().getLanguageVersion().asInt();
 
-            if(actual >= 9) {
-              if(actual < 12) {
+            if (actual >= 9) {
+              if (actual < 12) {
                 // Apply workaround for https://bugs.openjdk.java.net/browse/JDK-8215291
                 // This will probably never be backported......
                 noModuleDirectories.setValue(true);
               }
-              if(actual >= 12) {
+              if (actual >= 12) {
                 enablePreview.setValue(previewFeaturesEnabledProp.get());
               }
 
@@ -159,7 +159,7 @@ public class IndraPlugin implements ProjectPlugin {
 
     // If we are publishing, publish java
     indra.configurePublications(publication -> {
-      if(Properties.finalized(indra.includeJavaSoftwareComponentInPublications()).get()) {
+      if (Properties.finalized(indra.includeJavaSoftwareComponentInPublications()).get()) {
         publication.from(project.getComponents().getByName("java"));
       }
     });
@@ -174,7 +174,7 @@ public class IndraPlugin implements ProjectPlugin {
         javaPlugin.setTargetCompatibility(JavaVersion.toVersion(versionProp.get()));
       });
 
-      if(indra.reproducibleBuilds().get()) {
+      if (indra.reproducibleBuilds().get()) {
         tasks.withType(AbstractArchiveTask.class).configureEach(archive -> {
           archive.setPreserveFileTimestamps(false);
           archive.setReproducibleFileOrder(true);
@@ -226,7 +226,7 @@ public class IndraPlugin implements ProjectPlugin {
       extensions.configure(EclipseModel.class, eclipse -> {
         // https://github.com/diffplug/goomph/issues/125
         // buildship pls stop being broken thanks
-        for(final String task : APT_TASKS) {
+        for (final String task : APT_TASKS) {
           eclipse.synchronizationTasks(tasks.named(task));
         }
         // To handle updating dependencies properly, we need to overwrite the factorypath, not just add to it.

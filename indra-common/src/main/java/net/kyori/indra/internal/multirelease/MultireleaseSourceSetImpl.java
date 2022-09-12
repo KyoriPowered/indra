@@ -66,7 +66,7 @@ class MultireleaseSourceSetImpl implements MultireleaseSourceSet {
 
   @Override
   public void alternateVersions(final int... alternates) {
-    for(final int alternate : alternates) {
+    for (final int alternate : alternates) {
       this.alternateVersions.add(alternate);
     }
   }

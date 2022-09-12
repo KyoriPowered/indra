@@ -115,7 +115,7 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
 
     final TaskProvider<RequireClean> requireClean = tasks.named(GitPlugin.REQUIRE_CLEAN_TASK, RequireClean.class);
     tasks.withType(AbstractPublishToMaven.class).configureEach(task -> {
-      if(!(task instanceof PublishToMavenLocal)) {
+      if (!(task instanceof PublishToMavenLocal)) {
         task.dependsOn(requireClean);
       }
     });
@@ -125,7 +125,7 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
         this.applyPublishingActions(publishing, ((IndraExtensionImpl) indra).publishingActions);
 
         ((IndraExtensionImpl) indra).repositories.all(rr -> { // will be applied to repositories as they're added
-          if(this.canPublishTo(project, rr)) {
+          if (this.canPublishTo(project, rr)) {
             publishing.getRepositories().maven(repository -> {
               repository.setName(rr.name());
               repository.setUrl(rr.url());
@@ -146,16 +146,16 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
     final String username = repository.name() + "Username";
     final String password = repository.name() + "Password";
 
-    if(!project.hasProperty(username) || !project.hasProperty(password)) {
+    if (!project.hasProperty(username) || !project.hasProperty(password)) {
       project.getLogger().info("indra-publishing: skipping repository {} because username or password was not set", repository.name());
       return false;
     }
 
-    if(repository.releases() && Versioning.isRelease(project)) {
+    if (repository.releases() && Versioning.isRelease(project)) {
       project.getLogger().info("indra-publishing: adding repository {} because it accepts releases and this project is in a release state", repository.name());
       return true;
     }
-    if(repository.snapshots() && Versioning.isSnapshot(project)) {
+    if (repository.snapshots() && Versioning.isSnapshot(project)) {
       project.getLogger().info("indra-publishing: adding repository {} because it accepts snapshots and this project is in a snapshot state", repository.name());
       return true;
     }

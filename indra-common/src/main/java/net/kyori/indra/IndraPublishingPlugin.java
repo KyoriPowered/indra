@@ -33,7 +33,7 @@ public class IndraPublishingPlugin extends AbstractIndraPublishingPlugin {
   @Override
   protected void applyPublishingActions(final PublishingExtension extension, final Set<Action<MavenPublication>> actions) {
     extension.getPublications().named(Indra.PUBLICATION_NAME, MavenPublication.class).configure(publication -> {
-      for(final Action<MavenPublication> action : actions) {
+      for (final Action<MavenPublication> action : actions) {
         action.execute(publication);
       }
     });

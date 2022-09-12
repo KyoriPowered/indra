@@ -78,5 +78,6 @@ public interface LanguageSupport {
     final @NotNull SourceSet sourceSet,
     final @NotNull Provider<Integer> toolchainVersion,
     final @NotNull Provider<Integer> targetVersion
-  ) {};
+  ) {
+  }
 }

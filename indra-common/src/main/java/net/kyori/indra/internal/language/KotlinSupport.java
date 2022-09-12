@@ -109,7 +109,7 @@ public class KotlinSupport implements LanguageSupport {
     ) {
       try {
         this.configureCompileTasks.invoke(null, toolchains, tasks, sourceSet, toolchainVersion, bytecodeVersion);
-      } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+      } catch (final IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
         throw new GradleException("Failed to invoke compile task configuration step for Kotlin source set", ex);
       }
     }

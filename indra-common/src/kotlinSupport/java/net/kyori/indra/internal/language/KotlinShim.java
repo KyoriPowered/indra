@@ -35,6 +35,9 @@ import org.jetbrains.kotlin.gradle.tasks.UsesKotlinJavaToolchain;
 
 public final class KotlinShim {
 
+  private KotlinShim() {
+  }
+
   public static void configureCompileTasks(
     final JavaToolchainService toolchains,
     final @NotNull TaskContainer tasks,
@@ -42,7 +45,7 @@ public final class KotlinShim {
     final @NotNull Provider<Integer> toolchainVersion,
     final @NotNull Provider<Integer> bytecodeVersion
   ) {
-    final Provider<JavaLauncher> launcher = toolchains.launcherFor(spec -> spec.getLanguageVersion().set(bytecodeVersion.map(v -> JavaLanguageVersion.of(v))));
+    final Provider<JavaLauncher> launcher = toolchains.launcherFor(spec -> spec.getLanguageVersion().set(bytecodeVersion.map(JavaLanguageVersion::of)));
     final String expectedName = sourceSet.getCompileTaskName("kotlin");
     tasks.withType(UsesKotlinJavaToolchain.class).matching(it -> it.getName().equals(expectedName)).configureEach(task -> {
       task.getKotlinJavaToolchain().getToolchain().use(launcher);

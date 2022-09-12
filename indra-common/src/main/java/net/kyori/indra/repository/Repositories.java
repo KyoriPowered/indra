@@ -43,7 +43,7 @@ public final class Repositories {
   }
 
   public static void registerRepositoryExtensions(final @NotNull RepositoryHandler handler, final @NotNull Iterable<RemoteRepository> repositories) {
-    for(final RemoteRepository repo : repositories) {
+    for (final RemoteRepository repo : repositories) {
       ((ExtensionAware) handler).getExtensions().add(repo.name(), new Closure<Void>(null, handler) {
         public void doCall() {
           repo.addTo((RepositoryHandler) this.getThisObject());

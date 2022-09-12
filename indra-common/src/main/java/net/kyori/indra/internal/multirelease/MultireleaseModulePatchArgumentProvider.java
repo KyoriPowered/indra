@@ -60,7 +60,7 @@ class MultireleaseModulePatchArgumentProvider implements CommandLineArgumentProv
   @Override
   public Iterable<String> asArguments() {
     final @Nullable String moduleName = this.moduleName.getOrNull();
-    if(moduleName == null) return Collections.emptyList();
+    if (moduleName == null) return Collections.emptyList();
 
     final String directories = Properties.finalized(this.getClassDirectories()).getFiles()
       .stream()

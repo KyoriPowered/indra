@@ -57,7 +57,7 @@ public class ScalaSupport implements LanguageSupport {
 
   @Override
   public void configureCompileTasks(final @NotNull Project project, final @NotNull SourceSet sourceSet, final @NotNull Provider<Integer> toolchainVersion, final @NotNull Provider<Integer> bytecodeVersion) {
-    final Provider<JavaLauncher> launcher = this.toolchains.launcherFor(spec -> spec.getLanguageVersion().set(toolchainVersion.map(v -> JavaLanguageVersion.of(v))));
+    final Provider<JavaLauncher> launcher = this.toolchains.launcherFor(spec -> spec.getLanguageVersion().set(toolchainVersion.map(JavaLanguageVersion::of)));
     final String expectedName = sourceSet.getCompileTaskName("scala");
     project.getTasks().withType(ScalaCompile.class).matching(it -> it.getName().equals(expectedName)).configureEach(task -> {
       final ScalaCompileOptions options = task.getScalaCompileOptions();

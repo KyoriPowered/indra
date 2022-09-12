@@ -45,6 +45,7 @@ import net.kyori.indra.task.CheckModuleExports;
 import net.kyori.indra.task.JDeps;
 import net.kyori.mammoth.ProjectPlugin;
 import org.gradle.api.Action;
+import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.NamedDomainObjectProvider;
@@ -191,7 +192,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
       // Configure multirelease Javadoc, if it is enabled in the extension.
       // The way we handle this is a touch hacky, to handle the dependency chains, but it should work
       // If modular javadoc is not enabled, we pass an empty alternates list into calculations rather than the actual list
-      final Provider<Set<Integer>> alternateVersions = project.getProviders().provider(() -> multireleaseExtension.alternateVersions()).zip(multireleaseExtension.applyToJavadoc(), (alternates, useAlts) -> {
+      final Provider<Set<Integer>> alternateVersions = project.getProviders().provider(multireleaseExtension::alternateVersions).zip(multireleaseExtension.applyToJavadoc(), (alternates, useAlts) -> {
         return useAlts ? alternates : Collections.emptySet();
       });
       final Provider<Integer> docsTargetVersion = indra.javaVersions().target().zip(alternateVersions, (base, alternates) -> {
@@ -210,7 +211,6 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
       });
 
       this.configureLanguages(project, parent, indra.javaVersions().actualVersion(), indra.javaVersions().target(), docsRuntimeVersion, docsTargetVersion);
-
 
       multireleaseExtension.alternateVersions().whenObjectAdded(version -> {
         // Ideally we'd be able to initialize the source set here, but for some reason gradle won't let us do that...
@@ -368,7 +368,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
     final SourceSet variant,
     final NamedDomainObjectProvider<Configuration> baseApiElements,
     final NamedDomainObjectProvider<Configuration> baseRuntimeElements
-    ) {
+  ) {
     // Add classes to the appropriate outgoing variants of the base configuration
     if (baseApiElements != null) {
       baseApiElements.configure(conf -> {
@@ -377,7 +377,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
           classesVariant.artifact(
             compileJava.flatMap(AbstractCompile::getDestinationDirectory),
             artifact -> artifact.builtBy(compileJava)
-            );
+          );
         });
       });
     }
@@ -388,13 +388,13 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
           classesVariant.artifact(
             compileJava.flatMap(AbstractCompile::getDestinationDirectory),
             artifact -> artifact.builtBy(compileJava)
-            );
+          );
         });
         conf.getOutgoing().getVariants().named(RESOURCES_VARAINT, classesVariant -> {
           classesVariant.artifact(
             processResources.map(Copy::getDestinationDir),
             artifact -> artifact.builtBy(processResources)
-            );
+          );
         });
       });
     }
@@ -529,7 +529,6 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
         }
       }
 
-
       if (sourceVersion != baseVersion) {
         final JavaVersion compatibility = JavaVersion.toVersion(sourceVersion);
         model.getJdt().setSourceCompatibility(compatibility);
@@ -572,12 +571,12 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
   private void registerValidateModule(final Project project, final IndraExtension indra, final SourceSet set, final MultireleaseSourceSet multirelease) {
     // Use JDeps to validate the module
     final JavaToolchainService toolchains = project.getExtensions().getByType(JavaToolchainService.class);
-    final Provider<Integer> maxMultirelase = project.provider(() -> multirelease.alternateVersions()).map(alternates -> {
-        int target = -1;
-        for (final int alternate : alternates) {
-          target = Math.max(target, alternate);
-        }
-        return target;
+    final Provider<Integer> maxMultirelase = project.provider(multirelease::alternateVersions).map(alternates -> {
+      int target = -1;
+      for (final int alternate : alternates) {
+        target = Math.max(target, alternate);
+      }
+      return target;
     });
     final TaskProvider<JDeps> provider = project.getTasks().register(set.getTaskName("validate", "Module"), JDeps.class, jdeps -> {
       jdeps.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
@@ -595,7 +594,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
       jdeps.getModulePath().from(set.getCompileClasspath());
       final TaskContainer tasks = project.getTasks();
       if (tasks.getNames().contains(set.getJarTaskName())) {
-        jdeps.getModulePath().from(tasks.named(set.getJarTaskName(), Jar.class).map(t -> t.getOutputs()));
+        jdeps.getModulePath().from(tasks.named(set.getJarTaskName(), Jar.class).map(DefaultTask::getOutputs));
       } else {
         jdeps.getModulePath().from(set.getOutput());
       }

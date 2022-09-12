@@ -174,9 +174,9 @@ public interface RemoteRepository {
       final boolean snapshots = this.snapshots();
       final boolean releasesOnly = releases && !snapshots;
       final boolean snapshotsOnly = !releases && snapshots;
-      if(releasesOnly) {
+      if (releasesOnly) {
         it.mavenContent(MavenRepositoryContentDescriptor::releasesOnly);
-      } else if(snapshotsOnly) {
+      } else if (snapshotsOnly) {
         it.mavenContent(MavenRepositoryContentDescriptor::snapshotsOnly);
       }
     });

@@ -37,7 +37,7 @@ import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.jetbrains.annotations.NotNull;
 
 /**
- * Support for Groovy-language plugins
+ * Support for Groovy-language plugins.
  */
 public class GroovySupport implements LanguageSupport {
   private static final String GROOVY = "groovy";
@@ -57,8 +57,8 @@ public class GroovySupport implements LanguageSupport {
   }
 
   @Override
-  public void configureCompileTasks(final Project project, final SourceSet sourceSet, final Provider<Integer> toolchainVersion, final Provider<Integer> bytecodeVersion) {
-    final Provider<JavaLauncher> launcher = this.toolchains.launcherFor(spec -> spec.getLanguageVersion().set(bytecodeVersion.map(v -> JavaLanguageVersion.of(v))));
+  public void configureCompileTasks(final @NotNull Project project, final @NotNull SourceSet sourceSet, final @NotNull Provider<Integer> toolchainVersion, final @NotNull Provider<Integer> bytecodeVersion) {
+    final Provider<JavaLauncher> launcher = this.toolchains.launcherFor(spec -> spec.getLanguageVersion().set(bytecodeVersion.map(JavaLanguageVersion::of)));
     final String expectedName = sourceSet.getCompileTaskName(GROOVY);
     project.getTasks().withType(GroovyCompile.class).matching(it -> it.getName().equals(expectedName)).configureEach(groovyCompile -> {
       groovyCompile.getOptions().getRelease().set(bytecodeVersion);

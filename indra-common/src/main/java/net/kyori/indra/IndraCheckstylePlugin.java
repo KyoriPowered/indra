@@ -40,6 +40,8 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Configure Gradle's built-in {@code checkstyle} plugin.
+ *
+ * @since 2.0.0
  */
 public class IndraCheckstylePlugin implements ProjectPlugin {
   public static final String CHECKSTYLE_ALL_TASK = "checkstyleAll";

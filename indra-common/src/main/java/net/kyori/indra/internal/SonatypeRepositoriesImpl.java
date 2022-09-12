@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import net.kyori.indra.repository.SonatypeRepositories;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
+import org.gradle.api.artifacts.repositories.MavenRepositoryContentDescriptor;
 
 public class SonatypeRepositoriesImpl implements SonatypeRepositories {
   private final RepositoryHandler repositories;
@@ -42,7 +43,7 @@ public class SonatypeRepositoriesImpl implements SonatypeRepositories {
     return this.repositories.maven(repo -> {
       repo.setName("sonatypeSnapshots");
       repo.setUrl("https://oss.sonatype.org/content/repositories/snapshots/");
-      repo.mavenContent(content -> content.snapshotsOnly());
+      repo.mavenContent(MavenRepositoryContentDescriptor::snapshotsOnly);
     });
   }
 
@@ -51,7 +52,7 @@ public class SonatypeRepositoriesImpl implements SonatypeRepositories {
     return this.repositories.maven(repo -> {
       repo.setName("sonatypeSnapshots");
       repo.setUrl(formatOssHost(host));
-      repo.mavenContent(content -> content.snapshotsOnly());
+      repo.mavenContent(MavenRepositoryContentDescriptor::snapshotsOnly);
     });
   }
 

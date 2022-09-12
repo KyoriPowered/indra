@@ -65,7 +65,7 @@ public class JavaSupport implements LanguageSupport {
     project.getTasks().named(sourceSet.getCompileJavaTaskName(), JavaCompile.class, task -> {
       final CompileOptions options = task.getOptions();
       options.setEncoding(DEFAULT_ENCODING);
-      task.getJavaCompiler().set(this.toolchains.compilerFor(spec -> spec.getLanguageVersion().set(toolchainVersion.map(v -> JavaLanguageVersion.of(v)))));
+      task.getJavaCompiler().set(this.toolchains.compilerFor(spec -> spec.getLanguageVersion().set(toolchainVersion.map(JavaLanguageVersion::of))));
 
       options.getRelease().set(bytecodeVersion.zip(toolchainVersion, (bytecode, toolchain) -> {
         if (toolchain >= 9) {
@@ -79,15 +79,15 @@ public class JavaSupport implements LanguageSupport {
   }
 
   @Override
-  public void configureDocTasks(@NotNull final Project project, @NotNull final SourceSet sourceSet, @NotNull final Provider<Integer> toolchainVersion, @NotNull final Provider<Integer> targetVersion) {
+  public void configureDocTasks(final @NotNull Project project, final @NotNull SourceSet sourceSet, final @NotNull Provider<Integer> toolchainVersion, final @NotNull Provider<Integer> targetVersion) {
     final String taskName = sourceSet.getJavadocTaskName();
-    final Provider<JavadocTool> javadocTool = this.toolchains.javadocToolFor(spec -> spec.getLanguageVersion().set(toolchainVersion.map(v -> JavaLanguageVersion.of(v))));
+    final Provider<JavadocTool> javadocTool = this.toolchains.javadocToolFor(spec -> spec.getLanguageVersion().set(toolchainVersion.map(JavaLanguageVersion::of)));
     project.getTasks().withType(Javadoc.class).matching(t -> t.getName().equals(taskName)).configureEach(task -> {
       final MinimalJavadocOptions minimalOpts = task.getOptions();
       minimalOpts.setEncoding(DEFAULT_ENCODING);
       task.getJavadocTool().set(javadocTool);
 
-      if(minimalOpts instanceof StandardJavadocDocletOptions) {
+      if (minimalOpts instanceof StandardJavadocDocletOptions) {
         final StandardJavadocDocletOptions options = (StandardJavadocDocletOptions) minimalOpts;
         options.charSet(DEFAULT_ENCODING);
 
@@ -100,13 +100,13 @@ public class JavaSupport implements LanguageSupport {
   static final class IndraCompileArgumentProvider implements CommandLineArgumentProvider {
     private final @NotNull Provider<Integer> toolchainVersion;
 
-    public IndraCompileArgumentProvider(final @NotNull Provider<Integer> toolchainVersion) {
+    IndraCompileArgumentProvider(final @NotNull Provider<Integer> toolchainVersion) {
       this.toolchainVersion = toolchainVersion;
     }
 
     @Override
     public Iterable<String> asArguments() {
-      if(this.toolchainVersion.get() >= 9) {
+      if (this.toolchainVersion.get() >= 9) {
         return Arrays.asList(
           "-Xdoclint",
           "-Xdoclint:-missing"
@@ -127,7 +127,7 @@ public class JavaSupport implements LanguageSupport {
     }
 
     @Override
-    public void execute(final Task t) {
+    public void execute(final @NotNull Task t) {
       final StandardJavadocDocletOptions options = (StandardJavadocDocletOptions) ((Javadoc) t).getOptions();
       final int target = this.targetVersion.get();
       final int actual = ((Javadoc) t).getJavadocTool().get().getMetadata().getLanguageVersion().asInt();
@@ -145,7 +145,7 @@ public class JavaSupport implements LanguageSupport {
 
   private static String jdkApiDocs(final int javaVersion) {
     final String template;
-    if(javaVersion >= 11) {
+    if (javaVersion >= 11) {
       template = "https://docs.oracle.com/en/java/javase/%s/docs/api";
     } else {
       template = "https://docs.oracle.com/javase/%s/docs/api";

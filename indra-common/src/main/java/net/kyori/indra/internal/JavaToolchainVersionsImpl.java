@@ -63,7 +63,7 @@ public class JavaToolchainVersionsImpl implements JavaToolchainVersions {
     this.actualVersion = this.strictVersions.map(strict -> {
       final int running = Versioning.versionNumber(JavaVersion.current());
       final int minimum = Math.max(Properties.finalized(this.minimumToolchain).get(), Properties.finalized(this.target).get()); // If target > minimum toolchain, the target is our new minimum
-      if(strict || running < minimum) {
+      if (strict || running < minimum) {
         return minimum;
       } else {
         return running;
@@ -108,7 +108,7 @@ public class JavaToolchainVersionsImpl implements JavaToolchainVersions {
 
   @Override
   public void testWith(final int... testVersions) {
-    for(final int version : testVersions) {
+    for (final int version : testVersions) {
       this.testWith.add(version);
     }
   }

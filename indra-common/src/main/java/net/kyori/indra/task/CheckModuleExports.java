@@ -85,7 +85,7 @@ public abstract class CheckModuleExports extends DefaultTask {
   }
 
   @TaskAction
-  public void validateModule() throws ZipException, IOException {
+  public void validateModule() throws IOException {
     final Set<String> exclusions = this.getExclusions().get();
     final Set<String> knownPackages = new HashSet<>();
     final Set<String> exports = new HashSet<>();

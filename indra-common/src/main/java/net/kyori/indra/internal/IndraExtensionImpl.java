@@ -124,19 +124,19 @@ public class IndraExtensionImpl implements IndraExtension {
   public void github(final @NotNull String user, final @NotNull String repo, final @Nullable Action<ApplyTo> applicable) {
     final ApplyTo options = Configurable.configureIfNonNull(ApplyTo.defaults(), applicable);
 
-    if(options.ci()) {
+    if (options.ci()) {
       this.ci(ci -> ci.system("GitHub Actions").url(String.format("https://github.com/%s/%s/actions", user, repo)));
     }
-    if(options.issues()) {
+    if (options.issues()) {
       this.issues(issues -> issues.system("GitHub").url(String.format("https://github.com/%s/%s/issues", user, repo)));
     }
-    if(options.scm()) {
+    if (options.scm()) {
       this.scm(scm -> scm
         .connection(String.format("scm:git:https://github.com/%s/%s.git", user, repo))
         .developerConnection(String.format("scm:git:ssh://git@github.com/%s/%s.git", user, repo))
         .url(String.format("https://github.com/%s/%s", user, repo)));
     }
-    if(options.publishing()) {
+    if (options.publishing()) {
       this.publishReleasesTo("githubPackages", String.format("https://maven.pkg.github.com/%s/%s", user, repo));
     }
   }
@@ -145,20 +145,20 @@ public class IndraExtensionImpl implements IndraExtension {
   public void gitlab(final @NotNull String user, final @NotNull String repo, final @Nullable Action<ApplyTo> applicable) {
     final ApplyTo options = Configurable.configureIfNonNull(ApplyTo.defaults(), applicable);
 
-    if(options.ci()) {
+    if (options.ci()) {
       this.ci(ci -> ci.system("GitLab CI").url(String.format("https://gitlab.com/%s/%s/-/pipelines", user, repo)));
     }
-    if(options.issues()) {
+    if (options.issues()) {
       this.issues(issues -> issues.system("GitLab").url(String.format("https://gitlab.com/%s/%s/-/issues", user, repo)));
     }
-    if(options.scm()) {
+    if (options.scm()) {
       this.scm(scm -> scm
         .connection(String.format("scm:git:https://gitlab.com/%s/%s.git", user, repo))
         .developerConnection(String.format("scm:git:ssh://git@gitlab.com/%s/%s.git", user, repo))
         .url(String.format("https://gitlab.com/%s/%s", user, repo))
       );
     }
-    if(options.publishing()) {
+    if (options.publishing()) {
       // TODO: needs project ID, which is separate from user/repo and uses HTTP header-based auth
       throw new GradleException("Publishing cannot yet be automatically configured for GitLab projects");
     }
@@ -212,7 +212,7 @@ public class IndraExtensionImpl implements IndraExtension {
 
     @Override
     public Iterable<String> asArguments() {
-      if(Properties.finalized(this.previewFeaturesEnabledProp).get()) {
+      if (Properties.finalized(this.previewFeaturesEnabledProp).get()) {
         return Collections.singletonList("--enable-preview");
       } else {
         return Collections.emptyList();

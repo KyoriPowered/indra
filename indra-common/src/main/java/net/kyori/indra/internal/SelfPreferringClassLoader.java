@@ -67,8 +67,7 @@ public class SelfPreferringClassLoader extends URLClassLoader {
 
   @Override
   public @Nullable URL getResource(final String name) {
-    @Nullable
-    URL result = this.findResource(name);
+    @Nullable URL result = this.findResource(name);
     if (result == null) {
       result = super.getResource(name);
     }
@@ -78,10 +77,8 @@ public class SelfPreferringClassLoader extends URLClassLoader {
   @Override
   public Enumeration<URL> getResources(final String name) throws IOException {
     return new Enumeration<URL>() {
-      @Nullable
-      Enumeration<URL> active = SelfPreferringClassLoader.this.findResources(name);
-      @Nullable
-      Enumeration<URL> staged = SelfPreferringClassLoader.this.parent == null
+      @Nullable Enumeration<URL> active = SelfPreferringClassLoader.this.findResources(name);
+      @Nullable Enumeration<URL> staged = SelfPreferringClassLoader.this.parent == null
         ? ClassLoader.getSystemClassLoader().getResources(name)
         : SelfPreferringClassLoader.this.parent.getResources(name);
 

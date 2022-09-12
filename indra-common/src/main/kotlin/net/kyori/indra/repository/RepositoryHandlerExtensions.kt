@@ -29,4 +29,5 @@ import org.gradle.api.artifacts.repositories.MavenArtifactRepository
 /**
  * Add the primary sonatype snapshots repository at https://oss.sonatype.org as a project repository.
  */
+@Deprecated(message = "Replaced with new Gradle extension codegen", replaceWith = ReplaceWith("sonatype.ossSnapshots()"))
 fun RepositoryHandler.sonatypeSnapshots(): MavenArtifactRepository = RemoteRepository.SONATYPE_SNAPSHOTS.addTo(this)

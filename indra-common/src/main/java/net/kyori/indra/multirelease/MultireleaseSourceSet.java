@@ -109,6 +109,7 @@ public interface MultireleaseSourceSet {
    * @since 2.1.0
    */
   void requireAllPackagesExported(final @NotNull Action<? super CheckModuleExports> action);
+
   /**
    * Configure whether multi-release contents are exposed to Javadoc generation.
    *
