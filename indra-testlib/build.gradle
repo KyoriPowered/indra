@@ -1,5 +1,5 @@
 dependencies {
-    api "net.kyori:mammoth-test:$mammothVersion"
+    api libs.mammoth.test
 }
 
 javadoc {

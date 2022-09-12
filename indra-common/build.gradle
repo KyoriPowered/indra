@@ -1,5 +1,5 @@
 plugins {
-  id "org.jetbrains.kotlin.jvm"
+  alias(libs.plugins.kotlin)
 }
 
 kotlin {
@@ -30,19 +30,19 @@ pluginUnderTestMetadata {
 }
 
 dependencies {
-  compileOnlyApi "org.immutables:value:2.9.0:annotations"
-  annotationProcessor "org.immutables:value:2.9.1"
-  compileOnlyApi "org.immutables:builder:2.9.1"
-  compileOnlyApi "org.jetbrains:annotations:23.0.0"
+  compileOnlyApi variantOf(libs.immutables.value) { classifier('annotations') }
+  annotationProcessor libs.immutables.value
+  compileOnlyApi libs.immutables.builder
+  compileOnlyApi libs.jetbrainsAnnotations
   api project(":indra-git")
-  implementation "de.jjohannes.gradle:missing-metadata-guava:31.1.1" // https://github.com/jjohannes/missing-metadata-guava
-  implementation "gradle.plugin.org.cadixdev.gradle:licenser:0.6.1"
-  implementation "org.ow2.asm:asm:9.3"
-  api "net.kyori:mammoth:$mammothVersion"
+  implementation libs.missingMetadataGuava 
+  implementation libs.cadixLicenser
+  implementation libs.asm
+  api libs.mammoth
   testImplementation project(":indra-testlib")
   
   // Kotlin plugin dep
-  kotlinSupportCompileOnly "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.10"
+  kotlinSupportCompileOnly libs.kotlinPlugin
   kotlinSupportCompileOnly(gradleApi())
   compileOnly(sourceSets.kotlinSupport.output)
 }

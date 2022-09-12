@@ -1,9 +1,10 @@
-pluginManagement {
-  plugins {
-    id "org.jetbrains.kotlin.jvm" version "1.7.10"
+dependencyResolutionManagement {
+  repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+  repositories {
+    mavenCentral()
+    gradlePluginPortal()
   }
 }
-
 rootProject.name = "indra"
 
 [

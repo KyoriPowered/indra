@@ -1,18 +1,11 @@
 import net.kyori.indra.IndraExtension
 import net.kyori.indra.gradle.IndraPluginPublishingExtension
 
-buildscript {
-    ext {
-        indraVersion = "2.1.1"
-    }
-}
-
 plugins {
-  id "net.kyori.indra" version "$indraVersion" apply false
-  id "net.kyori.indra.publishing.gradle-plugin" version "$indraVersion" apply false
-  id "com.gradle.plugin-publish" version "0.21.0" apply false
-  id "com.github.ben-manes.versions" version "0.42.0"
-  id "com.diffplug.eclipse.apt" version "3.37.2" apply false
+  alias(libs.plugins.indra) apply false
+  alias(libs.plugins.indra.pluginPublish) apply false
+  alias(libs.plugins.gradlePluginPublish) apply false
+  alias(libs.plugins.eclipseApt) apply false
   id "eclipse"
 }
 
@@ -26,15 +19,10 @@ subprojects {
   apply plugin: "net.kyori.indra.license-header"
   apply plugin: "com.diffplug.eclipse.apt"
   
-  repositories {
-    mavenCentral()
-    gradlePluginPortal()
-  }
-  
   dependencies {
-    testImplementation "org.junit.jupiter:junit-jupiter-api:5.9.0"
-    testImplementation "org.junit.jupiter:junit-jupiter-params:5.9.0"
-    testRuntimeOnly "org.junit.jupiter:junit-jupiter-engine:5.9.0"
+    testImplementation libs.junit.api
+    testImplementation libs.junit.params
+    testRuntimeOnly libs.junit.engine
   }
 
   
@@ -95,6 +83,5 @@ subprojects {
     }
 
     publishSnapshotsTo("stellardrift", "https://repo.stellardrift.ca/repository/snapshots/")
-    
   }
 }

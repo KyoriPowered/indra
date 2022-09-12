@@ -1,0 +1,54 @@
+[metadata]
+version = "1.0"
+
+[versions]
+asm = "9.3"
+goomph = "3.37.2"
+immutables = "2.9.1"
+indra = "2.1.1"
+jetbrainsAnnotations = "23.0.0"
+jgit = "5.13.0.+" # stay on 5.x series, 6+ requires Java 11
+junit = "5.9.0"
+kotlin = "1.7.10"
+mammoth = "1.2.0"
+
+[libraries]
+junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+
+# build
+immutables-builder = { module = "org.immutables:builder", version.ref = "immutables" }
+immutables-value = { module = "org.immutables:value", version.ref = "immutables" }
+jetbrainsAnnotations = { module = "org.jetbrains:annotations", version.ref = "jetbrainsAnnotations" }
+mammoth = { module = "net.kyori:mammoth", version.ref = "mammoth" }
+
+# common
+
+asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
+cadixLicenser = "gradle.plugin.org.cadixdev.gradle:licenser:0.6.1"
+# https://github.com/jjohannes/missing-metadata-guava
+missingMetadataGuava = "de.jjohannes.gradle:missing-metadata-guava:31.1.1"
+kotlinPlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+
+# git
+
+jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version.ref = "jgit" }
+
+# publishing-gradle-plugin
+
+gradlePluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", version = "1.0.0" }
+
+# publishing-sonatype
+
+nexusPublishPlugin = { module = "io.github.gradle-nexus:publish-plugin", version = "1.1.0" }
+
+# testlib
+mammoth-test = { module = "net.kyori:mammoth-test", version.ref = "mammoth" }
+
+[plugins]
+eclipseApt = { id = "com.diffplug.eclipse.apt", version.ref = "goomph" }
+gradlePluginPublish = "com.gradle.plugin-publish:0.21.0"
+indra = { id = "net.kyori.indra", version.ref = "indra" }
+indra-pluginPublish = { id = "net.kyori.indra.publishing.gradle-plugin", version.ref = "indra" }
+kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
