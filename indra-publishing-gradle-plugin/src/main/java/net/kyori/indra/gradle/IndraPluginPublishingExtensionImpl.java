@@ -24,21 +24,19 @@
 package net.kyori.indra.gradle;
 
 import com.gradle.publish.PluginBundleExtension;
-import org.gradle.api.model.ObjectFactory;
-import org.gradle.api.provider.ListProperty;
-import org.gradle.api.provider.Property;
-import org.gradle.plugin.devel.GradlePluginDevelopmentExtension;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
 import javax.inject.Inject;
+import org.gradle.api.model.ObjectFactory;
+import org.gradle.api.provider.ListProperty;
+import org.gradle.api.provider.Property;
+import org.gradle.plugin.devel.GradlePluginDevelopmentExtension;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class IndraPluginPublishingExtensionImpl implements IndraPluginPublishingExtension {
   private final GradlePluginDevelopmentExtension publishingExtension;

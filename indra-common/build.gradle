@@ -35,12 +35,12 @@ dependencies {
   compileOnlyApi libs.immutables.builder
   compileOnlyApi libs.jetbrainsAnnotations
   api project(":indra-git")
-  implementation libs.missingMetadataGuava 
+  implementation libs.missingMetadataGuava
   implementation libs.cadixLicenser
   implementation libs.asm
   api libs.mammoth
   testImplementation project(":indra-testlib")
-  
+
   // Kotlin plugin dep
   kotlinSupportCompileOnly libs.kotlinPlugin
   kotlinSupportCompileOnly(gradleApi())
