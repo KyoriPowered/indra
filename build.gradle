@@ -1,6 +1,3 @@
-import net.kyori.indra.IndraExtension
-import net.kyori.indra.gradle.IndraPluginPublishingExtension
-
 plugins {
   alias(libs.plugins.indra) apply false
   alias(libs.plugins.indra.pluginPublish) apply false
@@ -25,7 +22,6 @@ subprojects {
     testRuntimeOnly libs.junit.engine
   }
 
-  
   if (!project.findProperty('indra.skipPublishing')) {
     apply plugin: "com.gradle.plugin-publish"
     apply plugin: "net.kyori.indra.publishing.gradle-plugin"
@@ -35,15 +31,14 @@ subprojects {
       website("https://github.com/KyoriPowered/indra/wiki")
     }
   }
-  
-  if ('true'.equals(project.findProperty("skipFunctionalTests"))) {
-      tasks.named('test') {
-          useJUnitPlatform {
-              excludeTags 'functional'
-          }
+
+  if ('true' == project.findProperty("skipFunctionalTests")) {
+    tasks.named('test') {
+      useJUnitPlatform {
+        excludeTags 'functional'
       }
+    }
   }
-    
 
   license {
     exclude { it.file.absolutePath.startsWith(project.file('src/test/resources').absolutePath) }
