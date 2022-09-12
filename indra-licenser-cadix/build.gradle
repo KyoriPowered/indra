@@ -1,0 +1,16 @@
+dependencies {
+  compileOnlyApi libs.jetbrainsAnnotations
+  implementation libs.cadixLicenser
+  api libs.mammoth
+  testImplementation project(':indra-testlib')
+}
+
+indraPluginPublishing {
+  plugin(
+    "indra.license-header",
+    "net.kyori.indra.IndraLicenseHeaderPlugin",
+    "Indra License Header",
+    "License header configuration in line with the Indra file layout, using the Cadix licenser",
+    ["boilerplate", "license", "license-header", "licensing"]
+  )
+}

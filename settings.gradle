@@ -12,6 +12,8 @@ rootProject.name = "indra"
   "indra-git",
   "indra-publishing-gradle-plugin",
   "indra-publishing-sonatype",
+  "indra-licenser-spotless",
+  "indra-licenser-cadix",
   "indra-testlib",
   "indra-crossdoc"
 ].each {

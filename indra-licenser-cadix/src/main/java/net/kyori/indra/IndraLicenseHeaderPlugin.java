@@ -23,6 +23,8 @@
  */
 package net.kyori.indra;
 
+import java.util.HashSet;
+import java.util.Set;
 import net.kyori.mammoth.ProjectPlugin;
 import org.cadixdev.gradle.licenser.LicenseExtension;
 import org.cadixdev.gradle.licenser.Licenser;
@@ -32,7 +34,26 @@ import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.tasks.TaskContainer;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * A plugin to apply and configure the Cadix licenser plugin.
+ *
+ * @deprecated since 2.2.0, for replacement with <a href="https://github.com/diffplug/spotless">Spotless</a>
+ * @since 1.0.0
+ */
+@Deprecated
 public class IndraLicenseHeaderPlugin implements ProjectPlugin {
+  // Copied from Indra since this plugin is just temporary anyways
+  private static final Set<String> SOURCE_FILES = sourceFiles();
+
+  private static Set<String> sourceFiles() {
+    final Set<String> sourceFiles = new HashSet<>();
+    sourceFiles.add( "**/*.groovy");
+    sourceFiles.add( "**/*.java");
+    sourceFiles.add( "**/*.kt");
+    sourceFiles.add( "**/*.scala");
+    return sourceFiles;
+  }
+
   private static final String HEADER_FILE_NAME = "license_header.txt";
 
   @Override
@@ -42,7 +63,7 @@ public class IndraLicenseHeaderPlugin implements ProjectPlugin {
     // Configure sensible defaults
     extensions.configure(LicenseExtension.class, extension -> {
       extension.header(project.getRootProject().file(HEADER_FILE_NAME));
-      extension.include(Indra.SOURCE_FILES);
+      extension.include(SOURCE_FILES);
       extension.getNewLine().set(false);
     });
   }
