@@ -1,0 +1,4 @@
+plugins {
+  id 'net.kyori.indra.licenser.spotless'
+  id 'java-library'
+}

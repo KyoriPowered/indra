@@ -23,14 +23,64 @@
  */
 package net.kyori.indra.licenser.spotless;
 
+import java.io.IOException;
+import net.kyori.indra.test.FunctionalTestDisplayNameGenerator;
+import net.kyori.indra.test.IndraFunctionalTest;
 import net.kyori.indra.test.IndraTesting;
+import net.kyori.mammoth.test.TestContext;
 import org.gradle.api.Project;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.Test;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
+@DisplayNameGeneration(FunctionalTestDisplayNameGenerator.class)
 class SpotlessLicenserPluginTest {
   private static final String ID = "net.kyori.indra.licenser.spotless";
 
+  @Test
+  @Disabled
   void testPluginSimplyApplies() {
+    // TODO: ProjectBuilder does not register the appropriate service for spotless to be able to apply (build services :(((()
     final Project project = IndraTesting.project();
-    project.getPlugins().apply(ID);
+    assertDoesNotThrow(() -> project.getPlugins().apply(ID));
   }
+
+  @IndraFunctionalTest
+  void testApplication(final TestContext ctx) throws IOException {
+    ctx.copyInput("build.gradle");
+    ctx.copyInput("settings.gradle");
+
+    ctx.build("help");
+  }
+
+  // Java
+
+  @IndraFunctionalTest
+  void testJava(final TestContext ctx) throws IOException {
+    ctx.copyInput("build.gradle");
+    ctx.copyInput("settings.gradle");
+    ctx.copyInput("license_header.txt");
+    ctx.copyInput("Test.java", "src/main/java/test/Test.java");
+
+    // Fails check
+    ctx.runner("spotlessCheck").buildAndFail();
+
+    // Then applies, and matches expectation
+    ctx.runner("spotlessApply").build();
+    ctx.assertOutputEquals("TestFormatted.java", "src/main/java/test/Test.java");
+  }
+
+  // Kotlin
+
+  // Groovy
+
+  // Customize header format
+
+  // Per-language header format
+
+  // newLine
+
+  // test non-ascii characters
 }

@@ -54,7 +54,7 @@ public class SpotlessLicenserPlugin implements ProjectPlugin {
     final @NotNull TaskContainer tasks
   ) {
     // Register our own extension
-    final SpotlessLicenserExtensionImpl extension = (SpotlessLicenserExtensionImpl) extensions.create(SpotlessLicenserExtension.class, "indraSpotlessLicenser", SpotlessLicenserExtensionImpl.class);
+    final SpotlessLicenserExtensionImpl extension = (SpotlessLicenserExtensionImpl) extensions.create(SpotlessLicenserExtension.class, "indraSpotlessLicenser", SpotlessLicenserExtensionImpl.class, project.getResources().getText());
 
     // Default licenser configuration
     extension.licenseHeaderFile().convention(project.getResources().getText().fromFile(project.getRootProject().file(HEADER_FILE_NAME), "UTF-8"));
@@ -91,11 +91,9 @@ public class SpotlessLicenserPlugin implements ProjectPlugin {
     final FormatExtension.LicenseHeaderConfig config = format.new LicenseHeaderConfig(step);
     config.delimiter(delimiter); // replace the step with a properly configured one
 
-    // Then apply any extra steps after evaluation
-    project.afterEvaluate(p -> {
-      for (final Action<FormatExtension.LicenseHeaderConfig> configStep : indraExtension.extraConfigSteps()) {
-        configStep.execute(config);
-      }
-    });
+    // Then apply any extra steps -- these tasks are created lazily
+    for (final Action<FormatExtension.LicenseHeaderConfig> configStep : indraExtension.extraConfigSteps()) {
+      configStep.execute(config);
+    }
   }
 }

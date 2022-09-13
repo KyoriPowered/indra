@@ -53,7 +53,7 @@ public class HeaderFormat {
   }
 
   public static HeaderFormat starSlash() {
-    return new HeaderFormat("/* ", " * ", null, " */");
+    return new HeaderFormat("/*", " * ", null, " */");
   }
 
   public static HeaderFormat doubleSlash() {

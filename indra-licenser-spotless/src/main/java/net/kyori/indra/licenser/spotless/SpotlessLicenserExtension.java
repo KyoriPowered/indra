@@ -34,12 +34,39 @@ import org.jetbrains.annotations.NotNull;
 
 import static java.util.Objects.requireNonNull;
 
+/**
+ * Configuration options determining how license header contents should be applied to Spotless's licenser.
+ *
+ * @since 2.2.0
+ */
 public interface SpotlessLicenserExtension {
 
+  /**
+   * A property holding the file to use for a license header.
+   *
+   * @return the license header file property
+   * @since 2.2.0
+   */
   @NotNull Property<TextResource> licenseHeaderFile();
 
+  /**
+   * Set the license header file to use.
+   *
+   * <p>The contents of this file will be processed to apply a comment style and expand template parameters.</p>
+   *
+   * @param file the file to read, via {@code Project.file()}
+   * @since 2.2.0
+   */
   void licenseHeaderFile(final @NotNull Object file);
 
+  /**
+   * A property containing the header format to use.
+   *
+   * <p>Language-specific overrides can be set using {@link #languageFormatOverride(String, HeaderFormat)}.</p>
+   *
+   * @return the header format property
+   * @since 2.2.0
+   */
   @NotNull Property<HeaderFormat> headerFormat();
 
   /**

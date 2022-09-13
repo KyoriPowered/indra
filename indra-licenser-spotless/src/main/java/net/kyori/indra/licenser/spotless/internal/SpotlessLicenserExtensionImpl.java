@@ -41,6 +41,7 @@ import org.gradle.api.Action;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
+import org.gradle.api.resources.ResourceHandler;
 import org.gradle.api.resources.TextResource;
 import org.gradle.api.resources.TextResourceFactory;
 import org.jetbrains.annotations.NotNull;
@@ -50,7 +51,6 @@ import static java.util.Objects.requireNonNull;
 public class SpotlessLicenserExtensionImpl implements SpotlessLicenserExtension {
   private static final Pattern LINE_SPLIT = Pattern.compile("\r?\n");
 
-  private final ObjectFactory objects;
   private final TextResourceFactory textResources;
 
   private final Property<TextResource> licenseHeaderFile;
@@ -62,7 +62,6 @@ public class SpotlessLicenserExtensionImpl implements SpotlessLicenserExtension 
 
   @Inject
   public SpotlessLicenserExtensionImpl(final ObjectFactory objects, final TextResourceFactory textResources) {
-    this.objects = objects;
     this.textResources = textResources;
 
     this.licenseHeaderFile = objects.property(TextResource.class);
@@ -132,33 +131,47 @@ public class SpotlessLicenserExtensionImpl implements SpotlessLicenserExtension 
       }
 
       final HeaderFormat format = Properties.finalized(this.languageFormatOverrides).get().getOrDefault(name, Properties.finalized(this.headerFormat()).get());
-      final String lineSeparator = System.lineSeparator();
 
       // Apply header format to contents
-      licenseHeader = LINE_SPLIT.splitAsStream(licenseHeader)
-        .map(line -> {
-          if (format.linePrefix() != null || format.lineSuffix() != null) {
-            final StringBuilder builder = new StringBuilder(line.length() + 4);
-            if (format.linePrefix() != null) {
-              builder.append(format.linePrefix());
-            }
-            builder.append(line);
-            if (format.lineSuffix() != null) {
-              builder.append(format.lineSuffix());
-            }
-
-            return builder.toString();
-          } else {
-            return line;
-          }
-        })
-        .collect(Collectors.joining(
-          lineSeparator,
-          format.begin() != null ? format.begin() + lineSeparator : "",
-          format.end() != null ? format.end() + lineSeparator : "" // todo: newLine
-        ));
-
-      return licenseHeader;
+      return formatHeader(licenseHeader, format, true, false); // todo: expose trim and newline options
     };
+  }
+
+  private static String formatHeader(final String header, final HeaderFormat format, final boolean trimBody, final boolean newLine) {
+    final String lineSeparator = System.lineSeparator();
+    // Apply header format to contents
+    return LINE_SPLIT.splitAsStream(header)
+      .map(line -> {
+        if (format.linePrefix() != null || format.lineSuffix() != null) {
+          final StringBuilder builder = new StringBuilder(line.length() + 4);
+          if (format.linePrefix() != null) {
+            builder.append(format.linePrefix());
+          }
+          builder.append(line);
+          if (format.lineSuffix() != null) {
+            builder.append(format.lineSuffix());
+          }
+
+          return trimBody ? trimEnd(builder.toString()) : builder.toString();
+        } else {
+          return line;
+        }
+      })
+      .collect(Collectors.joining(
+        lineSeparator,
+        format.begin() != null ? format.begin() + lineSeparator : "",
+        format.end() != null ? lineSeparator + format.end() + lineSeparator : "" // todo: newLine
+      ));
+  }
+
+  private static String trimEnd(final String input) {
+    int i;
+    for (i = input.length() - 1; i >= 0; i--) {
+      if (!Character.isWhitespace(input.charAt(i))) {
+        break;
+      }
+    }
+
+    return input.substring(0, i + 1);
   }
 }
