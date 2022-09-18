@@ -30,7 +30,7 @@ import com.diffplug.gradle.spotless.KotlinExtension;
 import com.diffplug.gradle.spotless.SpotlessExtension;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.kotlin.KotlinConstants;
-import net.kyori.indra.licenser.spotless.internal.SpotlessLicenserExtensionImpl;
+import net.kyori.indra.licenser.spotless.internal.IndraSpotlessLicenserExtensionImpl;
 import net.kyori.mammoth.ProjectPlugin;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
@@ -44,13 +44,13 @@ import org.jetbrains.annotations.NotNull;
  *
  * @since 2.2.0
  */
-public class SpotlessLicenserPlugin implements ProjectPlugin {
+public class IndraSpotlessLicenserPlugin implements ProjectPlugin {
   private static final String JAVA_LICENSE_HEADER_DELIMITER = "package ";
 
   private static final String HEADER_FILE_NAME = "license_header.txt";
 
   private SpotlessExtension spotless;
-  private SpotlessLicenserExtensionImpl extension;
+  private IndraSpotlessLicenserExtensionImpl extension;
 
   @Override
   public void apply(
@@ -60,7 +60,7 @@ public class SpotlessLicenserPlugin implements ProjectPlugin {
     final @NotNull TaskContainer tasks
   ) {
     // Register our own extension
-    final SpotlessLicenserExtensionImpl extension = (SpotlessLicenserExtensionImpl) extensions.create(SpotlessLicenserExtension.class, "indraSpotlessLicenser", SpotlessLicenserExtensionImpl.class, project.getResources().getText());
+    final IndraSpotlessLicenserExtensionImpl extension = (IndraSpotlessLicenserExtensionImpl) extensions.create(IndraSpotlessLicenserExtension.class, "indraSpotlessLicenser", IndraSpotlessLicenserExtensionImpl.class, project.getResources().getText());
     // Default licenser configuration
     extension.licenseHeaderFile().convention(project.getResources().getText().fromFile(project.getRootProject().file(HEADER_FILE_NAME), "UTF-8"));
 
@@ -91,7 +91,7 @@ public class SpotlessLicenserPlugin implements ProjectPlugin {
     });
   }
 
-  private static void addStep(final FormatExtension format, final SpotlessLicenserExtensionImpl indraExtension, final String name, final String delimiter) {
+  private static void addStep(final FormatExtension format, final IndraSpotlessLicenserExtensionImpl indraExtension, final String name, final String delimiter) {
     final LicenseHeaderStep step = LicenseHeaderStep.headerDelimiter(indraExtension.createHeaderSupplier(name), "");
     format.addStep(step.withYearMode(LicenseHeaderStep.YearMode.PRESERVE).build()); // add with dummy settings
     final FormatExtension.LicenseHeaderConfig config = format.new LicenseHeaderConfig(step);

@@ -40,7 +40,7 @@ import java.util.stream.Collectors;
 import javax.inject.Inject;
 import net.kyori.indra.licenser.spotless.HeaderFormat;
 import net.kyori.indra.licenser.spotless.HeaderFormatApplier;
-import net.kyori.indra.licenser.spotless.SpotlessLicenserExtension;
+import net.kyori.indra.licenser.spotless.IndraSpotlessLicenserExtension;
 import net.kyori.mammoth.Properties;
 import org.gradle.api.Action;
 import org.gradle.api.model.ObjectFactory;
@@ -52,7 +52,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static java.util.Objects.requireNonNull;
 
-public class SpotlessLicenserExtensionImpl implements SpotlessLicenserExtension {
+public class IndraSpotlessLicenserExtensionImpl implements IndraSpotlessLicenserExtension {
   private static final Pattern LINE_SPLIT = Pattern.compile("\r?\n");
 
   private final ObjectFactory objects;
@@ -66,7 +66,7 @@ public class SpotlessLicenserExtensionImpl implements SpotlessLicenserExtension 
   private final List<Action<FormatExtension.LicenseHeaderConfig>> extraConfigureSteps;
 
   @Inject
-  public SpotlessLicenserExtensionImpl(final ObjectFactory objects, final TextResourceFactory textResources) {
+  public IndraSpotlessLicenserExtensionImpl(final ObjectFactory objects, final TextResourceFactory textResources) {
     this.objects = objects;
     this.textResources = textResources;
 

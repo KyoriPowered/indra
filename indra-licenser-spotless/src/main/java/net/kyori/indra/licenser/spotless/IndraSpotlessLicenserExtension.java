@@ -40,7 +40,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @since 2.2.0
  */
-public interface SpotlessLicenserExtension {
+public interface IndraSpotlessLicenserExtension {
 
   /**
    * A property holding the file to use for a license header.
@@ -134,7 +134,7 @@ public interface SpotlessLicenserExtension {
    * @return this extension, for chaining
    * @since 2.2.0
    */
-  default @NotNull SpotlessLicenserExtension property(final @NotNull String key, final @NotNull String value) {
+  default @NotNull IndraSpotlessLicenserExtension property(final @NotNull String key, final @NotNull String value) {
     this.properties().put(key, value);
     return this;
   }
@@ -147,7 +147,7 @@ public interface SpotlessLicenserExtension {
    * @return this extension, for chaining
    * @since 2.2.0
    */
-  default @NotNull SpotlessLicenserExtension property(final @NotNull String key, final @NotNull Provider<?> value) {
+  default @NotNull IndraSpotlessLicenserExtension property(final @NotNull String key, final @NotNull Provider<?> value) {
     this.properties().put(key, value);
     return this;
   }

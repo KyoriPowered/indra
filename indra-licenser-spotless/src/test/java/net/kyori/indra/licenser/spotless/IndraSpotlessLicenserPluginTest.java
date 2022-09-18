@@ -45,7 +45,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayNameGeneration(FunctionalTestDisplayNameGenerator.class)
-class SpotlessLicenserPluginTest {
+class IndraSpotlessLicenserPluginTest {
   private static final String ID = "net.kyori.indra.licenser.spotless";
 
   @Test
