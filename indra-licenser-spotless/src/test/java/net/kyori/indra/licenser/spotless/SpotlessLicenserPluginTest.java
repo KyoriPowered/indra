@@ -23,7 +23,13 @@
  */
 package net.kyori.indra.licenser.spotless;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.util.stream.Collectors;
 import net.kyori.indra.test.FunctionalTestDisplayNameGenerator;
 import net.kyori.indra.test.IndraFunctionalTest;
 import net.kyori.indra.test.IndraTesting;
@@ -34,6 +40,7 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @DisplayNameGeneration(FunctionalTestDisplayNameGenerator.class)
 class SpotlessLicenserPluginTest {
@@ -55,8 +62,6 @@ class SpotlessLicenserPluginTest {
     ctx.build("help");
   }
 
-  // Java
-
   @IndraFunctionalTest
   void testJava(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
@@ -72,15 +77,108 @@ class SpotlessLicenserPluginTest {
     ctx.assertOutputEquals("TestFormatted.java", "src/main/java/test/Test.java");
   }
 
-  // Kotlin
+  @IndraFunctionalTest
+  void testKotlin(final TestContext ctx) throws IOException {
+    ctx.copyInput("build.gradle.kts");
+    ctx.copyInput("settings.gradle.kts");
+    ctx.copyInput("license_header.txt");
+    ctx.copyInput("Test.kt", "src/main/kotlin/test/Test.kt");
 
-  // Groovy
+    // Fails check
+    ctx.runner("spotlessCheck").buildAndFail();
 
-  // Customize header format
+    // Then applies, and matches expectation
+    ctx.runner("spotlessApply").build();
+    ctx.assertOutputEquals("TestFormatted.kt", "src/main/kotlin/test/Test.kt");
+  }
 
-  // Per-language header format
+  @IndraFunctionalTest
+  void testGroovy(final TestContext ctx) throws IOException {
+    ctx.copyInput("build.gradle");
+    ctx.copyInput("settings.gradle");
+    ctx.copyInput("license_header.txt");
+    ctx.copyInput("Test.groovy", "src/main/groovy/test/Test.groovy");
 
-  // newLine
+    // Fails check
+    ctx.runner("spotlessCheck").buildAndFail();
 
-  // test non-ascii characters
+    // Then applies, and matches expectation
+    ctx.runner("spotlessApply").build();
+    ctx.assertOutputEquals("TestFormatted.groovy", "src/main/groovy/test/Test.groovy");
+  }
+
+  @IndraFunctionalTest
+  void testCustomFormat(final TestContext ctx) throws IOException {
+    ctx.copyInput("build.gradle");
+    ctx.copyInput("settings.gradle");
+    ctx.copyInput("license_header.txt");
+    ctx.copyInput("Test.java", "src/main/java/test/Test.java");
+    ctx.copyInput("TestChangeFormat.java", "src/main/java/test/TestChangeFormat.java");
+
+    // Fails check
+    ctx.runner("spotlessCheck").buildAndFail();
+
+    // Then applies, and matches expectation
+    ctx.runner("spotlessApply").build();
+    ctx.assertOutputEquals("TestFormatted.java", "src/main/java/test/Test.java");
+    ctx.assertOutputEquals("TestChangedFormat.java", "src/main/java/test/TestChangeFormat.java");
+  }
+
+  @IndraFunctionalTest
+  void testPerLanguageFormat(final TestContext ctx) throws IOException {
+    // kotlin has dobule-slash, Java has slash-star
+    ctx.copyInput("build.gradle.kts");
+    ctx.copyInput("settings.gradle.kts");
+    ctx.copyInput("license_header.txt");
+    ctx.copyInput("Test.java", "src/main/java/test/Test.java");
+    ctx.copyInput("TestKotlin.kt", "src/main/kotlin/test/TestKotlin.kt");
+
+    // Fails check
+    ctx.runner("spotlessCheck").buildAndFail();
+
+    // Then applies, and matches expectation
+    ctx.runner("spotlessApply").build();
+    ctx.assertOutputEquals("TestFormatted.java", "src/main/java/test/Test.java");
+    ctx.assertOutputEquals("TestKotlinFormatted.kt", "src/main/kotlin/test/TestKotlin.kt");
+  }
+
+  @IndraFunctionalTest
+  void testNewLine(final TestContext ctx) throws IOException {
+    ctx.copyInput("build.gradle");
+    ctx.copyInput("settings.gradle");
+    ctx.copyInput("license_header.txt");
+    ctx.copyInput("Test.groovy", "src/main/groovy/test/Test.groovy");
+
+    // Fails check
+    ctx.runner("spotlessCheck").buildAndFail();
+
+    // Then applies, and matches expectation
+    ctx.runner("spotlessApply").build();
+    ctx.assertOutputEquals("TestFormatted.groovy", "src/main/groovy/test/Test.groovy");
+  }
+
+  @IndraFunctionalTest
+  void testNonAsciiCharacters(final TestContext ctx) throws IOException {
+    ctx.copyInput("build.gradle");
+    ctx.copyInput("settings.gradle");
+    ctx.copyInput("license_header.txt");
+    ctx.copyInput("Test.java", "src/main/java/test/Test.java");
+
+    // Fails check
+    ctx.runner("spotlessCheck").buildAndFail();
+
+    // Then applies, and matches expectation
+    ctx.runner("spotlessApply").build();
+
+    final URL expectedTemplate = this.getClass().getResource("nonAsciiCharacters/out/TestFormatted.java");
+    assertNotNull(expectedTemplate, "expectedTemplate should not be null");
+
+    final String contents;
+    try (final BufferedReader reader = new BufferedReader(new InputStreamReader(expectedTemplate.openStream(), StandardCharsets.UTF_8))) {
+      contents = reader.lines()
+        .collect(Collectors.joining("\n", "", "\n"))
+        .replace("YEAR", String.valueOf(LocalDate.now().getYear()));
+    }
+    ctx.assertOutputEqualsLiteral("src/main/java/test/Test.java", contents);
+  }
 }

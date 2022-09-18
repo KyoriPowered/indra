@@ -25,6 +25,7 @@ package net.kyori.indra.licenser.spotless;
 
 import com.diffplug.gradle.spotless.FormatExtension;
 import groovy.text.SimpleTemplateEngine;
+import net.kyori.indra.licenser.spotless.internal.HeaderFormatApplierImpl;
 import org.gradle.api.Action;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
@@ -79,9 +80,41 @@ public interface SpotlessLicenserExtension {
     this.headerFormat().set(requireNonNull(format, "format"));
   }
 
+  /**
+   * Set the header format to use.
+   *
+   * @param configurer an action that will be passed callbacks for common header format presets
+   * @since 2.2.0
+   */
+  default void headerFormat(final @NotNull Action<HeaderFormatApplier> configurer) {
+    requireNonNull(configurer, "configurer").execute(new HeaderFormatApplierImpl(this.headerFormat()));
+  }
+
+  /**
+   * A property providing language-specific header format overrides.
+   *
+   * @return the map property containing overrides
+   * @since 2.2.0
+   */
   @NotNull MapProperty<String, HeaderFormat> languageFormatOverrides();
 
+  /**
+   * Set a language format override for a specific formatter task.
+   *
+   * @param language the formatter task to configure
+   * @param headerFormat the header format to apply
+   * @since 2.2.0
+   */
   void languageFormatOverride(final @NotNull String language, final @NotNull HeaderFormat headerFormat);
+
+  /**
+   * Set a language format override for a specific formatter task.
+   *
+   * @param language the formatter task to configure
+   * @param configurer an action that will be passed callbacks for common header format presets
+   * @since 2.2.0
+   */
+  void languageFormatOverride(final @NotNull String language, final @NotNull Action<HeaderFormatApplier> configurer);
 
   /**
    * Properties to replace within license header contents.
@@ -126,6 +159,16 @@ public interface SpotlessLicenserExtension {
    * @since 2.2.0
    */
   @NotNull Property<Boolean> newLine();
+
+  /**
+   * Get whether to append an additional newline at the end of files.
+   *
+   * @param newLine the newline value
+   * @since 2.2.0
+   */
+  default void newLine(final boolean newLine) {
+    this.newLine().set(newLine);
+  }
 
   /**
    * Add an extra configure step to modify applied license header configurations.

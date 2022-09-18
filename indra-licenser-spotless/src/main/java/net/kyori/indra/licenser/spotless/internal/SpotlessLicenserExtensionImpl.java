@@ -26,6 +26,10 @@ package net.kyori.indra.licenser.spotless.internal;
 import com.diffplug.gradle.spotless.FormatExtension;
 import com.diffplug.spotless.ThrowingEx;
 import groovy.text.SimpleTemplateEngine;
+import java.io.BufferedReader;
+import java.io.File;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -35,13 +39,13 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import net.kyori.indra.licenser.spotless.HeaderFormat;
+import net.kyori.indra.licenser.spotless.HeaderFormatApplier;
 import net.kyori.indra.licenser.spotless.SpotlessLicenserExtension;
 import net.kyori.mammoth.Properties;
 import org.gradle.api.Action;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.MapProperty;
 import org.gradle.api.provider.Property;
-import org.gradle.api.resources.ResourceHandler;
 import org.gradle.api.resources.TextResource;
 import org.gradle.api.resources.TextResourceFactory;
 import org.jetbrains.annotations.NotNull;
@@ -51,6 +55,7 @@ import static java.util.Objects.requireNonNull;
 public class SpotlessLicenserExtensionImpl implements SpotlessLicenserExtension {
   private static final Pattern LINE_SPLIT = Pattern.compile("\r?\n");
 
+  private final ObjectFactory objects;
   private final TextResourceFactory textResources;
 
   private final Property<TextResource> licenseHeaderFile;
@@ -62,6 +67,7 @@ public class SpotlessLicenserExtensionImpl implements SpotlessLicenserExtension 
 
   @Inject
   public SpotlessLicenserExtensionImpl(final ObjectFactory objects, final TextResourceFactory textResources) {
+    this.objects = objects;
     this.textResources = textResources;
 
     this.licenseHeaderFile = objects.property(TextResource.class);
@@ -98,6 +104,13 @@ public class SpotlessLicenserExtensionImpl implements SpotlessLicenserExtension 
   }
 
   @Override
+  public void languageFormatOverride(final @NotNull String language, final @NotNull Action<HeaderFormatApplier> configurer) {
+    final Property<HeaderFormat> headerFormat = this.objects.property(HeaderFormat.class);
+    this.languageFormatOverrides.put(language, headerFormat);
+    requireNonNull(configurer, "configurer").execute(new HeaderFormatApplierImpl(headerFormat));
+  }
+
+  @Override
   public @NotNull MapProperty<String, Object> properties() {
     return this.properties;
   }
@@ -119,27 +132,44 @@ public class SpotlessLicenserExtensionImpl implements SpotlessLicenserExtension 
   public ThrowingEx.Supplier<String> createHeaderSupplier(final String name) {
     return () -> {
       // Read
-      String licenseHeader = this.licenseHeaderFile().get().asString();
-      final Map<String, Object> properties = Properties.finalized(this.properties()).get();
-      if (!properties.isEmpty()) {
-        final Map<String, Object> templateParams = new HashMap<>(properties);
-        templateParams.putIfAbsent("YEAR", "$YEAR");
+      final File licenseHeaderFile = this.licenseHeaderFile().get().asFile("UTF-8");
+      final String licenseHeader;
+      try (final BufferedReader reader = Files.newBufferedReader(licenseHeaderFile.toPath(), StandardCharsets.UTF_8)) {
 
-        licenseHeader = new SimpleTemplateEngine().createTemplate(licenseHeader)
-          .make(templateParams)
-          .toString();
+        final Map<String, Object> properties = Properties.finalized(this.properties()).get();
+        if (!properties.isEmpty()) {
+          final Map<String, Object> templateParams = new HashMap<>(properties);
+          templateParams.putIfAbsent("YEAR", "$YEAR");
+
+          licenseHeader = new SimpleTemplateEngine().createTemplate(reader)
+            .make(templateParams)
+            .toString();
+        } else {
+          licenseHeader = new String(Files.readAllBytes(licenseHeaderFile.toPath()), StandardCharsets.UTF_8);
+        }
       }
 
       final HeaderFormat format = Properties.finalized(this.languageFormatOverrides).get().getOrDefault(name, Properties.finalized(this.headerFormat()).get());
 
       // Apply header format to contents
-      return formatHeader(licenseHeader, format, true, false); // todo: expose trim and newline options
+      return formatHeader(licenseHeader, format, true, Properties.finalized(this.newLine()).get()); // todo: expose trim option
     };
   }
 
   private static String formatHeader(final String header, final HeaderFormat format, final boolean trimBody, final boolean newLine) {
     final String lineSeparator = System.lineSeparator();
     // Apply header format to contents
+    final String prefix = format.begin() != null ? format.begin() + lineSeparator : "";
+    final String suffix;
+    if (format.end() != null) {
+      if (newLine) {
+        suffix = lineSeparator + format.end() + lineSeparator + lineSeparator;
+      } else {
+        suffix = lineSeparator + format.end() + lineSeparator;
+      }
+    } else {
+      suffix = "";
+    }
     return LINE_SPLIT.splitAsStream(header)
       .map(line -> {
         if (format.linePrefix() != null || format.lineSuffix() != null) {
@@ -159,8 +189,8 @@ public class SpotlessLicenserExtensionImpl implements SpotlessLicenserExtension 
       })
       .collect(Collectors.joining(
         lineSeparator,
-        format.begin() != null ? format.begin() + lineSeparator : "",
-        format.end() != null ? lineSeparator + format.end() + lineSeparator : "" // todo: newLine
+        prefix,
+        suffix
       ));
   }
 

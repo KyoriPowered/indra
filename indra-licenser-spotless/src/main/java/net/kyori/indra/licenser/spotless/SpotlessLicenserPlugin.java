@@ -24,6 +24,9 @@
 package net.kyori.indra.licenser.spotless;
 
 import com.diffplug.gradle.spotless.FormatExtension;
+import com.diffplug.gradle.spotless.GroovyExtension;
+import com.diffplug.gradle.spotless.JavaExtension;
+import com.diffplug.gradle.spotless.KotlinExtension;
 import com.diffplug.gradle.spotless.SpotlessExtension;
 import com.diffplug.spotless.generic.LicenseHeaderStep;
 import com.diffplug.spotless.kotlin.KotlinConstants;
@@ -46,6 +49,9 @@ public class SpotlessLicenserPlugin implements ProjectPlugin {
 
   private static final String HEADER_FILE_NAME = "license_header.txt";
 
+  private SpotlessExtension spotless;
+  private SpotlessLicenserExtensionImpl extension;
+
   @Override
   public void apply(
     final @NotNull Project project,
@@ -55,37 +61,37 @@ public class SpotlessLicenserPlugin implements ProjectPlugin {
   ) {
     // Register our own extension
     final SpotlessLicenserExtensionImpl extension = (SpotlessLicenserExtensionImpl) extensions.create(SpotlessLicenserExtension.class, "indraSpotlessLicenser", SpotlessLicenserExtensionImpl.class, project.getResources().getText());
-
     // Default licenser configuration
     extension.licenseHeaderFile().convention(project.getResources().getText().fromFile(project.getRootProject().file(HEADER_FILE_NAME), "UTF-8"));
 
     // Apply spotless
     plugins.apply("com.diffplug.spotless");
-    final SpotlessExtension spotless = extensions.getByType(SpotlessExtension.class);
+    this.spotless = extensions.getByType(SpotlessExtension.class);
+    this.extension = extension;
 
     // Apply license header config to individual languages
     plugins.withId("java", $ -> {
-      spotless.java(java -> {
-        addStep(project, java, extension, "java", JAVA_LICENSE_HEADER_DELIMITER);
-      });
+      this.applyToFormat("java", JavaExtension.class, JAVA_LICENSE_HEADER_DELIMITER);
     });
 
     plugins.withId("org.jetbrains.kotlin.jvm", $ -> {
-      spotless.kotlin(kotlin -> {
-        addStep(project, kotlin, extension, "kotlin", KotlinConstants.LICENSE_HEADER_DELIMITER);
-      });
+      this.applyToFormat("kotlin", KotlinExtension.class, KotlinConstants.LICENSE_HEADER_DELIMITER);
     });
 
     plugins.withId("groovy", $ -> {
-      spotless.groovy(groovy -> {
-        addStep(project, groovy, extension, "groovy", JAVA_LICENSE_HEADER_DELIMITER);
-      });
+      this.applyToFormat("groovy", GroovyExtension.class, JAVA_LICENSE_HEADER_DELIMITER);
     });
 
     // TODO: scala -- scala doesn't support its own delimiter
   }
 
-  private static void addStep(final Project project, final FormatExtension format, final SpotlessLicenserExtensionImpl indraExtension, final String name, final String delimiter) {
+  private void applyToFormat(final String name, final Class<? extends FormatExtension> ext, final String delimiter) {
+    this.spotless.format(name, ext, format -> {
+      addStep(format, this.extension, name, delimiter);
+    });
+  }
+
+  private static void addStep(final FormatExtension format, final SpotlessLicenserExtensionImpl indraExtension, final String name, final String delimiter) {
     final LicenseHeaderStep step = LicenseHeaderStep.headerDelimiter(indraExtension.createHeaderSupplier(name), "");
     format.addStep(step.withYearMode(LicenseHeaderStep.YearMode.PRESERVE).build()); // add with dummy settings
     final FormatExtension.LicenseHeaderConfig config = format.new LicenseHeaderConfig(step);
