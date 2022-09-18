@@ -3,6 +3,7 @@ plugins {
   alias(libs.plugins.indra.pluginPublish) apply false
   alias(libs.plugins.gradlePluginPublish) apply false
   alias(libs.plugins.eclipseApt) apply false
+  alias(libs.plugins.spotless)
   id "eclipse"
 }
 
@@ -13,8 +14,8 @@ description = "KyoriPowered organizational build standards and utilities"
 subprojects {
   apply plugin: "java-gradle-plugin"
   apply plugin: "net.kyori.indra"
-  apply plugin: "net.kyori.indra.license-header"
   apply plugin: "com.diffplug.eclipse.apt"
+  apply plugin: "com.diffplug.spotless"
   
   dependencies {
     testImplementation libs.junit.api
@@ -38,10 +39,6 @@ subprojects {
         excludeTags 'functional'
       }
     }
-  }
-
-  license {
-    exclude { it.file.absolutePath.startsWith(project.file('src/test/resources').absolutePath) }
   }
 
   indra {
@@ -74,6 +71,30 @@ subprojects {
       versionMapping {
         usage(Usage.JAVA_API) { fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME) }
         usage(Usage.JAVA_RUNTIME) { fromResolutionResult() }
+      }
+    }
+
+    spotless {
+      java {
+        targetExclude 'src/test/resources/**'
+
+        def lineSep = System.lineSeparator()
+        File contents = rootProject.file('license_header.txt')
+        def licenseText = "/*" + lineSep + contents.readLines('utf-8')
+          .collect { (" * " + it).stripTrailing() }
+          .join(lineSep) + lineSep + " */"
+
+        licenseHeader(licenseText)
+        importOrderFile rootProject.file('.spotless/kyori.importorder')
+        trimTrailingWhitespace()
+        endWithNewline()
+        indentWithSpaces(2)
+      }
+      groovyGradle {
+        indentWithSpaces(2)
+        endWithNewline()
+        trimTrailingWhitespace()
+        importOrderFile rootProject.file('.spotless/kyori.importorder')
       }
     }
 

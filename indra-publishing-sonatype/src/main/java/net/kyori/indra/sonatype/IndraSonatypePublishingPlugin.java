@@ -25,6 +25,7 @@ package net.kyori.indra.sonatype;
 
 import io.github.gradlenexus.publishplugin.NexusPublishExtension;
 import io.github.gradlenexus.publishplugin.NexusPublishPlugin;
+import java.time.Duration;
 import net.kyori.indra.IndraPlugin;
 import net.kyori.indra.IndraPublishingPlugin;
 import net.kyori.indra.sonatype.internal.IndraSonatypePublishingExtensionImpl;
@@ -34,8 +35,6 @@ import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.tasks.TaskContainer;
 import org.jetbrains.annotations.NotNull;
-
-import java.time.Duration;
 
 /**
  * A plugin for configuring publication to Sonatype OSSRH.

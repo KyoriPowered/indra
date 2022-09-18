@@ -23,18 +23,17 @@
  */
 package net.kyori.indra.test;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
-import org.gradle.api.Project;
-import org.gradle.testfixtures.ProjectBuilder;
-import org.jetbrains.annotations.Nullable;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.StringWriter;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.function.Consumer;
+import org.gradle.api.Project;
+import org.gradle.testfixtures.ProjectBuilder;
+import org.jetbrains.annotations.Nullable;
+
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class IndraTesting {
   public static Project project() {

@@ -21,29 +21,38 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra;
+package net.kyori.indra.licenser.spotless.internal;
 
-import net.kyori.mammoth.ProjectPlugin;
-import org.cadixdev.gradle.licenser.LicenseExtension;
-import org.cadixdev.gradle.licenser.Licenser;
-import org.gradle.api.Project;
-import org.gradle.api.plugins.ExtensionContainer;
-import org.gradle.api.plugins.PluginContainer;
-import org.gradle.api.tasks.TaskContainer;
+import net.kyori.indra.licenser.spotless.HeaderFormat;
+import net.kyori.indra.licenser.spotless.HeaderFormatApplier;
+import org.gradle.api.provider.Property;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class IndraLicenseHeaderPlugin implements ProjectPlugin {
-  private static final String HEADER_FILE_NAME = "license_header.txt";
+public class HeaderFormatApplierImpl implements HeaderFormatApplier {
+  private final Property<HeaderFormat> format;
+
+  public HeaderFormatApplierImpl(final Property<HeaderFormat> format) {
+    this.format = format;
+  }
 
   @Override
-  public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull TaskContainer tasks) {
-    plugins.apply(Licenser.class);
+  public void starSlash() {
+    this.format.set(HeaderFormat.starSlash());
+  }
 
-    // Configure sensible defaults
-    extensions.configure(LicenseExtension.class, extension -> {
-      extension.header(project.getRootProject().file(HEADER_FILE_NAME));
-      extension.include(Indra.SOURCE_FILES);
-      extension.getNewLine().set(false);
-    });
+  @Override
+  public void doubleSlash() {
+    this.format.set(HeaderFormat.doubleSlash());
+  }
+
+  @Override
+  public void prefix(final @NotNull String prefix) {
+    this.format.set(HeaderFormat.prefix(prefix));
+  }
+
+  @Override
+  public void custom(final @Nullable String begin, final @Nullable String linePrefix, final @Nullable String lineSuffix, final @Nullable String end) {
+    this.format.set(HeaderFormat.headerFormat(begin, linePrefix, lineSuffix, end));
   }
 }

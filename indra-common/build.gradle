@@ -35,12 +35,12 @@ dependencies {
   compileOnlyApi libs.immutables.builder
   compileOnlyApi libs.jetbrainsAnnotations
   api project(":indra-git")
-  implementation libs.missingMetadataGuava 
-  implementation libs.cadixLicenser
+  api project(":indra-licenser-cadix") // for backwards compat
+  implementation libs.missingMetadataGuava
   implementation libs.asm
   api libs.mammoth
   testImplementation project(":indra-testlib")
-  
+
   // Kotlin plugin dep
   kotlinSupportCompileOnly libs.kotlinPlugin
   kotlinSupportCompileOnly(gradleApi())
@@ -62,14 +62,6 @@ indraPluginPublishing {
     "Indra Checkstyle",
     "Checkstyle configuration in line with the Indra file layout",
     ["boilerplate", "checkstyle"]
-  )
-
-  plugin(
-    "indra.license-header",
-    "net.kyori.indra.IndraLicenseHeaderPlugin",
-    "Indra License Header",
-    "License header configuration in line with the Indra file layout",
-    ["boilerplate", "license", "license-header", "licensing"]
   )
 
   plugin(
