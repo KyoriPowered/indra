@@ -8,7 +8,7 @@ dependencies {
 indraPluginPublishing {
   plugin(
     "indra.licenser.spotless",
-    "net.kyori.indra.licenser.spotless.SpotlessLicenserPlugin",
+    "net.kyori.indra.licenser.spotless.IndraSpotlessLicenserPlugin",
     "Indra Spotless License Headers",
     "Helper for configuring license header generation in Spotless with template parameters and differing formats",
     ["indra", "licenser", "license-header", "spotless"]

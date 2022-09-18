@@ -1,3 +1,7 @@
+import org.gradle.util.GradleVersion
+
 rootProject.name = "java"
 
-enableFeaturePreview "STABLE_CONFIGURATION_CACHE"
+if (GradleVersion.current() >= GradleVersion.version("7.5")) {
+  enableFeaturePreview "STABLE_CONFIGURATION_CACHE"
+}
