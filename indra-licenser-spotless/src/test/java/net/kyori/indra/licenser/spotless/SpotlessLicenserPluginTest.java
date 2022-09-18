@@ -31,16 +31,18 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDate;
 import java.util.stream.Collectors;
 import net.kyori.indra.test.FunctionalTestDisplayNameGenerator;
-import net.kyori.indra.test.IndraFunctionalTest;
+import net.kyori.indra.test.IndraConfigCacheFunctionalTest;
 import net.kyori.indra.test.IndraTesting;
 import net.kyori.mammoth.test.TestContext;
 import org.gradle.api.Project;
+import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @DisplayNameGeneration(FunctionalTestDisplayNameGenerator.class)
 class SpotlessLicenserPluginTest {
@@ -54,7 +56,7 @@ class SpotlessLicenserPluginTest {
     assertDoesNotThrow(() -> project.getPlugins().apply(ID));
   }
 
-  @IndraFunctionalTest
+  @IndraConfigCacheFunctionalTest
   void testApplication(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");
@@ -62,7 +64,7 @@ class SpotlessLicenserPluginTest {
     ctx.build("help");
   }
 
-  @IndraFunctionalTest
+  @IndraConfigCacheFunctionalTest
   void testJava(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");
@@ -77,7 +79,22 @@ class SpotlessLicenserPluginTest {
     ctx.assertOutputEquals("TestFormatted.java", "src/main/java/test/Test.java");
   }
 
-  @IndraFunctionalTest
+  @IndraConfigCacheFunctionalTest
+  void testConfigCacheReused(final TestContext ctx) throws IOException {
+    ctx.copyInput("build.gradle");
+    ctx.copyInput("settings.gradle");
+    ctx.copyInput("license_header.txt");
+    ctx.copyInput("Test.java", "src/main/java/test/Test.java");
+
+    // Fails check
+    ctx.runner("spotlessCheck").build();
+
+    // Then applies, and matches expectation
+    assertConfigCacheRestored(ctx.runner("spotlessCheck").build());
+
+  }
+
+  @IndraConfigCacheFunctionalTest
   void testKotlin(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle.kts");
     ctx.copyInput("settings.gradle.kts");
@@ -92,7 +109,7 @@ class SpotlessLicenserPluginTest {
     ctx.assertOutputEquals("TestFormatted.kt", "src/main/kotlin/test/Test.kt");
   }
 
-  @IndraFunctionalTest
+  @IndraConfigCacheFunctionalTest
   void testGroovy(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");
@@ -107,7 +124,7 @@ class SpotlessLicenserPluginTest {
     ctx.assertOutputEquals("TestFormatted.groovy", "src/main/groovy/test/Test.groovy");
   }
 
-  @IndraFunctionalTest
+  @IndraConfigCacheFunctionalTest
   void testCustomFormat(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");
@@ -124,7 +141,7 @@ class SpotlessLicenserPluginTest {
     ctx.assertOutputEquals("TestChangedFormat.java", "src/main/java/test/TestChangeFormat.java");
   }
 
-  @IndraFunctionalTest
+  @IndraConfigCacheFunctionalTest
   void testPerLanguageFormat(final TestContext ctx) throws IOException {
     // kotlin has dobule-slash, Java has slash-star
     ctx.copyInput("build.gradle.kts");
@@ -142,7 +159,7 @@ class SpotlessLicenserPluginTest {
     ctx.assertOutputEquals("TestKotlinFormatted.kt", "src/main/kotlin/test/TestKotlin.kt");
   }
 
-  @IndraFunctionalTest
+  @IndraConfigCacheFunctionalTest
   void testNewLine(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");
@@ -157,7 +174,7 @@ class SpotlessLicenserPluginTest {
     ctx.assertOutputEquals("TestFormatted.groovy", "src/main/groovy/test/Test.groovy");
   }
 
-  @IndraFunctionalTest
+  @IndraConfigCacheFunctionalTest
   void testNonAsciiCharacters(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");
@@ -180,5 +197,10 @@ class SpotlessLicenserPluginTest {
         .replace("YEAR", String.valueOf(LocalDate.now().getYear()));
     }
     ctx.assertOutputEqualsLiteral("src/main/java/test/Test.java", contents);
+  }
+
+  private static BuildResult assertConfigCacheRestored(final BuildResult result) {
+    assertTrue(result.getOutput().contains("Reusing configuration cache"));
+    return result;
   }
 }

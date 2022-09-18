@@ -1,0 +1,3 @@
+rootProject.name = "java"
+
+enableFeaturePreview "STABLE_CONFIGURATION_CACHE"
