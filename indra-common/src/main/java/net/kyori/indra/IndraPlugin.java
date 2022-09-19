@@ -24,6 +24,7 @@
 package net.kyori.indra;
 
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Objects;
 import net.kyori.indra.internal.IndraExtensionImpl;
 import net.kyori.indra.internal.SonatypeRepositoriesImpl;
@@ -39,7 +40,7 @@ import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
-import org.gradle.api.plugins.BasePluginConvention;
+import org.gradle.api.plugins.BasePluginExtension;
 import org.gradle.api.plugins.ExtensionAware;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.JavaLibraryPlugin;
@@ -89,7 +90,7 @@ public class IndraPlugin implements ProjectPlugin {
 
     final IndraExtensionImpl indra = (IndraExtensionImpl) Indra.extension(extensions);
 
-    project.getConvention().getPlugin(BasePluginConvention.class).setArchivesBaseName(project.getName().toLowerCase());
+    project.getExtensions().getByType(BasePluginExtension.class).getArchivesName().set(project.getName().toLowerCase(Locale.ROOT));
 
     extensions.configure(JavaPluginExtension.class, java -> {
       java.getToolchain().getLanguageVersion().set(indra.javaVersions().actualVersion().map(JavaLanguageVersion::of));
