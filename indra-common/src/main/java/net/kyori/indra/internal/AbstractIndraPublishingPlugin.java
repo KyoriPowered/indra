@@ -41,6 +41,7 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.repositories.PasswordCredentials;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.PluginContainer;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
@@ -109,8 +110,9 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
     });
 
     tasks.withType(Sign.class).configureEach(task -> {
-      final boolean shouldRun = project.hasProperty(FORCE_SIGN_PROPERTY) || Versioning.isRelease(project);
-      task.onlyIf(spec -> shouldRun);
+      final Provider<Boolean> forceSign = project.getProviders().gradleProperty(FORCE_SIGN_PROPERTY).map(x -> true).orElse(false);
+      final Provider<Boolean> isRelease = project.getProviders().provider(() -> Versioning.isRelease(project));
+      task.onlyIf(spec -> forceSign.zip(isRelease, (a, b) -> a || b).get());
     });
 
     final TaskProvider<RequireClean> requireClean = tasks.named(GitPlugin.REQUIRE_CLEAN_TASK, RequireClean.class);
