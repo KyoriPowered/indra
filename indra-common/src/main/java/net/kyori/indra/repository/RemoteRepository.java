@@ -35,8 +35,10 @@ import org.jetbrains.annotations.NotNull;
  * A definition for a repository that can be added to projects.
  *
  * @see Repositories#registerRepositoryExtensions(RepositoryHandler, Iterable) to registere remote repository extensions
+ * @deprecated for removal since 2.2.0, will become internal in 3.0.0
  * @since 2.0.0
  */
+@Deprecated
 @ImmutablesStyle
 @Value.Immutable(builder = false)
 public interface RemoteRepository {

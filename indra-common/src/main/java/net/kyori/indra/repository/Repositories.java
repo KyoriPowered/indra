@@ -32,8 +32,10 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Extensions for declaring additional custom repositories with factory methods.
  *
+ * @deprecated for removal since 2.2.0, will be removed in 3.0.0
  * @since 2.0.0
  */
+@Deprecated
 public final class Repositories {
   private Repositories() {
   }
