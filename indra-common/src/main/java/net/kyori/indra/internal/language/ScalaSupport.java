@@ -26,10 +26,13 @@ package net.kyori.indra.internal.language;
 import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
+import net.kyori.indra.internal.PropertyUtils;
 import org.gradle.api.Action;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 import org.gradle.api.plugins.scala.ScalaPlugin;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
@@ -41,6 +44,8 @@ import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.jetbrains.annotations.NotNull;
 
 public class ScalaSupport implements LanguageSupport {
+  private static final Logger LOGGER = Logging.getLogger(ScalaSupport.class);
+
   private final JavaToolchainService toolchains;
 
   @Inject
@@ -65,10 +70,11 @@ public class ScalaSupport implements LanguageSupport {
       options.setDeprecation(true);
 
       if (HAS_GRADLE_7_2) {
-        task.getJavaLauncher().set(launcher);
+        PropertyUtils.applyFinalizingAndLogging(task.getJavaLauncher(), launcher, task.getName());
       }
 
       final String compatibility = JavaVersion.toVersion(bytecodeVersion.get()).toString();
+      LOGGER.info("Computing bytecode version value within task {}: {}", task.getName(), compatibility);
       task.setSourceCompatibility(compatibility);
       task.setTargetCompatibility(compatibility);
       task.getOptions().getRelease().set(bytecodeVersion);

@@ -26,6 +26,7 @@ package net.kyori.indra.internal.language;
 import java.util.Arrays;
 import java.util.Collections;
 import javax.inject.Inject;
+import net.kyori.indra.internal.PropertyUtils;
 import net.kyori.indra.util.Versioning;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
@@ -65,21 +66,21 @@ public class JavaSupport implements LanguageSupport {
     project.getTasks().named(sourceSet.getCompileJavaTaskName(), JavaCompile.class, task -> {
       final CompileOptions options = task.getOptions();
       options.setEncoding(DEFAULT_ENCODING);
-      task.getJavaCompiler().set(this.toolchains.compilerFor(spec -> spec.getLanguageVersion().set(toolchainVersion.map(JavaLanguageVersion::of))));
+      PropertyUtils.applyFinalizingAndLogging(task.getJavaCompiler(), this.toolchains.compilerFor(spec -> spec.getLanguageVersion().set(toolchainVersion.map(JavaLanguageVersion::of))), task.getName());
 
-      options.getRelease().set(toolchainVersion.flatMap(toolchain -> toolchain >= 9 ? bytecodeVersion : null));
+      PropertyUtils.applyFinalizingAndLogging(options.getRelease(), toolchainVersion.flatMap(toolchain -> toolchain >= 9 ? bytecodeVersion : null), task.getName());
       // bleh
       task.setSourceCompatibility(Versioning.versionString(bytecodeVersion.get()));
       task.setTargetCompatibility(Versioning.versionString(bytecodeVersion.get()));
 
-      options.getCompilerArgumentProviders().add(new IndraCompileArgumentProvider(toolchainVersion));
+      options.getCompilerArgumentProviders().add(new IndraCompileArgumentProvider(PropertyUtils.logValueComputation(toolchainVersion, task.getName())));
     });
   }
 
   @Override
   public void configureDocTasks(final @NotNull Project project, final @NotNull SourceSet sourceSet, final @NotNull Provider<Integer> toolchainVersion, final @NotNull Provider<Integer> targetVersion) {
     final String taskName = sourceSet.getJavadocTaskName();
-    final Provider<JavadocTool> javadocTool = this.toolchains.javadocToolFor(spec -> spec.getLanguageVersion().set(toolchainVersion.map(JavaLanguageVersion::of)));
+    final Provider<JavadocTool> javadocTool = this.toolchains.javadocToolFor(spec -> PropertyUtils.applyFinalizingAndLogging(spec.getLanguageVersion(), toolchainVersion.map(JavaLanguageVersion::of), "javadoc"));
     project.getTasks().withType(Javadoc.class).matching(t -> t.getName().equals(taskName)).configureEach(task -> {
       final MinimalJavadocOptions minimalOpts = task.getOptions();
       minimalOpts.setEncoding(DEFAULT_ENCODING);

@@ -24,9 +24,12 @@
 package net.kyori.indra.internal.language;
 
 import javax.inject.Inject;
+import net.kyori.indra.internal.PropertyUtils;
 import org.gradle.api.Action;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 import org.gradle.api.plugins.GroovyPlugin;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
@@ -40,6 +43,7 @@ import org.jetbrains.annotations.NotNull;
  * Support for Groovy-language plugins.
  */
 public class GroovySupport implements LanguageSupport {
+  private static final Logger LOGGER = Logging.getLogger(GroovySupport.class);
   private static final String GROOVY = "groovy";
 
   private final JavaToolchainService toolchains;
@@ -61,12 +65,14 @@ public class GroovySupport implements LanguageSupport {
     final Provider<JavaLauncher> launcher = this.toolchains.launcherFor(spec -> spec.getLanguageVersion().set(bytecodeVersion.map(JavaLanguageVersion::of)));
     final String expectedName = sourceSet.getCompileTaskName(GROOVY);
     project.getTasks().withType(GroovyCompile.class).matching(it -> it.getName().equals(expectedName)).configureEach(groovyCompile -> {
-      groovyCompile.getOptions().getRelease().set(bytecodeVersion);
+      PropertyUtils.applyFinalizingAndLogging(groovyCompile.getOptions().getRelease(), bytecodeVersion, "groovy release");
       if (HAS_GRADLE_7_2) {
         // The Groovy plugin doesn't allow cross-compiling, so we have to use the specific target JDK
-        groovyCompile.getJavaLauncher().set(launcher);
+        PropertyUtils.applyFinalizingAndLogging(groovyCompile.getJavaLauncher(), launcher, "groovy toolchain");
       }
+
       final String compatibility = JavaVersion.toVersion(bytecodeVersion.get()).toString();
+      LOGGER.info("Computing bytecode version value within task {}: {}", groovyCompile.getName(), compatibility);
       groovyCompile.setSourceCompatibility(compatibility);
       groovyCompile.setTargetCompatibility(compatibility);
 

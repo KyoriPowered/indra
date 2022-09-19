@@ -23,6 +23,8 @@
  */
 package net.kyori.indra.internal.language;
 
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskContainer;
@@ -34,6 +36,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile;
 import org.jetbrains.kotlin.gradle.tasks.UsesKotlinJavaToolchain;
 
 public final class KotlinShim {
+  private static final Logger LOGGER = Logging.getLogger(KotlinShim.class);
 
   private KotlinShim() {
   }
@@ -53,6 +56,7 @@ public final class KotlinShim {
         final KotlinCompile kc = (KotlinCompile) task;
         task.getInputs().property("bytecodeVersion", bytecodeVersion);
         // TODO: this is kinda bad, but we can't add an action because this class is loaded in a non-Gradle class loader.
+        LOGGER.info("Computing value of bytecode version in {}", task.getName(), new Exception());
         kc.getKotlinOptions().setJvmTarget(org.gradle.api.JavaVersion.toVersion(bytecodeVersion.get()).toString());
       }
     });
