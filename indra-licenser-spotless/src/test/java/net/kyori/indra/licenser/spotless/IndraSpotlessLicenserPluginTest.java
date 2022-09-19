@@ -86,11 +86,12 @@ class IndraSpotlessLicenserPluginTest {
     ctx.copyInput("license_header.txt");
     ctx.copyInput("Test.java", "src/main/java/test/Test.java");
 
-    // Fails check
-    ctx.runner("spotlessCheck").build();
+    // First run, creates new config cache
+    ctx.build("spotlessApply");
+    ctx.build("spotlessCheck");
 
-    // Then applies, and matches expectation
-    assertConfigCacheRestored(ctx.runner("spotlessCheck").build());
+    // Then on second run, reuses the existing cache
+    assertConfigCacheRestored(ctx.build("spotlessCheck"));
 
   }
 
