@@ -30,8 +30,6 @@ import net.kyori.indra.internal.IndraExtensionImpl;
 import net.kyori.indra.internal.SonatypeRepositoriesImpl;
 import net.kyori.indra.internal.language.LanguageSupport;
 import net.kyori.indra.internal.multirelease.IndraMultireleasePlugin;
-import net.kyori.indra.repository.RemoteRepository;
-import net.kyori.indra.repository.Repositories;
 import net.kyori.indra.repository.SonatypeRepositories;
 import net.kyori.mammoth.ProjectPlugin;
 import net.kyori.mammoth.Properties;
@@ -216,9 +214,6 @@ public class IndraPlugin implements ProjectPlugin {
       SonatypeRepositoriesImpl.class,
       repositories
     );
-
-    // Legacy repository handling
-    Repositories.registerRepositoryExtensions(repositories, RemoteRepository.SONATYPE_SNAPSHOTS);
   }
 
   private void applyIdeConfigurationOptions(final PluginManager manager, final ExtensionContainer extensions, final TaskContainer tasks) {

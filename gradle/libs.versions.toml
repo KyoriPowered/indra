@@ -55,5 +55,4 @@ eclipseApt = { id = "com.diffplug.eclipse.apt", version.ref = "goomph" }
 gradlePluginPublish = "com.gradle.plugin-publish:0.21.0"
 indra = { id = "net.kyori.indra", version.ref = "indra" }
 indra-pluginPublish = { id = "net.kyori.indra.publishing.gradle-plugin", version.ref = "indra" }
-kotlin = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }

@@ -33,7 +33,6 @@ import net.kyori.indra.api.model.License;
 import net.kyori.indra.api.model.SourceCodeManagement;
 import net.kyori.indra.git.GitPlugin;
 import net.kyori.indra.git.task.RequireClean;
-import net.kyori.indra.repository.RemoteRepository;
 import net.kyori.indra.util.Versioning;
 import net.kyori.mammoth.ProjectPlugin;
 import org.gradle.api.Action;
@@ -66,7 +65,7 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
     final IndraExtension indra = Indra.extension(extensions);
 
     final Project rootProject = project.getRootProject();
-    if(!Objects.equals(project, rootProject)) {
+    if (!Objects.equals(project, rootProject)) {
       project.setGroup(rootProject.getGroup());
       project.setVersion(rootProject.getVersion());
       project.setDescription(rootProject.getDescription());

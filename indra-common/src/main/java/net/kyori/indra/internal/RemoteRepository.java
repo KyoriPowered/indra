@@ -21,10 +21,10 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra.repository;
+package net.kyori.indra.internal;
 
 import java.net.URI;
-import net.kyori.indra.internal.ImmutablesStyle;
+
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.artifacts.repositories.MavenRepositoryContentDescriptor;
@@ -34,16 +34,11 @@ import org.jetbrains.annotations.NotNull;
 /**
  * A definition for a repository that can be added to projects.
  *
- * @see Repositories#registerRepositoryExtensions(RepositoryHandler, Iterable) to registere remote repository extensions
- * @deprecated for removal since 2.2.0, will become internal in 3.0.0
  * @since 2.0.0
  */
-@Deprecated
 @ImmutablesStyle
 @Value.Immutable(builder = false)
 public interface RemoteRepository {
-  RemoteRepository SONATYPE_SNAPSHOTS = snapshotsOnly("sonatypeSnapshots", "https://oss.sonatype.org/content/repositories/snapshots/");
-
   /**
    * Create a repository that will publish/resolve both releases and snapshots.
    *

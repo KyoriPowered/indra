@@ -34,7 +34,6 @@ import net.kyori.indra.api.model.ContinuousIntegration;
 import net.kyori.indra.api.model.Issues;
 import net.kyori.indra.api.model.License;
 import net.kyori.indra.api.model.SourceCodeManagement;
-import net.kyori.indra.repository.RemoteRepository;
 import net.kyori.mammoth.Configurable;
 import net.kyori.mammoth.Properties;
 import org.gradle.api.Action;
