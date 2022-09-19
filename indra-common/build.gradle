@@ -35,7 +35,6 @@ dependencies {
   compileOnlyApi libs.immutables.builder
   compileOnlyApi libs.jetbrainsAnnotations
   api project(":indra-git")
-  api project(":indra-licenser-cadix") // for backwards compat
   implementation libs.missingMetadataGuava
   implementation libs.asm
   api libs.mammoth
