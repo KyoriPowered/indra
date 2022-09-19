@@ -23,18 +23,20 @@
  */
 package net.kyori.indra.crossdoc;
 
+import java.util.Locale;
 import net.kyori.mammoth.Properties;
 import org.jetbrains.annotations.NotNull;
 
 abstract class NameBasedProjectDocumentationUrlProviderImpl implements ProjectDocumentationUrlProvider, NameBasedProjectDocumentationUrlProvider {
   public NameBasedProjectDocumentationUrlProviderImpl() {
+    this.getLowercaseProjectName().convention(false);
   }
 
   @Override
   public @NotNull String createUrl(final @NotNull String projectName, final @NotNull String projectPath) {
-    String actualProjectName = projectName;
+    String actualProjectName = this.normalizeName(projectName);
     if (this.getProjectNamePrefix().isPresent()) {
-      final String prefixToStrip = Properties.finalized(this.getProjectNamePrefix()).get();
+      final String prefixToStrip = this.normalizeName(Properties.finalized(this.getProjectNamePrefix()).get());
       if (actualProjectName.startsWith(prefixToStrip)) {
         actualProjectName = actualProjectName.substring(prefixToStrip.length());
       }
@@ -44,6 +46,14 @@ abstract class NameBasedProjectDocumentationUrlProviderImpl implements ProjectDo
       return actualProjectName + '/' + this.getVersion().get();
     } else {
       return actualProjectName;
+    }
+   }
+
+  private String normalizeName(final String name) {
+    if (Properties.finalized(this.getLowercaseProjectName()).get()) {
+      return name.toLowerCase(Locale.ROOT);
+    } else {
+      return name;
     }
   }
 }
