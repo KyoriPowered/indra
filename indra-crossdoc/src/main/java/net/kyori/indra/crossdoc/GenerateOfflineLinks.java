@@ -45,7 +45,7 @@ import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.javadoc.Javadoc;
 
 /**
- * Generate an options file containing {@code -linkoffline} info for passing into {@link Javadoc} tasks
+ * Generate an options file containing {@code -linkoffline} info for passing into {@link Javadoc} tasks.
  *
  * @since 2.1.0
  */
@@ -70,17 +70,17 @@ public abstract class GenerateOfflineLinks extends DefaultTask {
   @Nested
   public abstract Property<ProjectDocumentationUrlProvider> getUrlProvider();
 
-  // TEMP: workaround for gradle/gradle#19490
+  @InputFiles
+  protected abstract ConfigurableFileCollection getLinkableArtifactFiles();
+
   /**
-   * A collection of artifacts on the compile classpath, to generate links t.
+   * A collection of artifacts on the compile classpath, to generate links to.
    *
    * @return a property including linkable artifacts.
+   * @since 3.0.0
    */
-  @InputFiles
-  protected abstract ConfigurableFileCollection getLinkableArtifacts();
-
   @Internal
-  protected abstract SetProperty<ResolvedArtifactResult> getTempLinkableArtifacts();
+  public abstract SetProperty<ResolvedArtifactResult> getLinkableArtifacts();
 
   /**
    * The output file that the generated arguments for the {@code javadoc} tool will be written to.
@@ -96,7 +96,7 @@ public abstract class GenerateOfflineLinks extends DefaultTask {
     final File outputFile = this.getOutputFile().get().getAsFile();
     outputFile.getParentFile().mkdirs();
     try (final BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(new FileOutputStream(outputFile), StandardCharsets.UTF_8))) {
-      for (final ResolvedArtifactResult it : this.getTempLinkableArtifacts().get()) {
+      for (final ResolvedArtifactResult it : this.getLinkableArtifacts().get()) {
         final File file = it.getFile();
         final ProjectComponentIdentifier identifier = (ProjectComponentIdentifier) it.getId().getComponentIdentifier();
         final String projectName = identifier.getProjectName();

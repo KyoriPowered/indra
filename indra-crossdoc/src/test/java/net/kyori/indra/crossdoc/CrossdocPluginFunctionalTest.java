@@ -28,6 +28,7 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import net.kyori.indra.test.FunctionalTestDisplayNameGenerator;
+import net.kyori.indra.test.IndraConfigCacheFunctionalTest;
 import net.kyori.indra.test.IndraFunctionalTest;
 import net.kyori.mammoth.test.TestContext;
 import org.gradle.testkit.runner.BuildResult;
@@ -41,7 +42,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @DisplayNameGeneration(FunctionalTestDisplayNameGenerator.class)
 class CrossdocPluginFunctionalTest {
   private static final String OFFLINE_LINKS_OUTPUT_LOCATION = "build/tmp/generateOfflineLinks-args.txt";
-  @IndraFunctionalTest
+
+  @IndraConfigCacheFunctionalTest
   void testSimpleLayout(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");
@@ -60,7 +62,7 @@ class CrossdocPluginFunctionalTest {
 
   // TODO: test copyJavadoc?
 
-  @IndraFunctionalTest
+  @IndraConfigCacheFunctionalTest
   void testNonCrossdocProjects(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");
@@ -77,7 +79,7 @@ class CrossdocPluginFunctionalTest {
     assertTrue(result.getOutput().contains("Failed to link to Javadoc"), () -> "No javadoc linking failures detected, output:\n" + result.getOutput());
   }
 
-  @IndraFunctionalTest
+  @IndraConfigCacheFunctionalTest
   void testBuildFailsWithoutJavadocJar(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");

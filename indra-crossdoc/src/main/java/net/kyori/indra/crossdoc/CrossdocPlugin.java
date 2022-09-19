@@ -140,7 +140,7 @@ public class CrossdocPlugin implements ProjectPlugin {
         v.getAttributes().attribute(
           JavadocPackaging.JAVADOC_PACKAGING_ATTRIBUTE,
           project.getObjects().named(JavadocPackaging.class, JavadocPackaging.DIRECTORY)
-          );
+        );
       });
     });
   }
@@ -182,8 +182,8 @@ public class CrossdocPlugin implements ProjectPlugin {
 
     final TaskProvider<GenerateOfflineLinks> generateLinks = project.getTasks().register(GENERATE_OFFLINE_LINKS_TASK_NAME, GenerateOfflineLinks.class, t -> {
       t.getLinkBaseUrl().set(extension.baseUrl());
-      t.getLinkableArtifacts().from(jdLinks.map(it -> it.getArtifactFiles()));
-      t.getTempLinkableArtifacts().set(jdLinks.map(it -> it.getArtifacts()));
+      t.getLinkableArtifactFiles().from(jdLinks.map(ArtifactCollection::getArtifactFiles));
+      t.getLinkableArtifacts().set(jdLinks.flatMap(ArtifactCollection::getResolvedArtifacts));
       t.getUrlProvider().set(extension.projectDocumentationUrlProvider());
       final Provider<RegularFile> argsDest = project.getLayout().getBuildDirectory().file("tmp/" + t.getName() + "-args.txt");
       t.getOutputFile().set(argsDest);
