@@ -31,8 +31,6 @@ import org.gradle.api.Action;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
 import org.gradle.api.plugins.scala.ScalaPlugin;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
@@ -44,7 +42,6 @@ import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.jetbrains.annotations.NotNull;
 
 public class ScalaSupport implements LanguageSupport {
-  private static final Logger LOGGER = Logging.getLogger(ScalaSupport.class);
 
   private final JavaToolchainService toolchains;
 
@@ -62,7 +59,7 @@ public class ScalaSupport implements LanguageSupport {
 
   @Override
   public void configureCompileTasks(final @NotNull Project project, final @NotNull SourceSet sourceSet, final @NotNull Provider<Integer> toolchainVersion, final @NotNull Provider<Integer> bytecodeVersion) {
-    final Provider<JavaLauncher> launcher = this.toolchains.launcherFor(spec -> spec.getLanguageVersion().set(toolchainVersion.map(JavaLanguageVersion::of)));
+    final Provider<JavaLauncher> launcher = this.toolchains.launcherFor(spec -> PropertyUtils.applyFinalizingAndLogging(spec.getLanguageVersion(), toolchainVersion.map(JavaLanguageVersion::of), "scala launcher"));
     final String expectedName = sourceSet.getCompileTaskName("scala");
     project.getTasks().withType(ScalaCompile.class).matching(it -> it.getName().equals(expectedName)).configureEach(task -> {
       final ScalaCompileOptions options = task.getScalaCompileOptions();
@@ -73,8 +70,7 @@ public class ScalaSupport implements LanguageSupport {
         PropertyUtils.applyFinalizingAndLogging(task.getJavaLauncher(), launcher, task.getName());
       }
 
-      final String compatibility = JavaVersion.toVersion(bytecodeVersion.get()).toString();
-      LOGGER.info("Computing bytecode version value within task {}: {}", task.getName(), compatibility);
+      final String compatibility = JavaVersion.toVersion(PropertyUtils.getAndLog(bytecodeVersion, task.getName())).toString();
       task.setSourceCompatibility(compatibility);
       task.setTargetCompatibility(compatibility);
       task.getOptions().getRelease().set(bytecodeVersion);

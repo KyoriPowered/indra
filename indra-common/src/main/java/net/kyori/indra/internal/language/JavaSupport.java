@@ -70,8 +70,9 @@ public class JavaSupport implements LanguageSupport {
 
       PropertyUtils.applyFinalizingAndLogging(options.getRelease(), toolchainVersion.flatMap(toolchain -> toolchain >= 9 ? bytecodeVersion : null), task.getName());
       // bleh
-      task.setSourceCompatibility(Versioning.versionString(bytecodeVersion.get()));
-      task.setTargetCompatibility(Versioning.versionString(bytecodeVersion.get()));
+      final String compatibility = Versioning.versionString(PropertyUtils.getAndLog(bytecodeVersion, task.getName()));
+      task.setSourceCompatibility(compatibility);
+      task.setTargetCompatibility(compatibility);
 
       options.getCompilerArgumentProviders().add(new IndraCompileArgumentProvider(PropertyUtils.logValueComputation(toolchainVersion, task.getName())));
     });
@@ -91,7 +92,7 @@ public class JavaSupport implements LanguageSupport {
         options.charSet(DEFAULT_ENCODING);
 
         task.getInputs().property("targetVersion", targetVersion);
-        task.doFirst(new IndraJavadocPrepareAction(targetVersion, options));
+        task.doFirst(new IndraJavadocPrepareAction(PropertyUtils.logValueComputation(targetVersion, task.getName()), options));
       }
     });
   }

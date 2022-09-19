@@ -28,8 +28,6 @@ import net.kyori.indra.internal.PropertyUtils;
 import org.gradle.api.Action;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
 import org.gradle.api.plugins.GroovyPlugin;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
@@ -43,7 +41,6 @@ import org.jetbrains.annotations.NotNull;
  * Support for Groovy-language plugins.
  */
 public class GroovySupport implements LanguageSupport {
-  private static final Logger LOGGER = Logging.getLogger(GroovySupport.class);
   private static final String GROOVY = "groovy";
 
   private final JavaToolchainService toolchains;
@@ -71,8 +68,7 @@ public class GroovySupport implements LanguageSupport {
         PropertyUtils.applyFinalizingAndLogging(groovyCompile.getJavaLauncher(), launcher, "groovy toolchain");
       }
 
-      final String compatibility = JavaVersion.toVersion(bytecodeVersion.get()).toString();
-      LOGGER.info("Computing bytecode version value within task {}: {}", groovyCompile.getName(), compatibility);
+      final String compatibility = JavaVersion.toVersion(PropertyUtils.getAndLog(bytecodeVersion, groovyCompile.getName())).toString();
       groovyCompile.setSourceCompatibility(compatibility);
       groovyCompile.setTargetCompatibility(compatibility);
 

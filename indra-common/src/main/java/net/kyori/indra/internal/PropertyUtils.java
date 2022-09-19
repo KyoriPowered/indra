@@ -41,8 +41,18 @@ public final class PropertyUtils {
 
   public static <V> Provider<V> logValueComputation(final Provider<? extends V> provider, final String message) {
     return provider.map(value -> {
-      LOGGER.debug("Computing value for property with value {}: {}", value, message, new Exception());
+      if (LOGGER.isDebugEnabled()) {
+        LOGGER.debug("Computing value for property with value {}: {}", value, message, new Exception());
+      }
       return value;
     });
+  }
+
+  public static <V> V getAndLog(final Provider<V> provider, final String message) {
+    final V value = provider.get();
+    if (LOGGER.isDebugEnabled()) {
+      LOGGER.debug("Computing value for property with value {}: {}", value, message, new Exception());
+    }
+    return value;
   }
 }

@@ -56,7 +56,9 @@ public final class KotlinShim {
         final KotlinCompile kc = (KotlinCompile) task;
         task.getInputs().property("bytecodeVersion", bytecodeVersion);
         // TODO: this is kinda bad, but we can't add an action because this class is loaded in a non-Gradle class loader.
-        LOGGER.info("Computing value of bytecode version in {}", task.getName(), new Exception());
+        if (LOGGER.isDebugEnabled()) {
+          LOGGER.debug("Computing value of bytecode version in {}", task.getName(), new Exception());
+        }
         kc.getKotlinOptions().setJvmTarget(org.gradle.api.JavaVersion.toVersion(bytecodeVersion.get()).toString());
       }
     });
