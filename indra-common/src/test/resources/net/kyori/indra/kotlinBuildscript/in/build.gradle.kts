@@ -1,5 +1,3 @@
-import net.kyori.indra.repository.sonatypeSnapshots
-
 plugins {
   id("net.kyori.indra")
 }
@@ -8,7 +6,7 @@ group = "com.example"
 version = "1.0.0-SNAPSHOT"
 
 repositories {
-  sonatypeSnapshots()
+  sonatype.ossSnapshots()
 }
 
 sourceSets {
