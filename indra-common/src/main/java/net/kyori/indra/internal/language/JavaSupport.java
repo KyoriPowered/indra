@@ -67,13 +67,11 @@ public class JavaSupport implements LanguageSupport {
       options.setEncoding(DEFAULT_ENCODING);
       task.getJavaCompiler().set(this.toolchains.compilerFor(spec -> spec.getLanguageVersion().set(toolchainVersion.map(JavaLanguageVersion::of))));
 
-      options.getRelease().set(bytecodeVersion.zip(toolchainVersion, (bytecode, toolchain) -> {
-        if (toolchain >= 9) {
-          return bytecode;
-        } else {
-          return null;
-        }
-      }));
+      options.getRelease().set(toolchainVersion.flatMap(toolchain -> toolchain >= 9 ? bytecodeVersion : null));
+      // bleh
+      task.setSourceCompatibility(Versioning.versionString(bytecodeVersion.get()));
+      task.setTargetCompatibility(Versioning.versionString(bytecodeVersion.get()));
+
       options.getCompilerArgumentProviders().add(new IndraCompileArgumentProvider(toolchainVersion));
     });
   }

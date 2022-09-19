@@ -1,0 +1,20 @@
+plugins {
+  id 'net.kyori.indra'
+}
+
+group 'com.example'
+version '1.0.0-SNAPSHOT'
+
+repositories {
+  sonatype.ossSnapshots()
+  sonatype.s01Snapshots()
+}
+
+indra {
+  github('Organization', 'Repository') {
+    ci true
+    publishing true
+  }
+  mitLicense()
+  javaVersions().minimumToolchain(8)
+}

@@ -66,13 +66,24 @@ class IndraPluginFunctionalTest {
   }
 
   @IndraConfigCacheFunctionalTest
+  void testJavac8Build(final TestContext ctx) throws IOException {
+    ctx.copyInput("build.gradle");
+    ctx.copyInput("settings.gradle");
+    ctx.copyInput("src/main/java/pkg/Test.java");
+
+    ctx.build("-PstrictMultireleaseVersions=true", "build"); // run build
+
+    final Path builtJar = ctx.outputDirectory().resolve("build/libs/javac8build-1.0.0-SNAPSHOT.jar");
+    assertTrue(Files.exists(builtJar));
+  }
+
+  @IndraConfigCacheFunctionalTest
   void testGroovy(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");
     ctx.copyInput("src/main/groovy/pkg/Test.groovy");
 
     final BuildResult result = ctx.build("build"); // run build
-    System.out.println(result.getOutput());
 
     final Path builtJar = ctx.outputDirectory().resolve("build/libs/groovy-1.0.0-SNAPSHOT.jar");
     assertTrue(Files.exists(builtJar));
@@ -173,7 +184,7 @@ class IndraPluginFunctionalTest {
     }
 
     assertBytecodeVersionEquals(jar, "pkg/Actor.class", 52);
-    assertBytecodeVersionEquals(jar, "META-INF/versions/9/pkg/Actor.class",53);
+    assertBytecodeVersionEquals(jar, "META-INF/versions/9/pkg/Actor.class", 53);
     assertBytecodeVersionEquals(jar, "META-INF/versions/17/pkg/Actor.class", 61);
 
     // TODO: test that multirelease tests work
@@ -199,7 +210,7 @@ class IndraPluginFunctionalTest {
   static final class VersionCollector extends org.objectweb.asm.ClassVisitor {
     int version = -1;
 
-    public VersionCollector() {
+    VersionCollector() {
       super(Opcodes.ASM9);
     }
 
