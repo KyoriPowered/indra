@@ -52,7 +52,7 @@ mammoth-test = { module = "net.kyori:mammoth-test", version.ref = "mammoth" }
 
 [plugins]
 eclipseApt = { id = "com.diffplug.eclipse.apt", version.ref = "goomph" }
-gradlePluginPublish = "com.gradle.plugin-publish:0.21.0"
+gradlePluginPublish = "com.gradle.plugin-publish:1.0.0"
 indra = { id = "net.kyori.indra", version.ref = "indra" }
 indra-pluginPublish = { id = "net.kyori.indra.publishing.gradle-plugin", version.ref = "indra" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
