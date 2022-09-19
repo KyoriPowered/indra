@@ -4,8 +4,9 @@ version = "1.0"
 [versions]
 asm = "9.3"
 goomph = "3.38.0"
+gradlePluginPublish = "1.0.0"
 immutables = "2.9.2"
-indra = "2.1.1"
+indra = "2.2.0"
 jetbrainsAnnotations = "23.0.0"
 jgit = "5.13.0.+" # stay on 5.x series, 6+ requires Java 11
 junit = "5.9.0"
@@ -38,7 +39,7 @@ jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version.ref = "jgit" }
 
 # publishing-gradle-plugin
 
-gradlePluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", version = "1.0.0" }
+gradlePluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "gradlePluginPublish" }
 
 # publishing-sonatype
 
@@ -52,7 +53,8 @@ mammoth-test = { module = "net.kyori:mammoth-test", version.ref = "mammoth" }
 
 [plugins]
 eclipseApt = { id = "com.diffplug.eclipse.apt", version.ref = "goomph" }
-gradlePluginPublish = "com.gradle.plugin-publish:0.21.0"
+gradlePluginPublish = { id = "com.gradle.plugin-publish", version.ref = "gradlePluginPublish" }
 indra = { id = "net.kyori.indra", version.ref = "indra" }
+indra-spotlessLicenser = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
 indra-pluginPublish = { id = "net.kyori.indra.publishing.gradle-plugin", version.ref = "indra" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
