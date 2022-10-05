@@ -51,10 +51,17 @@ import org.gradle.api.tasks.TaskProvider;
 import org.gradle.plugins.signing.Sign;
 import org.gradle.plugins.signing.SigningExtension;
 import org.gradle.plugins.signing.SigningPlugin;
+import org.gradle.util.GradleVersion;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
   private static final String FORCE_SIGN_PROPERTY = "forceSign";
+
+  @Override
+  public @Nullable GradleVersion minimumGradleVersion() {
+    return Indra.MINIMUM_SUPPORTED;
+  }
 
   @Override
   public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull TaskContainer tasks) {

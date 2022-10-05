@@ -36,7 +36,9 @@ import org.gradle.api.plugins.quality.CheckstyleExtension;
 import org.gradle.api.plugins.quality.CheckstylePlugin;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
+import org.gradle.util.GradleVersion;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Configure Gradle's built-in {@code checkstyle} plugin.
@@ -47,6 +49,11 @@ public class IndraCheckstylePlugin implements ProjectPlugin {
   public static final String CHECKSTYLE_ALL_TASK = "checkstyleAll";
 
   private static final String CHECKSTYLE_CONFIGURATION = "checkstyle";
+
+  @Override
+  public @Nullable GradleVersion minimumGradleVersion() {
+    return Indra.MINIMUM_SUPPORTED;
+  }
 
   @Override
   public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull TaskContainer tasks) {

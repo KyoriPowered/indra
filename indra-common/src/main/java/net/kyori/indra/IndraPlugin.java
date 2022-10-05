@@ -67,6 +67,7 @@ import org.gradle.plugins.ide.api.GeneratorTask;
 import org.gradle.plugins.ide.eclipse.model.EclipseModel;
 import org.gradle.util.GradleVersion;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * The primary Indra plugin providing project configuration.
@@ -76,6 +77,11 @@ import org.jetbrains.annotations.NotNull;
 public class IndraPlugin implements ProjectPlugin {
   private static final String DIFFPLUG_GOOMPH_APT = "com.diffplug.eclipse.apt";
   private static final String[] APT_TASKS = {"eclipseJdtApt", "eclipseJdt", "eclipseFactorypath"};
+
+  @Override
+  public @Nullable GradleVersion minimumGradleVersion() {
+    return Indra.MINIMUM_SUPPORTED;
+  }
 
   @Override
   public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull TaskContainer tasks) {

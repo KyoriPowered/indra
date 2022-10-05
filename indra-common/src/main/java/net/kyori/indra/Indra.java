@@ -26,9 +26,17 @@ package net.kyori.indra;
 import net.kyori.indra.internal.IndraExtensionImpl;
 import net.kyori.mammoth.Extensions;
 import org.gradle.api.plugins.ExtensionContainer;
+import org.gradle.util.GradleVersion;
 import org.jetbrains.annotations.NotNull;
 
 public class Indra {
+
+  /**
+   * The minimum supported Gradle version for the Indra suite.
+   *
+   * @since 3.0.0
+   */
+  public static final GradleVersion MINIMUM_SUPPORTED = GradleVersion.version("7.5");
   public static final String EXTENSION_NAME = "indra";
   public static final String PUBLICATION_NAME = "maven";
 
