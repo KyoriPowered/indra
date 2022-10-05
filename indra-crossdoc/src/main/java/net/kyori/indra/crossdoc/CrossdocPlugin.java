@@ -197,7 +197,7 @@ public class CrossdocPlugin implements ProjectPlugin {
 
       t.doFirst(new Action<Task>() {
         @Override
-        public void execute(final Task arg0) {
+        public void execute(final @NotNull Task arg0) {
           ((Javadoc) arg0).getOptions().optionFiles(linksOutput.get().getAsFile());
         }
       });

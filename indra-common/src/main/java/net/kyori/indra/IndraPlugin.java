@@ -124,7 +124,7 @@ public class IndraPlugin implements ProjectPlugin {
         final Property<Boolean> previewFeaturesEnabledProp = indra.javaVersions().previewFeaturesEnabled();
         task.doFirst(new Action<Task>() {
           @Override
-          public void execute(final Task t) {
+          public void execute(final @NotNull Task t) {
             final int actual = ((Javadoc) t).getJavadocTool().get().getMetadata().getLanguageVersion().asInt();
 
             if (actual >= 9) {
@@ -236,7 +236,7 @@ public class IndraPlugin implements ProjectPlugin {
 
   static class CleanFactorypath implements Action<Task> {
     @Override
-    public void execute(final Task arg0) {
+    public void execute(final @NotNull Task arg0) {
       final GeneratorTask<?> generator = (GeneratorTask<?>) arg0;
       if (generator.getInputFile().exists()) {
         generator.getInputFile().delete();

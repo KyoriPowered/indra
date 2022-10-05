@@ -47,7 +47,7 @@ abstract class NameBasedProjectDocumentationUrlProviderImpl implements ProjectDo
     } else {
       return actualProjectName;
     }
-   }
+  }
 
   private String normalizeName(final String name) {
     if (Properties.finalized(this.getLowercaseProjectName()).get()) {

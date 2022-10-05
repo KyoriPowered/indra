@@ -113,7 +113,8 @@ public abstract class GenerateOfflineLinks extends DefaultTask {
         // Write out the option
         writer.append(LINK_OFFLINE_OPTION)
           .append(' ')
-          .append(linkRoot + this.getUrlProvider().get().createUrl(projectName, identifier.getProjectPath()))
+          .append(linkRoot)
+          .append(this.getUrlProvider().get().createUrl(projectName, identifier.getProjectPath()))
           .append(' ')
           .append(file.getAbsolutePath());
         writer.newLine();

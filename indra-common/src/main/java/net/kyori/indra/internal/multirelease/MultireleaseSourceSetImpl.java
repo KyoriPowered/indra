@@ -87,7 +87,7 @@ class MultireleaseSourceSetImpl implements MultireleaseSourceSet {
   }
 
   @Override
-  public void requireAllPackagesExported(final Action<? super CheckModuleExports> action) {
+  public void requireAllPackagesExported(final @NotNull Action<? super CheckModuleExports> action) {
     this.exportValidation.add(action);
   }
 

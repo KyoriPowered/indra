@@ -507,7 +507,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
     }
 
     @Override
-    public void execute(final Task task) {
+    public void execute(final @NotNull Task task) {
       final Javadoc javadocTask = (Javadoc) task;
       if (this.modularJavadoc.get() && this.moduleName.isPresent()) {
         ((StandardJavadocDocletOptions) javadocTask.getOptions())

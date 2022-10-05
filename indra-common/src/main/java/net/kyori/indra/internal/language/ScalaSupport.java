@@ -81,12 +81,12 @@ public class ScalaSupport implements LanguageSupport {
   static class ParameterAdder implements Action<Task> {
     private final @NotNull Provider<Integer> target;
 
-    public ParameterAdder(final Provider<Integer> target) {
+    public ParameterAdder(final @NotNull Provider<Integer> target) {
       this.target = target;
     }
 
     @Override
-    public void execute(final Task task) {
+    public void execute(final @NotNull Task task) {
       List<String> options = ((ScalaCompile) task).getScalaCompileOptions().getAdditionalParameters();
       if (options != null && options.stream().anyMatch(opt -> opt.startsWith("-target:"))) {
         return;

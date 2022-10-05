@@ -32,24 +32,24 @@ import org.gradle.api.attributes.Attribute;
  * @since 2.1.0
  */
 public interface JavadocPackaging extends Named {
-    /**
-     * The attribute itself.
-     *
-     * @since 2.1.0
-     */
-    Attribute<JavadocPackaging> JAVADOC_PACKAGING_ATTRIBUTE = Attribute.of("net.kyori.indra.javadoc-packaging", JavadocPackaging.class);
+  /**
+   * The attribute itself.
+   *
+   * @since 2.1.0
+   */
+  Attribute<JavadocPackaging> JAVADOC_PACKAGING_ATTRIBUTE = Attribute.of("net.kyori.indra.javadoc-packaging", JavadocPackaging.class);
 
-    /**
-     * Packaged as an archive, such as a {@code jar}.
-     *
-     * @since 2.1.0
-     */
-    public static final String ARCHIVE = "archive";
+  /**
+   * Packaged as an archive, such as a {@code jar}.
+   *
+   * @since 2.1.0
+   */
+  String ARCHIVE = "archive";
 
-    /**
-     * Published as an exploded directory, the original output format.
-     *
-     * @since 2.1.0
-     */
-    public static final String DIRECTORY = "directory";
+  /**
+   * Published as an exploded directory, the original output format.
+   *
+   * @since 2.1.0
+   */
+  String DIRECTORY = "directory";
 }

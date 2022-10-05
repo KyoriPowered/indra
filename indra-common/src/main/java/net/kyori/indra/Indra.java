@@ -23,8 +23,6 @@
  */
 package net.kyori.indra;
 
-import java.util.HashSet;
-import java.util.Set;
 import net.kyori.indra.internal.IndraExtensionImpl;
 import net.kyori.mammoth.Extensions;
 import org.gradle.api.plugins.ExtensionContainer;

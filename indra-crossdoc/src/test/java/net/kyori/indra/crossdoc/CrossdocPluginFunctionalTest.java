@@ -29,7 +29,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import net.kyori.indra.test.FunctionalTestDisplayNameGenerator;
 import net.kyori.indra.test.IndraConfigCacheFunctionalTest;
-import net.kyori.indra.test.IndraFunctionalTest;
 import net.kyori.mammoth.test.TestContext;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
