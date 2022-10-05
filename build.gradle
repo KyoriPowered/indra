@@ -76,20 +76,17 @@ subprojects {
       }
     }
 
-    spotless {
+    spotless { spot ->
       java {
         targetExclude 'src/test/resources/**'
-
-        importOrderFile rootProject.file('.spotless/kyori.importorder')
-        trimTrailingWhitespace()
-        endWithNewline()
-        indentWithSpaces(2)
       }
-      groovyGradle {
-        indentWithSpaces(2)
-        endWithNewline()
-        trimTrailingWhitespace()
-        importOrderFile rootProject.file('.spotless/kyori.importorder')
+      ["java", "groovyGradle"].each {
+        spot."$it" {
+          importOrderFile rootProject.file('.spotless/kyori.importorder')
+          trimTrailingWhitespace()
+          endWithNewline()
+          indentWithSpaces(2)
+        }
       }
     }
 
