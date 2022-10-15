@@ -27,13 +27,14 @@ import java.io.File;
 import net.kyori.indra.git.internal.IndraGitExtensionImpl;
 import net.kyori.indra.git.internal.IndraGitService;
 import net.kyori.indra.git.task.RequireClean;
-import org.gradle.api.InvalidUserDataException;
-import org.gradle.api.Plugin;
+import net.kyori.mammoth.ProjectOrSettingsPlugin;
 import org.gradle.api.Project;
 import org.gradle.api.initialization.Settings;
 import org.gradle.api.invocation.Gradle;
 import org.gradle.api.plugins.ExtensionContainer;
+import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.TaskContainer;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -41,46 +42,46 @@ import org.jetbrains.annotations.NotNull;
  *
  * @since 2.0.0
  */
-public class GitPlugin implements Plugin<Object> {
+public class GitPlugin implements ProjectOrSettingsPlugin {
   private static final String EXTENSION_NAME = "indraGit";
   private static final String SERVICE_NAME = "indraGitService";
 
   public static final String REQUIRE_CLEAN_TASK = "requireClean";
 
   @Override
-  public void apply(final @NotNull Object projectOrSettings) {
-    if (projectOrSettings instanceof Project) {
-      this.applyToProject((Project) projectOrSettings);
-    } else if (projectOrSettings instanceof Settings) {
-      this.applyToSettings((Settings) projectOrSettings);
-    } else {
-      throw new InvalidUserDataException("The net.kyori.indra.git plugin can only be applied to a Project or Settings!");
-    }
-  }
-
-  private void applyToProject(final @NotNull Project project) {
-   final Provider<IndraGitService> service = this.applyCommon(
-     project.getGradle(),
-     project.getExtensions(),
-     project.getRootDir(),
-     project.getProjectDir(),
-     project.getDisplayName()
-   );
+  public void applyToProject(
+    final @NotNull Project target,
+    final @NotNull PluginContainer plugins,
+    final @NotNull ExtensionContainer extensions,
+    final @NotNull TaskContainer tasks
+  ) {
+    final Provider<IndraGitService> service = this.applyCommon(
+      target.getGradle(),
+      extensions,
+      target.getRootDir(),
+      target.getProjectDir(),
+      target.getDisplayName()
+    );
 
     // And create a task, but don't ever make it run
-    project.getTasks().register(REQUIRE_CLEAN_TASK, RequireClean.class, task -> {
+    tasks.register(REQUIRE_CLEAN_TASK, RequireClean.class, task -> {
       task.getGit().set(service);
     });
   }
 
-  private void applyToSettings(final @NotNull Settings settings) {
-   this.applyCommon(
-     settings.getGradle(),
-     settings.getExtensions(),
-     settings.getRootDir(),
-     settings.getRootDir(),
-     "settings"
-   );
+  @Override
+  public void applyToSettings(
+    final @NotNull Settings target,
+    final @NotNull PluginContainer plugins,
+    final @NotNull ExtensionContainer extensions
+  ) {
+    this.applyCommon(
+      target.getGradle(),
+      extensions,
+      target.getRootDir(),
+      target.getRootDir(),
+      "settings"
+    );
   }
 
   private Provider<IndraGitService> applyCommon(final @NotNull Gradle gradle, final ExtensionContainer extensions, final File rootDir, final File projectDir, final String displayName) {
