@@ -101,7 +101,7 @@ public class IndraPlugin implements ProjectPlugin {
     });
     this.applyIdeConfigurationOptions(project.getPluginManager(), extensions, tasks);
 
-    tasks.withType(JavaCompile.class, task -> {
+    tasks.withType(JavaCompile.class).configureEach(task -> {
       final CompileOptions options = task.getOptions();
       options.getCompilerArgs().addAll(Arrays.asList(
         // Generate metadata for reflection on method parameters
@@ -118,7 +118,7 @@ public class IndraPlugin implements ProjectPlugin {
       task.getArgumentProviders().add(indra.previewFeatureArgumentProvider());
     });
 
-    tasks.withType(Javadoc.class, task -> {
+    tasks.withType(Javadoc.class).configureEach(task -> {
       // Apply preview feature flag
       final MinimalJavadocOptions minimalOpts = task.getOptions();
       if (minimalOpts instanceof StandardJavadocDocletOptions) {
@@ -151,7 +151,7 @@ public class IndraPlugin implements ProjectPlugin {
       }
     });
 
-    tasks.withType(ProcessResources.class, task -> {
+    tasks.withType(ProcessResources.class).configureEach(task -> {
       task.setFilteringCharset(LanguageSupport.DEFAULT_ENCODING);
     });
 
@@ -160,7 +160,7 @@ public class IndraPlugin implements ProjectPlugin {
       extension.withSourcesJar();
     });
 
-    tasks.withType(Test.class, Test::useJUnitPlatform);
+    tasks.withType(Test.class).configureEach(Test::useJUnitPlatform);
 
     // If we are publishing, publish java
     indra.configurePublications(publication -> {
