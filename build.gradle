@@ -79,6 +79,8 @@ subprojects {
     spotless { spot ->
       java {
         targetExclude 'src/test/resources/**'
+        formatAnnotations()
+        removeUnusedImports()
       }
       ["java", "groovyGradle"].each {
         spot."$it" {
