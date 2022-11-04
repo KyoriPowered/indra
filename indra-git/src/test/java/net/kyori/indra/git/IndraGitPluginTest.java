@@ -105,7 +105,7 @@ class IndraGitPluginTest {
     .setCommitter(COMMITTER)
     .call();
 
-    IndraTesting.exec(mainProject, "git", "submodule", "add", "../submodule", "child");
+    IndraTesting.exec(mainProject, "git", "-c", "protocol.file.allow=always", "submodule", "add", "../submodule", "child");
 
     final Path referencedProjectDir = mainProject.resolve("child");
     final Project inSubmodule = IndraTesting.project(b -> b.withProjectDir(referencedProjectDir.toFile()));
