@@ -23,6 +23,11 @@
  */
 package net.kyori.indra.internal;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -39,9 +44,15 @@ import net.kyori.mammoth.Properties;
 import org.gradle.api.Action;
 import org.gradle.api.DomainObjectSet;
 import org.gradle.api.GradleException;
+import org.gradle.api.file.ProjectLayout;
+import org.gradle.api.logging.Logger;
+import org.gradle.api.logging.Logging;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.provider.ProviderFactory;
 import org.gradle.api.publish.maven.MavenPublication;
+import org.gradle.plugins.signing.SigningExtension;
 import org.gradle.process.CommandLineArgumentProvider;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -50,6 +61,7 @@ import static java.util.Objects.requireNonNull;
 
 public class IndraExtensionImpl implements IndraExtension {
 
+  private static final Logger LOGGER = Logging.getLogger(IndraExtensionImpl.class);
   private static final String DEFAULT_CHECKSTYLE_VERSION = "9.3";
 
   private final Property<ContinuousIntegration> ci;
@@ -65,8 +77,17 @@ public class IndraExtensionImpl implements IndraExtension {
   private final JavaToolchainVersionsImpl javaVersions;
   final DomainObjectSet<RemoteRepository> repositories;
 
+  private transient final ProviderFactory providers;
+  private transient final ProjectLayout layout;
+  private transient @Nullable Action<SigningExtension> signingAction;
+  private transient SigningExtension signingExtension;
+
+  private boolean alternateSigningConfigured;
+
   @Inject
-  public IndraExtensionImpl(final ObjectFactory objects) {
+  public IndraExtensionImpl(final ObjectFactory objects, final ProviderFactory providers, final ProjectLayout layout) {
+    this.providers = providers;
+    this.layout = layout;
     this.ci = objects.property(ContinuousIntegration.class);
     this.issues = objects.property(Issues.class);
     this.license = objects.property(License.class);
@@ -200,6 +221,73 @@ public class IndraExtensionImpl implements IndraExtension {
   @Override
   public @NotNull Property<Boolean> includeJavaSoftwareComponentInPublications() {
     return this.includeJavaSoftwareComponentInPublications;
+  }
+
+  @Override
+  public void signWithKeyFromPrefixedProperties(final String prefix) {
+    if (prefix.isEmpty()) {
+      throw new IllegalArgumentException("Prefix '" + prefix + "' must not be empty");
+    }
+
+    this.signWithKeyFromProperties(
+      prefix + "SigningKey",
+      prefix + "SigningPassword"
+    );
+  }
+
+  @Override
+  public void signWithKeyFromProperties(final String keyFileOrContentsProperty, final String keyPasswordProperty) {
+    final Provider<String> keyFileOrContents = this.providers.gradleProperty(keyFileOrContentsProperty);
+    final Provider<String> keyPassword = this.providers.gradleProperty(keyPasswordProperty);
+    if (!keyFileOrContents.isPresent()) {
+      LOGGER.info("Skipping configuring file-based signing because property '{}' had no value", keyFileOrContentsProperty);
+      return;
+    }
+    if (!keyPassword.isPresent()) {
+      LOGGER.info("Skipping configuring file-based signing because property '{}' had no value", keyPasswordProperty);
+      return;
+    }
+
+    this.alternateSigningConfigured = true;
+    if (this.signingExtension != null) {
+      this.configureSigningExtension(this.signingExtension, keyFileOrContents.get(), keyPassword.get());
+    } else {
+      this.signingAction = ext -> this.configureSigningExtension(ext, keyFileOrContents.get(), keyPassword.get());
+    }
+  }
+
+  private void configureSigningExtension(final SigningExtension extension, final String keyFileOrContents, final String keyPassword) {
+    final File keyFile = this.layout.getProjectDirectory().file(keyFileOrContents).getAsFile();
+    if (keyFile.exists()) {
+      final StringBuilder contents = new StringBuilder();
+      try (final BufferedReader reader = Files.newBufferedReader(keyFile.toPath(), StandardCharsets.UTF_8)) {
+        final char[] buf = new char[2048];
+        int read;
+        while ((read = reader.read(buf)) != -1) {
+          contents.append(buf, 0, read);
+        }
+      } catch (final IOException ex) {
+        throw new GradleException("Failed to read signing key file", ex);
+      }
+      extension.useInMemoryPgpKeys(contents.toString(), keyPassword);
+    } else {
+      extension.useInMemoryPgpKeys(keyFileOrContents, keyPassword);
+    }
+  }
+
+  public void initSigningExtension(final SigningExtension extension) {
+    if (this.signingAction != null) {
+      try {
+        this.signingAction.execute(extension);
+      } finally {
+        this.signingAction = null;
+      }
+    }
+    this.signingExtension = extension;
+  }
+
+  public boolean alternateSigningConfigured() {
+    return this.alternateSigningConfigured;
   }
 
   static class PreviewFeatureArgumentProvider implements CommandLineArgumentProvider {
