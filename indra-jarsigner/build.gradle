@@ -1,0 +1,21 @@
+dependencies {
+  compileOnlyApi libs.jetbrainsAnnotations
+  api libs.mammoth
+  testImplementation project(":indra-testlib")
+}
+
+sourceSets.main {
+  multirelease {
+    alternateVersions 9
+  }
+}
+
+indraPluginPublishing {
+  plugin(
+    "indra.jarsigner",
+    "net.kyori.indra.jarsigner.JarSignerPlugin",
+    "Indra Jarsigner",
+    "Provide a convenient way to expose the properties of a jar signer",
+    ["jarsigner", "codesigning"]
+  )
+}

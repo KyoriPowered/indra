@@ -19,6 +19,7 @@ rootProject.name = "indra"
 [
   "indra-common",
   "indra-git",
+  "indra-jarsigner",
   "indra-publishing-gradle-plugin",
   "indra-publishing-sonatype",
   "indra-licenser-spotless",

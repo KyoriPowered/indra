@@ -1,0 +1,7 @@
+plugins {
+  id 'net.kyori.indra.jarsigner'
+  id 'java-library'
+}
+
+group = "com.example"
+version = "1.0.0-SNAPSHOT"
