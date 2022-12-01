@@ -224,4 +224,26 @@ public interface IndraExtension {
   default void includeJavaSoftwareComponentInPublications(final boolean include) {
     this.includeJavaSoftwareComponentInPublications().set(include);
   }
+
+  /**
+   * Configure signing to source key and password for signing from two gradle properties with the provided prefix.
+   *
+   * <p>This is equivalent to invoking {@link #signWithKeyFromProperties(String, String)} with {@code ${prefix}SigningKey} and {@code ${prefix}SigningPassword} as arguments.</p>
+   *
+   * @param prefix the prefix for the two properties.
+   * @see #signWithKeyFromProperties(String, String)
+   * @since 3.1.0
+   */
+  void signWithKeyFromPrefixedProperties(final String prefix);
+
+  /**
+   * Configure signing to source key and password for signing from Gradle properties.
+   *
+   * <p>If both properties are set, this overrides Indra's default behaviour, which is to use the GPG agent for signing.</p>
+   *
+   * @param keyFileOrContentsProperty a property containing either a path to a key file, or the ascii-armored key blob
+   * @param keyPasswordProperty a password containing the literal password for the provided key
+   * @since 3.1.0
+   */
+  void signWithKeyFromProperties(final String keyFileOrContentsProperty, final String keyPasswordProperty);
 }

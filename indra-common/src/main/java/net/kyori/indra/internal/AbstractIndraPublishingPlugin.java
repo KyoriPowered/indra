@@ -26,7 +26,6 @@ package net.kyori.indra.internal;
 import java.util.Objects;
 import java.util.Set;
 import net.kyori.indra.Indra;
-import net.kyori.indra.IndraExtension;
 import net.kyori.indra.api.model.ContinuousIntegration;
 import net.kyori.indra.api.model.Issues;
 import net.kyori.indra.api.model.License;
@@ -69,7 +68,7 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
     plugins.apply(SigningPlugin.class);
     plugins.apply(GitPlugin.class);
 
-    final IndraExtension indra = Indra.extension(extensions);
+    final IndraExtensionImpl indra = (IndraExtensionImpl) Indra.extension(extensions);
 
     final Project rootProject = project.getRootProject();
     if (!Objects.equals(project, rootProject)) {
@@ -112,7 +111,10 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
     // Code signing
     extensions.configure(SigningExtension.class, extension -> {
       extension.sign(extensions.getByType(PublishingExtension.class).getPublications());
-      extension.useGpgCmd();
+      indra.initSigningExtension(extension);
+      if (!indra.alternateSigningConfigured()) {
+        extension.useGpgCmd();
+      }
     });
 
     tasks.withType(Sign.class).configureEach(task -> {
@@ -130,9 +132,9 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
 
     project.afterEvaluate(p -> {
       extensions.configure(PublishingExtension.class, publishing -> {
-        this.applyPublishingActions(publishing, ((IndraExtensionImpl) indra).publishingActions);
+        this.applyPublishingActions(publishing, indra.publishingActions);
 
-        ((IndraExtensionImpl) indra).repositories.all(rr -> { // will be applied to repositories as they're added
+        indra.repositories.all(rr -> { // will be applied to repositories as they're added
           if (this.canPublishTo(project, rr)) {
             publishing.getRepositories().maven(repository -> {
               repository.setName(rr.name());
