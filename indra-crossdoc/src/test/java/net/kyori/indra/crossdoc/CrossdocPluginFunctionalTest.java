@@ -29,6 +29,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import net.kyori.indra.test.FunctionalTestDisplayNameGenerator;
 import net.kyori.indra.test.IndraConfigCacheFunctionalTest;
+import net.kyori.indra.test.SettingsFactory;
 import net.kyori.mammoth.test.TestContext;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
@@ -81,7 +82,7 @@ class CrossdocPluginFunctionalTest {
   @IndraConfigCacheFunctionalTest
   void testBuildFailsWithoutJavadocJar(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
-    ctx.copyInput("settings.gradle");
+    SettingsFactory.createSettings(ctx, "buildFailsWithoutJavadocJar");
 
     final BuildResult result = ctx.runner("help").buildAndFail();
 

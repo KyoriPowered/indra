@@ -34,6 +34,7 @@ import java.util.zip.ZipFile;
 import net.kyori.indra.test.FunctionalTestDisplayNameGenerator;
 import net.kyori.indra.test.IndraConfigCacheFunctionalTest;
 import net.kyori.indra.test.IndraFunctionalTest;
+import net.kyori.indra.test.SettingsFactory;
 import net.kyori.mammoth.test.TestContext;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
@@ -53,7 +54,7 @@ class IndraPluginFunctionalTest {
   @IndraConfigCacheFunctionalTest
   void testSimpleBuild(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
-    ctx.copyInput("settings.gradle");
+    SettingsFactory.createSettings(ctx, "simpleBuild");
     ctx.copyInput("src/main/java/pkg/Test.java");
 
     ctx.build("build"); // run build
@@ -68,7 +69,7 @@ class IndraPluginFunctionalTest {
   @IndraConfigCacheFunctionalTest
   void testJavac8Build(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
-    ctx.copyInput("settings.gradle");
+    SettingsFactory.createSettings(ctx, "javac8Build");
     ctx.copyInput("src/main/java/pkg/Test.java");
 
     ctx.build("-PstrictMultireleaseVersions=true", "build"); // run build
@@ -80,7 +81,7 @@ class IndraPluginFunctionalTest {
   @IndraConfigCacheFunctionalTest
   void testGroovy(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
-    ctx.copyInput("settings.gradle");
+    SettingsFactory.createSettings(ctx, "groovy");
     ctx.copyInput("src/main/groovy/pkg/Test.groovy");
 
     final BuildResult result = ctx.build("build"); // run build
@@ -93,7 +94,7 @@ class IndraPluginFunctionalTest {
   @IndraConfigCacheFunctionalTest
   void testScala(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
-    ctx.copyInput("settings.gradle");
+    SettingsFactory.createSettings(ctx, "scala");
     ctx.copyInput("src/main/scala/pkg/Main.scala");
 
     ctx.build("build"); // run build
@@ -106,7 +107,7 @@ class IndraPluginFunctionalTest {
   @IndraFunctionalTest
   void testKotlinBuild(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
-    ctx.copyInput("settings.gradle");
+    SettingsFactory.createSettings(ctx, "kotlin");
     ctx.copyInput("src/main/kotlin/pkg/Test.kt");
 
     ctx.build("build"); // run build
@@ -119,7 +120,7 @@ class IndraPluginFunctionalTest {
   @IndraConfigCacheFunctionalTest
   void testKotlinBuildscript(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle.kts");
-    ctx.copyInput("settings.gradle.kts");
+    SettingsFactory.createSettings(ctx, "kotlinBuildscript", SettingsFactory.DSLLanguage.KOTLIN);
 
     ctx.build("build"); // run build
 
@@ -153,7 +154,7 @@ class IndraPluginFunctionalTest {
   @IndraConfigCacheFunctionalTest
   void testMultirelease(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
-    ctx.copyInput("settings.gradle");
+    SettingsFactory.createSettings(ctx, "multirelease");
 
     ctx.copyInput("j8/pkg/Actor.java", "src/main/java/pkg/Actor.java");
     ctx.copyInput("j8/pkg/Main.java", "src/main/java/pkg/Main.java");

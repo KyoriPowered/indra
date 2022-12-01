@@ -26,6 +26,7 @@ package net.kyori.indra;
 import java.io.IOException;
 import net.kyori.indra.test.IndraConfigCacheFunctionalTest;
 import net.kyori.indra.test.IndraTesting;
+import net.kyori.indra.test.SettingsFactory;
 import net.kyori.mammoth.test.TestContext;
 import org.gradle.api.Project;
 import org.gradle.testkit.runner.BuildResult;
@@ -57,7 +58,7 @@ class IndraCheckstylePluginTest {
   @IndraConfigCacheFunctionalTest
   void testGoogleChecks(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
-    ctx.copyInput("settings.gradle");
+    SettingsFactory.createSettings(ctx, "checkstyle");
     ctx.copyInput(".checkstyle/checkstyle.xml");
     ctx.copyInput("src/main/java/CheckstyleTest.java");
 

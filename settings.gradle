@@ -1,10 +1,19 @@
-dependencyResolutionManagement {
-  repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+pluginManagement {
   repositories {
     mavenCentral()
     gradlePluginPortal()
   }
 }
+
+plugins {
+  id "org.gradle.toolchains.foojay-resolver-convention" version "0.2"
+}
+
+dependencyResolutionManagement {
+  repositoriesMode = RepositoriesMode.FAIL_ON_PROJECT_REPOS
+  pluginManagement.repositories.each(repositories.&add)
+}
+
 rootProject.name = "indra"
 
 [
