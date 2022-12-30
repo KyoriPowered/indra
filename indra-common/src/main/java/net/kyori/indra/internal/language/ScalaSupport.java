@@ -27,6 +27,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.inject.Inject;
 import net.kyori.indra.internal.PropertyUtils;
+import net.kyori.indra.util.Versioning;
 import org.gradle.api.Action;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
@@ -59,7 +60,7 @@ public class ScalaSupport implements LanguageSupport {
 
   @Override
   public void configureCompileTasks(final @NotNull Project project, final @NotNull SourceSet sourceSet, final @NotNull Provider<Integer> toolchainVersion, final @NotNull Provider<Integer> bytecodeVersion) {
-    final Provider<JavaLauncher> launcher = this.toolchains.launcherFor(spec -> PropertyUtils.applyFinalizingAndLogging(spec.getLanguageVersion(), toolchainVersion.map(JavaLanguageVersion::of), "scala launcher"));
+    final Provider<JavaLauncher> launcher = this.toolchains.launcherFor(spec -> PropertyUtils.applyFinalizingAndLogging(spec.getLanguageVersion(), bytecodeVersion.map(JavaLanguageVersion::of), "scala launcher"));
     final String expectedName = sourceSet.getCompileTaskName("scala");
     project.getTasks().withType(ScalaCompile.class).matching(it -> it.getName().equals(expectedName)).configureEach(task -> {
       final ScalaCompileOptions options = task.getScalaCompileOptions();
@@ -68,13 +69,13 @@ public class ScalaSupport implements LanguageSupport {
 
       if (HAS_GRADLE_7_2) {
         PropertyUtils.applyFinalizingAndLogging(task.getJavaLauncher(), launcher, task.getName());
+      } else {
+        final String compatibility = JavaVersion.toVersion(PropertyUtils.getAndLog(bytecodeVersion, task.getName())).toString();
+        task.setSourceCompatibility(compatibility);
+        task.setTargetCompatibility(compatibility);
+        task.getOptions().getRelease().set(bytecodeVersion);
+        task.doFirst(new ParameterAdder(bytecodeVersion));
       }
-
-      final String compatibility = JavaVersion.toVersion(PropertyUtils.getAndLog(bytecodeVersion, task.getName())).toString();
-      task.setSourceCompatibility(compatibility);
-      task.setTargetCompatibility(compatibility);
-      task.getOptions().getRelease().set(bytecodeVersion);
-      task.doFirst(new ParameterAdder(bytecodeVersion));
     });
   }
 
@@ -95,7 +96,7 @@ public class ScalaSupport implements LanguageSupport {
         ((ScalaCompile) task).getScalaCompileOptions().setAdditionalParameters(options);
       }
 
-      options.add("-target:" + this.target.get());
+      options.add("-target:" + Versioning.versionString(this.target.get()));
     }
   }
 

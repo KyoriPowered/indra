@@ -15,5 +15,5 @@ sourceSets {
 }
 
 dependencies {
-  implementation 'org.scala-lang:scala-library:2.13.8' // TODO: in newer Gradle versions, test Scala 3?
+  implementation 'org.scala-lang:scala-library:2.13.9' // TODO: in newer Gradle versions, test Scala 3?
 }
