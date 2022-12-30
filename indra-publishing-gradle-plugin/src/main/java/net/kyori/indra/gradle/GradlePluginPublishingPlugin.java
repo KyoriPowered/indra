@@ -31,6 +31,7 @@ import java.util.function.BiConsumer;
 import net.kyori.indra.Indra;
 import net.kyori.indra.IndraExtension;
 import net.kyori.indra.IndraPlugin;
+import net.kyori.indra.api.model.SourceCodeManagement;
 import net.kyori.indra.internal.AbstractIndraPublishingPlugin;
 import org.gradle.api.Action;
 import org.gradle.api.Project;
@@ -38,15 +39,19 @@ import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.plugin.devel.GradlePluginDevelopmentExtension;
 import org.gradle.plugin.devel.plugins.JavaGradlePluginPlugin;
+import org.gradle.util.GradleVersion;
+import org.jetbrains.annotations.Nullable;
 
 public class GradlePluginPublishingPlugin extends AbstractIndraPublishingPlugin {
+
+  static final boolean HAS_GRADLE_7_6 = GradleVersion.current().compareTo(GradleVersion.version("7.6")) >= 0;
   private static final String EXTENSION_NAME = "indraPluginPublishing";
 
   @Override
   protected void extraApplySteps(final Project project) {
     // TODO: do we want to apply these plugins ourselves instead of only acting when the user chooses to do so?
     project.getPlugins().withType(PublishPlugin.class, $ -> {
-      final PluginBundleExtension pluginBundleExtension = project.getExtensions().getByType(PluginBundleExtension.class);
+      final @Nullable PluginBundleExtension pluginBundleExtension = project.getExtensions().findByType(PluginBundleExtension.class);
 
       // Needed to publish plugins using GH actions secrets, which can only be specified in environment variables.
       // Unfortunately, the plugin we are forced to use to publish to the plugin portal does not
@@ -62,41 +67,23 @@ public class GradlePluginPublishingPlugin extends AbstractIndraPublishingPlugin 
       copyProperty.accept("pluginPortalApiSecret", "gradle.publish.secret");
 
       project.getPlugins().withType(JavaGradlePluginPlugin.class, $$ -> {
+        final GradlePluginDevelopmentExtension pluginDevelopment = project.getExtensions().getByType(GradlePluginDevelopmentExtension.class);
         // When we have both plugins, we can create an extension
-        final IndraPluginPublishingExtension extension = project.getExtensions().create(
+        final IndraPluginPublishingExtensionImpl extension = (IndraPluginPublishingExtensionImpl) project.getExtensions().create(
           IndraPluginPublishingExtension.class,
           EXTENSION_NAME,
           IndraPluginPublishingExtensionImpl.class,
-          project.getExtensions().getByType(GradlePluginDevelopmentExtension.class),
+          pluginDevelopment,
           pluginBundleExtension
         );
 
         extension.pluginIdBase().convention(project.provider(() -> (String) project.getGroup()));
+        extension.fallbackDescription.set(project.provider(project::getDescription));
 
-        project.afterEvaluate(p -> {
-          // Set tags if present
-          if(extension.bundleTags().isPresent()) {
-            final List<String> tags = extension.bundleTags().get();
-            if(!tags.isEmpty()) {
-              pluginBundleExtension.setTags(tags);
-            }
-          }
-          // Set website if present
-          if(extension.website().isPresent()) {
-            pluginBundleExtension.setWebsite(extension.website().get());
-          }
-        });
-      });
-
-      project.afterEvaluate(p -> {
-        // Inherit properties from plugin and project
-        final IndraExtension indraExtension = Indra.extension(p.getExtensions());
-        if(indraExtension.scm().isPresent() && pluginBundleExtension.getVcsUrl() == null) {
-          pluginBundleExtension.setVcsUrl(indraExtension.scm().get().url());
-        }
-
-        if(p.getDescription() != null && pluginBundleExtension.getDescription() == null) {
-          pluginBundleExtension.setDescription(p.getDescription());
+        if (HAS_GRADLE_7_6) {
+          this.applyExtensionDataModern(project, extension, pluginDevelopment);
+        } else {
+          this.applyExtensionDataPreGradle76(project, extension, pluginBundleExtension);
         }
       });
     });
@@ -106,10 +93,47 @@ public class GradlePluginPublishingPlugin extends AbstractIndraPublishingPlugin 
     });
   }
 
+  private void applyExtensionDataModern(final Project project, final IndraPluginPublishingExtension indra, final GradlePluginDevelopmentExtension extension) {
+    // Set VCS if present
+    final IndraExtension indraExtension = Indra.extension(project.getExtensions());
+    extension.getVcsUrl().set(indraExtension.scm().map(SourceCodeManagement::url));
+
+    // Set website if present
+    extension.getWebsite().set(indra.website());
+
+    // Tags and description are only set per-plugin, handled within the extension
+  }
+
+  private void applyExtensionDataPreGradle76(final Project project, final IndraPluginPublishingExtension indra, final PluginBundleExtension extension) {
+    // Set tags if present
+    project.afterEvaluate(p -> {
+      if (indra.bundleTags().isPresent()) {
+        final List<String> tags = indra.bundleTags().get();
+        if(!tags.isEmpty()) {
+          extension.setTags(tags);
+        }
+      }
+      // Set website if present
+      if (indra.website().isPresent()) {
+        extension.setWebsite(indra.website().get());
+      }
+
+      // Inherit properties from plugin and project
+      final IndraExtension indraExtension = Indra.extension(p.getExtensions());
+      if (indraExtension.scm().isPresent() && extension.getVcsUrl() == null) {
+        extension.setVcsUrl(indraExtension.scm().get().url());
+      }
+
+      if (p.getDescription() != null && extension.getDescription() == null) {
+        extension.setDescription(p.getDescription());
+      }
+    });
+  }
+
   @Override
   protected void applyPublishingActions(final PublishingExtension extension, final Set<Action<MavenPublication>> actions) {
     extension.getPublications().withType(MavenPublication.class).configureEach(publication -> {
-      for(final Action<MavenPublication> action : actions) {
+      for (final Action<MavenPublication> action : actions) {
         action.execute(publication);
       }
     });
