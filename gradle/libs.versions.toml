@@ -12,7 +12,7 @@ jgit = "5.13.0.+" # stay on 5.x series, 6+ requires Java 11
 junit = "5.9.1"
 kotlin = "1.7.22"
 mammoth = "1.3.0"
-spotless = "6.12.0"
+spotless = "6.12.1"
 
 [libraries]
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
