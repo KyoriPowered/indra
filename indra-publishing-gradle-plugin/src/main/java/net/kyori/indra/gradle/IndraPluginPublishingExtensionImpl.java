@@ -35,27 +35,31 @@ import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.provider.ListProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.plugin.devel.GradlePluginDevelopmentExtension;
+import org.gradle.plugin.devel.PluginDeclaration;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class IndraPluginPublishingExtensionImpl implements IndraPluginPublishingExtension {
   private final GradlePluginDevelopmentExtension publishingExtension;
-  private final PluginBundleExtension pluginBundleExtension;
+  private final @Nullable PluginBundleExtension pluginBundleExtension;
   private final ListProperty<String> bundleTags;
   private final Property<String> pluginIdBase;
   private final Property<String> website;
+
+  final Property<String> fallbackDescription;
 
   @Inject
   public IndraPluginPublishingExtensionImpl(
     final ObjectFactory objects,
     final GradlePluginDevelopmentExtension publishingExtension,
-    final PluginBundleExtension pluginBundleExtension
+    final @Nullable PluginBundleExtension pluginBundleExtension
   ) {
     this.publishingExtension = publishingExtension;
     this.pluginBundleExtension = pluginBundleExtension;
     this.bundleTags = objects.listProperty(String.class);
     this.pluginIdBase = objects.property(String.class);
     this.website = objects.property(String.class);
+    this.fallbackDescription = objects.property(String.class);
   }
 
   @Override
@@ -76,29 +80,51 @@ public class IndraPluginPublishingExtensionImpl implements IndraPluginPublishing
   @Override
   public void plugin(final @NotNull String id, final @NotNull String mainClass, final @NotNull String displayName, final @Nullable String description, final @Nullable List<String> tags) {
     final String qualifiedId = this.pluginIdBase.get() + '.' + id;
-    this.publishingExtension.getPlugins().create(id, plugin -> {
+    final PluginDeclaration created = this.publishingExtension.getPlugins().create(id, plugin -> {
       plugin.setId(qualifiedId);
       plugin.setImplementationClass(mainClass);
       plugin.setDisplayName(displayName);
       if(description != null) {
         plugin.setDescription(description);
+      } else {
+        plugin.setDescription(this.fallbackDescription.get());
       }
     });
 
+    if (GradlePluginPublishingPlugin.HAS_GRADLE_7_6) {
+      this.applyTagsModern(created, tags);
+    } else {
+      this.applyTagsLegacy(created, tags);
+    }
+  }
+
+  private void applyTagsLegacy(final PluginDeclaration plugin, final List<String> tags) {
+    if (this.pluginBundleExtension == null) {
+      return;
+    }
+
     if (tags != null && !tags.isEmpty()) {
       final Map<String, Collection<String>> bundleTags = new HashMap<>(this.pluginBundleExtension.getPluginTags());
-      final Collection<String> existing = bundleTags.putIfAbsent(id, tags);
+      final Collection<String> existing = bundleTags.putIfAbsent(plugin.getId(), tags);
       if (existing != null) {
-          final Set<String> combinedTags = new LinkedHashSet<>(existing.size() + tags.size());
-          combinedTags.addAll(existing);
-          combinedTags.addAll(tags);
-          bundleTags.put(id, combinedTags);
+        final Set<String> combinedTags = new LinkedHashSet<>(existing.size() + tags.size());
+        combinedTags.addAll(existing);
+        combinedTags.addAll(tags);
+        bundleTags.put(plugin.getId(), combinedTags);
       }
       this.pluginBundleExtension.setPluginTags(bundleTags);
     }
 
     if (tags != null && this.pluginBundleExtension.getTags().isEmpty()) {
       this.pluginBundleExtension.setTags(tags);
+    }
+  }
+
+  private void applyTagsModern(final PluginDeclaration plugin, final List<String> tags) {
+    if (tags != null && !tags.isEmpty()) {
+      plugin.getTags().addAll(tags);
+    } else {
+      plugin.getTags().set(this.bundleTags());
     }
   }
 }
