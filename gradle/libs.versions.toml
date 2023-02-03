@@ -12,7 +12,7 @@ jgit = "5.13.0.+" # stay on 5.x series, 6+ requires Java 11
 junit = "5.9.2"
 kotlin = "1.8.10"
 mammoth = "1.3.0"
-spotless = "6.12.1"
+spotless = "6.14.0"
 
 [libraries]
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
@@ -46,7 +46,7 @@ gradlePluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", ver
 nexusPublishPlugin = { module = "io.github.gradle-nexus:publish-plugin", version = "1.1.0" }
 
 # spotless-licenser
-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless"}
+spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version = "6.13.0" } # any newer version requires J11
 
 # testlib
 mammoth-test = { module = "net.kyori:mammoth-test", version.ref = "mammoth" }
