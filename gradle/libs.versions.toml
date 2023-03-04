@@ -29,8 +29,8 @@ mammoth = { module = "net.kyori:mammoth", version.ref = "mammoth" }
 
 asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
 cadixLicenser = "gradle.plugin.org.cadixdev.gradle:licenser:0.6.1"
-# https://github.com/jjohannes/missing-metadata-guava
-missingMetadataGuava = "de.jjohannes.gradle:missing-metadata-guava:31.1.1"
+# https://github.com/gradlex-org/java-ecosystem-capabilities
+javaEcosystemCapabilities = { module = "org.gradlex:java-ecosystem-capabilities", version = "1.1" }
 kotlinPlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
 # git

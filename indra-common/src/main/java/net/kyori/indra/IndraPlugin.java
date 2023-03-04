@@ -87,9 +87,9 @@ public class IndraPlugin implements ProjectPlugin {
   public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull TaskContainer tasks) {
     plugins.apply(JavaLibraryPlugin.class);
     if (GradleVersion.current().compareTo(GradleVersion.version("7.0")) >= 0) {
-      // Fix Guava references
+      // Fix a lot of JVM library artifact inconsistencies
       // Gradle <7.0 doesn't provide the necessary attributes for this to work effectively
-      plugins.apply("de.jjohannes.missing-metadata-guava");
+      plugins.apply("org.gradlex.java-ecosystem-capabilities");
     }
 
     final IndraExtensionImpl indra = (IndraExtensionImpl) Indra.extension(extensions);
