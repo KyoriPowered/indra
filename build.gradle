@@ -77,6 +77,8 @@ subprojects {
     }
 
     spotless { spot ->
+      ratchetFrom "origin/main/3.x"
+
       java {
         targetExclude 'src/test/resources/**'
         formatAnnotations()
