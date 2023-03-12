@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 package net.kyori.indra;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import net.kyori.indra.internal.IndraExtensionImpl;
@@ -37,6 +38,7 @@ import org.gradle.api.Action;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
 import org.gradle.api.plugins.BasePluginExtension;
 import org.gradle.api.plugins.ExtensionAware;
@@ -49,6 +51,8 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.JavaExec;
+import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
@@ -169,8 +173,6 @@ public class IndraPlugin implements ProjectPlugin {
       }
     });
 
-    plugins.apply(IndraMultireleasePlugin.class);
-
     // For things that are eagerly applied (field accesses, anything where you need to `get()`)
     project.afterEvaluate(p -> {
       extensions.configure(JavaPluginExtension.class, javaPlugin -> {
@@ -189,6 +191,11 @@ public class IndraPlugin implements ProjectPlugin {
       // Set up testing on the selected Java versions
       final JavaToolchainService toolchains = extensions.getByType(JavaToolchainService.class);
       final SetProperty<Integer> testWithProp = Properties.finalized(indra.javaVersions().testWith());
+      final Provider<SourceSet> testSet = p.getExtensions().getByType(SourceSetContainer.class)
+        .named(SourceSet.TEST_SOURCE_SET_NAME);
+      final Provider<Configuration> testRuntimeClasspathConfig = testSet
+        .flatMap(set -> p.getConfigurations().named(set.getRuntimeClasspathConfigurationName()));
+      final List<String> requestedTasks = p.getGradle().getStartParameter().getTaskNames();
       testWithProp.get().forEach(targetRuntime -> {
         // Create task that will use that version
         final Property<Boolean> strictVersions = indra.javaVersions().strictVersions();
@@ -196,11 +203,13 @@ public class IndraPlugin implements ProjectPlugin {
         final TaskProvider<Test> versionedTest = tasks.register(Indra.testJava(targetRuntime), Test.class, test -> {
           test.setDescription("Runs tests on Java " + targetRuntime + " if necessary based on build settings");
           test.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
-          // Appropriate classpath and test class source information is set on all test tasks by JavaPlugin
+          test.setClasspath(testRuntimeClasspathConfig.get().getIncoming().getFiles());
+          test.setTestClassesDirs(testSet.get().getOutput().getClassesDirs());
 
           test.onlyIf($ -> {
-            // Only run if our runtime is not the standard runtime, and we're doing strict versions.
-            return strictVersions.get() && !Objects.equals(targetRuntime, actualVersion.get());
+            // Only run if explicitly requested, our runtime is not the standard runtime, and we're doing strict versions.
+            return requestedTasks.contains(test.getName()) || requestedTasks.contains(test.getPath())
+              || strictVersions.get() && !Objects.equals(targetRuntime, actualVersion.get());
           });
           test.getJavaLauncher().set(toolchains.launcherFor(it -> it.getLanguageVersion().set(strictVersions.zip(actualVersion, (strict, actual) -> JavaLanguageVersion.of(strict ? targetRuntime : actual)))));
         });
@@ -209,6 +218,8 @@ public class IndraPlugin implements ProjectPlugin {
       });
     });
 
+    // Give our actions priority over the multirelease afterEvaluate actions (eww)
+    plugins.apply(IndraMultireleasePlugin.class);
     this.registerRepositoryExtensions(project.getRepositories());
   }
 
