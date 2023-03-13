@@ -3,6 +3,7 @@ version = "1.0"
 
 [versions]
 asm = "9.4"
+assertj = "3.24.2"
 goomph = "3.41.1"
 gradlePluginPublish = "1.1.0"
 immutables = "2.9.3"
@@ -15,6 +16,7 @@ mammoth = "1.3.0"
 spotless = "6.16.0"
 
 [libraries]
+assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertj" }
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-params = { module = "org.junit.jupiter:junit-jupiter-params", version.ref = "junit" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
