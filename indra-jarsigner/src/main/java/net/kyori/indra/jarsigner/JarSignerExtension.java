@@ -31,6 +31,7 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.AbstractArchiveTask;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -39,6 +40,7 @@ import org.jetbrains.annotations.NotNull;
  * @see <a href="https://docs.oracle.com/en/java/javase/17/docs/specs/man/jarsigner.html">jarsigner CLI reference</a>
  * @since 3.1.0
  */
+@ApiStatus.NonExtendable
 public interface JarSignerExtension {
   boolean DEFAULT_STRICT = false;
   String DEFAULT_STORE_FORMAT = "PKCS12";
@@ -219,6 +221,8 @@ public interface JarSignerExtension {
     this.storeFormat().set(storeFormat);
   }
 
+  // apply to artifacts //
+
   /**
    * Create a task signing the output of an existing task.
    *
@@ -233,11 +237,17 @@ public interface JarSignerExtension {
   /**
    * Create a task signing the outgoing artifact of an existing configuration.
    *
-   * <p>If the input task's classifier does not already end with {@code unsigned}, the input task will be modified to add this prefix.</p>
+   * <p>If the input tasks' classifiers does not already end with {@code unsigned}, the input task will be modified to add this prefix.</p>
    *
    * @param configuration the configuration whose outgoing artifacts should be signed
-   * @return the new sign task
    * @since 3.1.0
    */
-  TaskProvider<SignJarTask> signConfigurationOutgoing(final Configuration configuration);
+  void signConfigurationOutgoing(final Configuration configuration);
+
+  /**
+   * Create tasks to sign the artifacts of the default java configurations.
+   *
+   * @since 3.1.0
+   */
+  void signDefaultConfigurations();
 }

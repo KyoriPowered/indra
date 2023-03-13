@@ -24,12 +24,20 @@
 package net.kyori.indra.jarsigner;
 
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import net.kyori.indra.test.FunctionalTestDisplayNameGenerator;
 import net.kyori.indra.test.IndraConfigCacheFunctionalTest;
 import net.kyori.indra.test.SettingsFactory;
 import net.kyori.mammoth.test.TestContext;
+import org.gradle.testkit.runner.BuildResult;
+import org.gradle.testkit.runner.BuildTask;
+import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.DisplayNameGeneration;
 
+import static net.kyori.indra.test.IndraTesting.exec;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 
 @DisplayNameGeneration(FunctionalTestDisplayNameGenerator.class)
@@ -43,5 +51,52 @@ class JarSignerPluginTest {
     SettingsFactory.createSettings(ctx, "pluginApplication");
 
     assertDoesNotThrow(() -> ctx.build("build"));
+  }
+
+  private static String jdkToolPath(final String toolName) {
+    return Paths.get(System.getProperty("java.home")).resolve("bin").resolve(toolName).toString();
+  }
+
+  @IndraConfigCacheFunctionalTest
+  void testSignOutput(final TestContext ctx) throws IOException {
+    // Generate a transient signing key to make sure everything works
+    // There is
+
+    final String keyPass = "test123";
+    final Path keyStore = ctx.outputDirectory().resolve("test.pkcs12");
+    exec(ctx.outputDirectory(), jdkToolPath("keytool"), "-genkeypair",
+      "-alias", "test",
+      "-dname", "CN=example.org, o=ExamplesRUs",
+      "-keystore", keyStore.toString(),
+      "-validity", "90",
+      "-keypass", keyPass,
+      "-storepass", keyPass,
+      "-keyalg", "RSA",
+      "-keysize", "4096",
+      "-storetype", "PKCS12"
+    ); // create signing key
+
+    ctx.copyInput("build.gradle");
+    ctx.copyInput("Test.java", "src/main/java/test/Test.java");
+    SettingsFactory.createSettings(ctx, "signOutput");
+
+    final BuildResult result = ctx.build(
+      "--info",
+      "-PsigningKey=" + keyStore.toAbsolutePath(),
+      "-PsigningPassword=" + keyPass,
+      "build",
+      "jarsignJar"
+    );
+
+    System.out.println(result.getOutput());
+
+    assertThat(result.task(":jarsignJar"))
+      .describedAs("task :jarsignJar")
+      .isNotNull()
+      .extracting(BuildTask::getOutcome)
+        .isEqualTo(TaskOutcome.SUCCESS); // ensure task actually executed
+
+    assertThatNoException()
+      .isThrownBy(() -> exec(ctx.outputDirectory(), jdkToolPath("jarsigner"), "-verify", "build/libs/signOutput.jar"));
   }
 }

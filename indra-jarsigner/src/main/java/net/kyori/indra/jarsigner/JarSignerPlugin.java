@@ -25,7 +25,7 @@ package net.kyori.indra.jarsigner;
 
 import net.kyori.mammoth.ProjectPlugin;
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.plugins.BasePluginExtension;
 import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
@@ -47,12 +47,12 @@ public class JarSignerPlugin implements ProjectPlugin {
   @Override
   public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull TaskContainer tasks) {
     // extension: register the bits
-    final JarSignerExtension extension = extensions.create(JarSignerExtension.class, JAR_SIGNER_EXTENSION, JarSignerExtensionImpl.class);
+    final JarSignerExtension extension = extensions.create(JarSignerExtension.class, JAR_SIGNER_EXTENSION, JarSignerExtensionImpl.class, project.getConfigurations());
 
     tasks.withType(SignJarTask.class).configureEach(task -> {
       task.getAlias().set(extension.alias());
       task.getKeyStore().set(extension.keyStore());
-      task.getStorePassword().set(extension.storeFormat());
+      task.getStorePassword().set(extension.storePassword());
       task.getKeyPassword().set(extension.keyPassword());
       task.getStrict().set(extension.strict());
       task.getStoreFormat().set(extension.storeFormat());
@@ -62,14 +62,11 @@ public class JarSignerPlugin implements ProjectPlugin {
     plugins.withType(JavaPlugin.class).configureEach($ -> {
       final JavaToolchainService service = extensions.getByType(JavaToolchainService.class);
       final Provider<JavaLauncher> toolchain = service.launcherFor(extensions.getByType(JavaPluginExtension.class).getToolchain());
+      final BasePluginExtension base = extensions.getByType(BasePluginExtension.class);
       tasks.withType(SignJarTask.class).configureEach(task -> {
         task.getJavaLauncher().convention(toolchain);
+        task.getDestinationDirectory().set(base.getLibsDirectory());
       });
-
-      // Sign default configurations
-      final ConfigurationContainer configurations = project.getConfigurations();
-      extension.signConfigurationOutgoing(configurations.getByName(JavaPlugin.API_ELEMENTS_CONFIGURATION_NAME));
-      extension.signConfigurationOutgoing(configurations.getByName(JavaPlugin.RUNTIME_ELEMENTS_CONFIGURATION_NAME));
     });
   }
 }

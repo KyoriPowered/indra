@@ -1,0 +1,15 @@
+plugins {
+  id 'net.kyori.indra.jarsigner'
+  id 'java-library'
+}
+
+group = "com.example"
+
+jarSigning {
+  keyStore file(project.ext.signingKey)
+  storePassword project.ext.signingPassword
+  keyPassword project.ext.signingPassword
+  alias 'test'
+
+  signDefaultConfigurations()
+}

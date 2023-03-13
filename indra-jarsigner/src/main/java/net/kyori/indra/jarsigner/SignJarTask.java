@@ -43,9 +43,11 @@ import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.CacheableTask;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.PathSensitive;
 import org.gradle.api.tasks.PathSensitivity;
+import org.gradle.api.tasks.bundling.Zip;
 import org.gradle.jvm.tasks.Jar;
 import org.gradle.jvm.toolchain.JavaLauncher;
 import org.gradle.workers.WorkAction;
@@ -65,7 +67,7 @@ import org.jetbrains.annotations.ApiStatus;
  * @since 3.1.0
  */
 @CacheableTask
-public abstract class SignJarTask extends Jar {
+public abstract class SignJarTask extends Zip {
   /**
    * Get the alias within a key store.
    *
@@ -130,7 +132,7 @@ public abstract class SignJarTask extends Jar {
    * @return the jarsigner tool launcher provider
    * @since 3.1.0
    */
-  @Input
+  @Nested
   @Optional
   public abstract Property<JavaLauncher> getJavaLauncher();
 
@@ -148,10 +150,12 @@ public abstract class SignJarTask extends Jar {
   protected abstract WorkerExecutor getWorkerExecutor();
 
   public SignJarTask() {
+    this.getArchiveExtension().set(Jar.DEFAULT_EXTENSION);
   }
 
   @Override
   public void copy() {
+    this.getLogger().warn("Source files: {}", this.getSource().getFiles());
     final File file = this.getSource().getSingleFile();
     final File destination = this.getArchiveFile().get().getAsFile();
     final Map<String, String> args = this.getExtraProperties().get();
@@ -159,8 +163,7 @@ public abstract class SignJarTask extends Jar {
     final JavaLauncher launcher = this.getJavaLauncher().getOrNull();
     final int javaVersion;
     if (launcher == null) {
-      final String versionStr = System.getProperty("java.version");
-      javaVersion = Integer.parseInt(versionStr.startsWith("1.") ? versionStr.substring(2) : versionStr);
+      javaVersion = runtimeVersion();
     } else {
       javaVersion = launcher.getMetadata().getLanguageVersion().asInt();
     }
@@ -191,6 +194,20 @@ public abstract class SignJarTask extends Jar {
     });
 
     queue.await();
+  }
+
+  private static int runtimeVersion() {
+    String version = System.getProperty("java.version");
+    if (version.startsWith("1.")) {
+      version = version.substring(2);
+    }
+
+    final int dotIdx = version.indexOf('.');
+    if (dotIdx != -1) {
+      version = version.substring(0, dotIdx);
+    }
+
+    return Integer.parseInt(version);
   }
 
   /**
@@ -230,7 +247,7 @@ public abstract class SignJarTask extends Jar {
       try (final InputStream is = new FileInputStream(params.getKeyStoreFile().get())) {
         keyStore.load(is, params.getKeyStorePassword().get().toCharArray());
       } catch (final CertificateException | IOException | NoSuchAlgorithmException ex) {
-        throw new InvalidUserDataException("Failed to load key store file from " + params.getKeyStoreFile().get());
+        throw new InvalidUserDataException("Failed to load key store file from " + params.getKeyStoreFile().get(), ex);
       }
 
       final KeyStore.Entry potentialEntry; // or a password?
@@ -244,7 +261,7 @@ public abstract class SignJarTask extends Jar {
 
         potentialEntry = keyStore.getEntry(params.getKeyStoreAlias().get(), param);
       } catch (final NoSuchAlgorithmException | UnrecoverableEntryException | KeyStoreException ex) {
-        throw new InvalidUserDataException("Unable to read entry '" + params.getKeyStoreAlias().get() + " from key store");
+        throw new InvalidUserDataException("Unable to read entry '" + params.getKeyStoreAlias().get() + "' from key store", ex);
       }
       if (!(potentialEntry instanceof KeyStore.PrivateKeyEntry)) {
         throw new InvalidUserDataException("Key store entry " + params.getKeyStoreAlias().get()
