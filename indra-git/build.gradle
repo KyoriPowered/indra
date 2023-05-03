@@ -5,6 +5,14 @@ dependencies {
   testImplementation project(":indra-testlib")
 }
 
+
+indra.configurePublications {
+  versionMapping {
+    usage(Usage.JAVA_API) { fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME) }
+    usage(Usage.JAVA_RUNTIME) { fromResolutionResult() }
+  }
+}
+
 indraPluginPublishing {
   plugin(
     "indra.git",

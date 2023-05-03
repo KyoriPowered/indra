@@ -1,8 +1,70 @@
+import org.gradle.api.attributes.java.TargetJvmVersion
+import org.gradle.api.plugins.internal.JavaConfigurationVariantMapping
+
+static def transferAttributes(HasAttributes src, HasAttributes dest) {
+  def destAttrs = dest.attributes
+  src.attributes.keySet().each {
+    destAttrs.attribute(it, src.attributes.getAttribute(it))
+  }
+}
+
+def duplicateConfiguration(Configuration src, String name, Configuration parent) {
+  configurations.create(name) {
+    canBeConsumed = true
+    canBeResolved = false
+    visible = true
+
+    transferAttributes(src, delegate)
+    attributes.attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 11)
+
+    outgoing.variants.addAll(src.outgoing.variants)
+    outgoing.variants.configureEach {
+      it.attributes.attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 11)
+    }
+    artifacts.addAll(src.artifacts)
+
+    src.incoming.dependencies.each {
+      if (it.group != "com.diffplug.spotless") { // yikes
+        project.dependencies.add(name, it)
+      }
+    }
+    extendsFrom parent
+  }
+}
+
+configurations {
+  java11Deps {
+    canBeConsumed = false
+    canBeResolved = true
+  }
+}
+
 dependencies {
   compileOnlyApi libs.jetbrainsAnnotations
   api libs.mammoth
-  api libs.spotless
+  api libs.spotlessLegacy
+  java11Deps libs.spotless
   testImplementation project(":indra-testlib")
+  testImplementation libs.spotless
+}
+
+configurations {
+  // must be after dep declaration because we eagerly read declared deps
+  duplicateConfiguration(apiElements, 'java11ApiElements', java11Deps)
+  duplicateConfiguration(runtimeElements, 'java11RuntimeElements', java11Deps)
+
+  [testCompileClasspath, testRuntimeClasspath].each {
+    it.attributes {
+      attribute(TargetJvmVersion.TARGET_JVM_VERSION_ATTRIBUTE, 11)
+    }
+  }
+}
+
+components.java {
+  // This is technically internal api but because it's our own buildscript we can just update as needed
+  // and it's easier than matching their logic
+  addVariantsFromConfiguration(configurations.java11ApiElements, new JavaConfigurationVariantMapping('compile', true))
+  addVariantsFromConfiguration(configurations.java11RuntimeElements, new JavaConfigurationVariantMapping('runtime', true))
 }
 
 indraPluginPublishing {
@@ -13,4 +75,8 @@ indraPluginPublishing {
     "Helper for configuring license header generation in Spotless with template parameters and differing formats",
     ["indra", "licenser", "license-header", "spotless"]
   )
+}
+
+tasks.named('pluginUnderTestMetadata', PluginUnderTestMetadata).configure {
+  pluginClasspath.setFrom(sourceSets.main.output, configurations.java11Deps, configurations.runtimeClasspath)
 }

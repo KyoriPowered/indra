@@ -11,7 +11,7 @@ jetbrainsAnnotations = "24.0.1"
 jgit = "5.13.0.+" # stay on 5.x series, 6+ requires Java 11
 junit = "5.9.3"
 kotlin = "1.8.21"
-mammoth = "1.3.0"
+mammoth = "1.3.1"
 spotless = "6.18.0"
 
 [libraries]
@@ -46,7 +46,8 @@ gradlePluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", ver
 nexusPublishPlugin = { module = "io.github.gradle-nexus:publish-plugin", version = "1.2.0" }
 
 # spotless-licenser
-spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version = "6.13.0" } # any newer version requires J11
+spotlessLegacy = { module = "com.diffplug.spotless:spotless-plugin-gradle", version = "6.13.0" } # build against this, for J8 support
+spotless = { module = "com.diffplug.spotless:spotless-plugin-gradle", version.ref = "spotless" } # published as a dep on a special J11+ variant
 
 # testlib
 mammoth-test = { module = "net.kyori:mammoth-test", version.ref = "mammoth" }

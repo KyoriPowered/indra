@@ -48,7 +48,7 @@ subprojects {
       ci true
     }
     mitLicense()
-    javaVersions().testWith(8, 11, 17)
+    javaVersions().testWith(11, 17, 20)
 
     configurePublications {
       pom {
@@ -68,11 +68,6 @@ subprojects {
             timezone = "America/Vancouver"
           }
         }
-      }
-
-      versionMapping {
-        usage(Usage.JAVA_API) { fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME) }
-        usage(Usage.JAVA_RUNTIME) { fromResolutionResult() }
       }
     }
 

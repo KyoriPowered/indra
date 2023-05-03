@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -32,6 +32,7 @@ import java.time.LocalDate;
 import java.util.stream.Collectors;
 import net.kyori.indra.test.FunctionalTestDisplayNameGenerator;
 import net.kyori.indra.test.IndraConfigCacheFunctionalTest;
+import net.kyori.indra.test.IndraFunctionalTest;
 import net.kyori.indra.test.IndraTesting;
 import net.kyori.mammoth.test.TestContext;
 import org.gradle.api.Project;
@@ -56,7 +57,7 @@ class IndraSpotlessLicenserPluginTest {
     assertDoesNotThrow(() -> project.getPlugins().apply(ID));
   }
 
-  @IndraConfigCacheFunctionalTest
+  @IndraFunctionalTest
   void testApplication(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");
@@ -64,7 +65,7 @@ class IndraSpotlessLicenserPluginTest {
     ctx.build("help");
   }
 
-  @IndraConfigCacheFunctionalTest
+  @IndraFunctionalTest
   void testJava(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");
@@ -79,6 +80,7 @@ class IndraSpotlessLicenserPluginTest {
     ctx.assertOutputEquals("TestFormatted.java", "src/main/java/test/Test.java");
   }
 
+  @Disabled // spotless doesn't fully support config cache yet
   @IndraConfigCacheFunctionalTest
   void testConfigCacheReused(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
@@ -95,7 +97,7 @@ class IndraSpotlessLicenserPluginTest {
 
   }
 
-  @IndraConfigCacheFunctionalTest
+  @IndraFunctionalTest
   void testKotlin(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle.kts");
     ctx.copyInput("settings.gradle.kts");
@@ -110,7 +112,7 @@ class IndraSpotlessLicenserPluginTest {
     ctx.assertOutputEquals("TestFormatted.kt", "src/main/kotlin/test/Test.kt");
   }
 
-  @IndraConfigCacheFunctionalTest
+  @IndraFunctionalTest
   void testGroovy(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");
@@ -125,7 +127,7 @@ class IndraSpotlessLicenserPluginTest {
     ctx.assertOutputEquals("TestFormatted.groovy", "src/main/groovy/test/Test.groovy");
   }
 
-  @IndraConfigCacheFunctionalTest
+  @IndraFunctionalTest
   void testCustomFormat(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");
@@ -142,7 +144,7 @@ class IndraSpotlessLicenserPluginTest {
     ctx.assertOutputEquals("TestChangedFormat.java", "src/main/java/test/TestChangeFormat.java");
   }
 
-  @IndraConfigCacheFunctionalTest
+  @IndraFunctionalTest
   void testPerLanguageFormat(final TestContext ctx) throws IOException {
     // kotlin has dobule-slash, Java has slash-star
     ctx.copyInput("build.gradle.kts");
@@ -160,7 +162,7 @@ class IndraSpotlessLicenserPluginTest {
     ctx.assertOutputEquals("TestKotlinFormatted.kt", "src/main/kotlin/test/TestKotlin.kt");
   }
 
-  @IndraConfigCacheFunctionalTest
+  @IndraFunctionalTest
   void testNewLine(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");
@@ -175,7 +177,7 @@ class IndraSpotlessLicenserPluginTest {
     ctx.assertOutputEquals("TestFormatted.groovy", "src/main/groovy/test/Test.groovy");
   }
 
-  @IndraConfigCacheFunctionalTest
+  @IndraFunctionalTest
   void testNonAsciiCharacters(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     ctx.copyInput("settings.gradle");

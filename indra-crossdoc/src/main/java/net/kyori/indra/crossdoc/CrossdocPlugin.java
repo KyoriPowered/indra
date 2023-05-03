@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -174,6 +174,7 @@ public class CrossdocPlugin implements ProjectPlugin {
 
   private void configureJavadocTask(final Project project, final CrossdocExtension extension, final NamedDomainObjectProvider<Configuration> offlineLinkedJavadoc) {
     // link to modules in project
+    // TODO: figure out a way to get the build identifier
     final Provider<ArtifactCollection> jdLinks = offlineLinkedJavadoc.map(oLJ -> oLJ.getIncoming()
       .artifactView(view -> {
         view.componentFilter(c -> c instanceof ProjectComponentIdentifier && ((ProjectComponentIdentifier) c).getBuild().isCurrentBuild()); // only in-project, and not included builds

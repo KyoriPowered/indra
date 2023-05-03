@@ -1,6 +1,6 @@
 plugins {
   id("net.kyori.indra.licenser.spotless")
-  kotlin("jvm") version "1.7.10"
+  kotlin("jvm") version "1.8.21"
 }
 
 kotlin {
