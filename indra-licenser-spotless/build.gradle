@@ -80,3 +80,15 @@ indraPluginPublishing {
 tasks.named('pluginUnderTestMetadata', PluginUnderTestMetadata).configure {
   pluginClasspath.setFrom(sourceSets.main.output, configurations.java11Deps, configurations.runtimeClasspath)
 }
+
+indra {
+  javaVersions {
+    // TODO(4): remove this since we'll target 11
+    def oldTestWith = testWith().get()
+    testWith().empty()
+    testWith().addAll(oldTestWith.findAll { it != 8})
+
+  }
+}
+
+
