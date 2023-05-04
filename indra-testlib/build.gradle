@@ -2,6 +2,14 @@ dependencies {
     api libs.mammoth.test
 }
 
+sourceSets {
+  main {
+    multirelease {
+      alternateVersions 20
+    }
+  }
+}
+
 javadoc {
     enabled = false
 }

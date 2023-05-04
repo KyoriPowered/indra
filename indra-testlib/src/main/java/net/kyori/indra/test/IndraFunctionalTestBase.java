@@ -37,7 +37,7 @@ import org.junit.jupiter.api.Tag;
  * A base annotation for both operations that use the configuration cache and those that don't.
  */
 @GradleFunctionalTest
-@TestVariant(gradleVersion = "7.6.1")
+@LegacyGradleVersion
 @TestVariant(gradleVersion = "8.1.1")
 @TestVariantResource(value = "/injected-gradle-versions", optional = true)
 @Tag("functional")
