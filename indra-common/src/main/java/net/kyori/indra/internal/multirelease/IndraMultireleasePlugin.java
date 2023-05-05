@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -551,6 +551,10 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
     declaresModule.finalizeValueOnRead();
     eclipse.getClasspath().getFile().whenMerged(model -> {
       final Classpath cp = (Classpath) model;
+
+      // If we don't define our own module name, don't apply indra-specific behavior
+      if (!declaresModule.get()) return;
+
       for (final ClasspathEntry entry : cp.getEntries()) {
         if (entry instanceof Library) {
           final Library library = (Library) entry;
@@ -560,9 +564,7 @@ public class IndraMultireleasePlugin implements ProjectPlugin {
           }
         } else if (entry instanceof ProjectDependency) {
           // Assume all project dependencies should be on the module path if the source set has a declared module name
-          if (declaresModule.get()) {
-            ((ProjectDependency) entry).getEntryAttributes().put(ECLIPSE_MODULE_ATTRIBUTE, "true");
-          }
+          ((ProjectDependency) entry).getEntryAttributes().put(ECLIPSE_MODULE_ATTRIBUTE, "true");
         }
       }
     });

@@ -87,8 +87,5 @@ indra {
     def oldTestWith = testWith().get()
     testWith().empty()
     testWith().addAll(oldTestWith.findAll { it != 8})
-
   }
 }
-
-
