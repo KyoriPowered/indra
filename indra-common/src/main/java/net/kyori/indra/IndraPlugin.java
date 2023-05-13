@@ -105,6 +105,14 @@ public class IndraPlugin implements ProjectPlugin {
     });
     this.applyIdeConfigurationOptions(project.getPluginManager(), extensions, tasks);
 
+    final Provider<String> projectVersion = project.provider(() -> {
+      final String raw = String.valueOf(project.getVersion());
+      if (raw.equals("unspecified")) {
+        return null;
+      } else {
+        return raw;
+      }
+    });
     tasks.withType(JavaCompile.class).configureEach(task -> {
       final CompileOptions options = task.getOptions();
       options.getCompilerArgs().addAll(Arrays.asList(
@@ -116,6 +124,9 @@ public class IndraPlugin implements ProjectPlugin {
 
       // Enable preview features if option is set in extension
       options.getCompilerArgumentProviders().add(indra.previewFeatureArgumentProvider());
+
+      // Provide a module version when compiling module infos
+      options.getJavaModuleVersion().set(projectVersion);
     });
 
     tasks.withType(JavaExec.class).configureEach(task -> {
