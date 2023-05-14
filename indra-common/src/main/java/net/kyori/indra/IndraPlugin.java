@@ -214,7 +214,7 @@ public class IndraPlugin implements ProjectPlugin {
         final TaskProvider<Test> versionedTest = tasks.register(Indra.testJava(targetRuntime), Test.class, test -> {
           test.setDescription("Runs tests on Java " + targetRuntime + " if necessary based on build settings");
           test.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
-          test.setClasspath(testSet.get().getOutput().plus(testRuntimeClasspathConfig.get().getIncoming().getFiles()));
+          test.setClasspath(testSet.get().getOutput().plus(testSet.get().getRuntimeClasspath()));
           test.setTestClassesDirs(testSet.get().getOutput().getClassesDirs());
 
           test.onlyIf($ -> {
