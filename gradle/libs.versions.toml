@@ -6,13 +6,13 @@ asm = "9.5"
 goomph = "3.41.1"
 gradlePluginPublish = "1.2.0"
 immutables = "2.9.3"
-indra = "3.0.1"
+indra = "3.1.1"
 jetbrainsAnnotations = "24.0.1"
 jgit = "5.13.0.+" # stay on 5.x series, 6+ requires Java 11
 junit = "5.9.3"
 kotlin = "1.8.21"
 mammoth = "1.3.1"
-spotless = "6.18.0"
+spotless = "6.19.0"
 
 [libraries]
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
