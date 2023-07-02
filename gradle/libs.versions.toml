@@ -10,7 +10,7 @@ indra = "3.1.1"
 jetbrainsAnnotations = "24.0.1"
 jgit = "5.13.0.+" # stay on 5.x series, 6+ requires Java 11
 junit = "5.9.3"
-kotlin = "1.8.21"
+kotlin = "1.8.22"
 mammoth = "1.3.1"
 spotless = "6.19.0"
 
