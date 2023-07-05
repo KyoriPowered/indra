@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -60,9 +60,9 @@ public class JavaToolchainVersionsImpl implements JavaToolchainVersions {
     this.testWith = objects.setProperty(Integer.class);
     this.testWith.add(this.target);
     this.enablePreviewFeatures = objects.property(Boolean.class).convention(false);
-    this.actualVersion = this.strictVersions.map(strict -> {
+    final Provider<Integer> minimumVersion = this.minimumToolchain.zip(this.target, Math::max);
+    this.actualVersion = this.strictVersions.zip(minimumVersion, (strict, minimum) -> {
       final int running = Versioning.versionNumber(JavaVersion.current());
-      final int minimum = Math.max(Properties.finalized(this.minimumToolchain).get(), Properties.finalized(this.target).get()); // If target > minimum toolchain, the target is our new minimum
       if (strict || running < minimum) {
         return minimum;
       } else {
