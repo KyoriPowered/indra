@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,7 @@ import java.io.IOException;
 import net.kyori.mammoth.test.TestContext;
 
 public final class SettingsFactory {
-  private static final String RESOLVER_VERSION = "0.2";
+  private static final String RESOLVER_VERSION = "0.5.0";
 
   public enum DSLLanguage {
     GROOVY("settings.gradle") {
