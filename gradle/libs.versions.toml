@@ -3,7 +3,7 @@ version = "1.0"
 
 [versions]
 asm = "9.5"
-goomph = "3.41.1"
+goomph = "3.42.1"
 gradlePluginPublish = "1.2.0"
 immutables = "2.9.3"
 indra = "3.1.1"
