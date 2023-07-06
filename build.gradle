@@ -50,6 +50,7 @@ subprojects {
     mitLicense()
     javaVersions().testWith(11, 17, 20)
 
+    signWithKeyFromPrefixedProperties("kyori")
     configurePublications {
       pom {
         organization {
