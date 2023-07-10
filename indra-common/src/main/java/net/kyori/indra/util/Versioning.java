@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,12 +23,9 @@
  */
 package net.kyori.indra.util;
 
-import net.kyori.indra.git.IndraGitExtension;
-import org.eclipse.jgit.lib.Ref;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 public final class Versioning {
   public static int versionNumber(final @NotNull JavaVersion version) {
@@ -60,20 +57,13 @@ public final class Versioning {
   /**
    * Verify that this project is checked out to a release version.
    *
-   * <p>This means that:</p>
-   * <ul>
-   * <li>The version does not contain SNAPSHOT</li>
-   * <li>The project is managed within a Git repository</li>
-   * <li>the current head commit is tagged</li>
-   * </ul>
+   * <p>This means that the version does not contain SNAPSHOT</p>
    *
    * @param project the project to check
    * @return if the project is recognized as a release
    */
   public static boolean isRelease(final @NotNull Project project) {
-    final @Nullable IndraGitExtension git = project.getExtensions().findByType(IndraGitExtension.class);
-    final @Nullable Ref tag = git == null ? null : git.headTag();
-    return (tag != null || git == null || !git.isPresent()) && !isSnapshot(project);
+    return !isSnapshot(project);
   }
 
   private Versioning() {
