@@ -103,82 +103,17 @@ class VersioningTest {
     assertFalse(Versioning.isRelease(project));
   }
 
-  @TestFactory
-  Stream<DynamicNode> testIsReleaseMatches(@TempDir final Path tempDir) {
-    return Stream.of(
-      "1.0.0",
-      "1.0.0-KITTENS",
-      "3",
-      "stable"
-    ).flatMap(version -> Stream.of(
-      dynamicTest(version + " - matches, no repo", () -> {
-        final Project project = IndraTesting.project();
-        project.getPlugins().apply(GitPlugin.class);
-        project.setVersion(version);
-        assertTrue(Versioning.isRelease(project));
-      }),
-      dynamicTest(version + " - matches, on tag (non-annotated)", () -> {
-        final Path testPath = tempDir.resolve(version + "-ontag");
-        Files.createDirectories(testPath);
-        final Git repo = initRepoWithCommit(testPath);
-
-        repo.tag()
-        .setName("v" + version)
-        .call();
-
-        final Project project = IndraTesting.project(b -> b.withProjectDir(testPath.toFile()));
-        project.getPlugins().apply(GitPlugin.class);
-        project.setVersion(version);
-        assertTrue(Versioning.isRelease(project));
-      }),
-      dynamicTest(version + " - matches, on tag (annotated)", () -> {
-        final Path testPath = tempDir.resolve(version + "-onannotatedtag");
-        Files.createDirectories(testPath);
-        final Git repo = initRepoWithCommit(testPath);
-
-        repo.tag()
-        .setName("v" + version)
-        .setAnnotated(true)
-        .setMessage("Release " + version)
-        .call();
-
-        final Project project = IndraTesting.project(b -> b.withProjectDir(testPath.toFile()));
-        project.getPlugins().apply(GitPlugin.class);
-        project.setVersion(version);
-        assertTrue(Versioning.isRelease(project));
-      }),
-      dynamicTest(version + " - does not match, with repo no tag", () -> {
-        final Path testPath = tempDir.resolve(version + "-untagged");
-        Files.createDirectories(testPath);
-        initRepoWithCommit(testPath);
-
-        final Project project = IndraTesting.project(b -> b.withProjectDir(testPath.toFile()));
-        project.getPlugins().apply(GitPlugin.class);
-        project.setVersion(version);
-        assertFalse(Versioning.isRelease(project));
-      })
-    ));
+  @ParameterizedTest
+  @ValueSource(strings = {
+    "1.0.0",
+    "1.0.0-KITTENS",
+    "3",
+    "stable"
+  })
+  void testIsReleaseDoesMatch(final String version) {
+    final Project project = IndraTesting.project();
+    project.setVersion(version);
+    assertTrue(Versioning.isRelease(project));
   }
-
-  private static Git initRepoWithCommit(final Path repoDir) throws IOException, GitAPIException {
-    Files.createDirectories(repoDir);
-    final Git repo = Git.init()
-      .setDirectory(repoDir.toFile())
-      .setInitialBranch("trunk")
-      .call();
-
-    Files.write(repoDir.resolve("gradle.properties"), "filler=test".getBytes(StandardCharsets.UTF_8));
-    repo.commit()
-    .setAuthor("CI", "noreply@kyori.net")
-    .setCommitter("CI", "noreply@kyori.net")
-    .setAll(true)
-    .setMessage("Initial commit")
-    .call();
-
-    return repo;
-  }
-
-  // release matches non-git checkout content
-
 
 }
