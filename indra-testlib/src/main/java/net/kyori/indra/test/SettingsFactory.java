@@ -27,7 +27,7 @@ import java.io.IOException;
 import net.kyori.mammoth.test.TestContext;
 
 public final class SettingsFactory {
-  private static final String RESOLVER_VERSION = "0.5.0";
+  private static final String RESOLVER_VERSION = "0.7.0";
 
   public enum DSLLanguage {
     GROOVY("settings.gradle") {
