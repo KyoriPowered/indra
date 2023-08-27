@@ -20,9 +20,11 @@ subprojects {
   apply plugin: "com.diffplug.spotless"
   
   dependencies {
+    testImplementation platform(libs.junit.bom)
     testImplementation libs.junit.api
     testImplementation libs.junit.params
     testRuntimeOnly libs.junit.engine
+    testRuntimeOnly libs.junit.launcher
   }
 
   if (!project.findProperty('indra.skipPublishing')) {
