@@ -38,7 +38,6 @@ import org.junit.jupiter.api.Tag;
  */
 @GradleFunctionalTest
 @LegacyGradleVersion
-@TestVariant(gradleVersion = "8.2.1")
 @TestVariant(gradleVersion = "8.3")
 @TestVariantResource(value = "/injected-gradle-versions", optional = true)
 @Tag("functional")
