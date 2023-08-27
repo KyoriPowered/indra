@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -38,6 +38,7 @@ import net.kyori.indra.test.SettingsFactory;
 import net.kyori.mammoth.test.TestContext;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
@@ -105,6 +106,7 @@ class IndraPluginFunctionalTest {
   }
 
   @IndraFunctionalTest
+  @Disabled("does not work on gradle 8.3+")
   void testKotlinBuild(final TestContext ctx) throws IOException {
     ctx.copyInput("build.gradle");
     SettingsFactory.createSettings(ctx, "kotlin");

@@ -175,9 +175,10 @@ public class CrossdocPlugin implements ProjectPlugin {
   private void configureJavadocTask(final Project project, final CrossdocExtension extension, final NamedDomainObjectProvider<Configuration> offlineLinkedJavadoc) {
     // link to modules in project
     // TODO: figure out a way to get the build identifier
+    final BuildTreeComparer comparer = BuildTreeComparer.comparer(project);
     final Provider<ArtifactCollection> jdLinks = offlineLinkedJavadoc.map(oLJ -> oLJ.getIncoming()
       .artifactView(view -> {
-        view.componentFilter(c -> c instanceof ProjectComponentIdentifier && ((ProjectComponentIdentifier) c).getBuild().isCurrentBuild()); // only in-project, and not included builds
+        view.componentFilter(c -> c instanceof ProjectComponentIdentifier && comparer.isCurrentBuild((ProjectComponentIdentifier) c)); // only in-project, and not included builds
         view.setLenient(true); // ignore artifacts with no javadoc elements variant
       }).getArtifacts());
 
