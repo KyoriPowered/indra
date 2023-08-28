@@ -4,13 +4,13 @@ changelog:
       - "type: dependencies"
       - "dependencies"
   categories:
+    - title: "🔧 Changes"
+      labels:
+        - "breaking"
     - title: "✨ Features"
       labels:
         - "type: enhancement"
         - "enhancement"
-    - title: "🔧 Changes"
-      labels:
-        - "breaking"
     - title: "🐛 Fixes"
       labels:
         - "type: bug"
