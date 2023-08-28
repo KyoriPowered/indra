@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -62,7 +62,7 @@ import static java.util.Objects.requireNonNull;
 public class IndraExtensionImpl implements IndraExtension {
 
   private static final Logger LOGGER = Logging.getLogger(IndraExtensionImpl.class);
-  private static final String DEFAULT_CHECKSTYLE_VERSION = "9.3";
+  private static final String DEFAULT_CHECKSTYLE_VERSION = "10.12.3";
 
   private final Property<ContinuousIntegration> ci;
   private final Property<Issues> issues;
