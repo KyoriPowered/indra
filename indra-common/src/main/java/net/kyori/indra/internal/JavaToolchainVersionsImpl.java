@@ -49,7 +49,7 @@ public class JavaToolchainVersionsImpl implements JavaToolchainVersions {
   @Inject
   public JavaToolchainVersionsImpl(final ObjectFactory objects, final ProviderFactory providers) {
     this.target = objects.property(Integer.class).convention(8);
-    this.minimumToolchain = objects.property(Integer.class).convention(11);
+    this.minimumToolchain = objects.property(Integer.class).convention(17);
     this.strictVersions = objects.property(Boolean.class)
       .convention(
         Properties.forUseAtConfigurationTime(providers.gradleProperty(STRICT_MULTIRELEASE_VERSIONS))
