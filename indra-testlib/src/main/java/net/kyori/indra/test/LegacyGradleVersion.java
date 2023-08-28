@@ -30,7 +30,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import net.kyori.mammoth.test.TestVariant;
 
-
 /**
  * An annotation providing Gradle 7.x test variants, so this version can be overridden when running on Java versions
  * that older Gradle versions do not support.
