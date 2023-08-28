@@ -131,6 +131,7 @@ public class CrossdocPlugin implements ProjectPlugin {
   private void addUnpackedResultToJavadocConfiguration(final Project project) {
     // Register unpacked Javadoc as an artifact for cross-linking
     project.getConfigurations().matching(c -> c.getName().equals(JavaPlugin.JAVADOC_ELEMENTS_CONFIGURATION_NAME)).configureEach(c -> {
+      c.extendsFrom(project.getConfigurations().getByName(JavaPlugin.API_ELEMENTS_CONFIGURATION_NAME)); // include transitive dependencies
       c.getOutgoing().getVariants().create("files", v -> {
         final TaskProvider<Javadoc> javadocTask = project.getTasks().named(JavaPlugin.JAVADOC_TASK_NAME, Javadoc.class);
         v.artifact(javadocTask.map(it -> it.getDestinationDir()), a -> {
