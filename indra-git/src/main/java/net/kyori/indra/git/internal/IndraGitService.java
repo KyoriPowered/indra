@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -51,6 +51,7 @@ import org.jetbrains.annotations.Nullable;
  * @since 2.0.0
  */
 public abstract class IndraGitService implements BuildService<IndraGitService.Parameters>, AutoCloseable {
+  public static final String SERVICE_NAME = "indraGitService";
   private static final Logger LOGGER = Logging.getLogger(IndraGitService.class);
 
   private volatile boolean open = true;
