@@ -50,7 +50,11 @@ subprojects {
       ci true
     }
     mitLicense()
-    javaVersions().testWith(11, 17, 20)
+    javaVersions {
+      target 11
+      minimumToolchain 17
+      testWith(11, 17, 20)
+    }
 
     signWithKeyFromPrefixedProperties("kyori")
     configurePublications {
