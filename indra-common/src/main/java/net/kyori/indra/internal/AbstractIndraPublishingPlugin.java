@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -31,7 +31,6 @@ import net.kyori.indra.api.model.Issues;
 import net.kyori.indra.api.model.License;
 import net.kyori.indra.api.model.SourceCodeManagement;
 import net.kyori.indra.git.GitPlugin;
-import net.kyori.indra.git.task.RequireClean;
 import net.kyori.indra.util.Versioning;
 import net.kyori.mammoth.ProjectPlugin;
 import org.gradle.api.Action;
@@ -117,16 +116,22 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
       }
     });
 
+    final Provider<Boolean> forceSign = project.getProviders().gradleProperty(FORCE_SIGN_PROPERTY).map(x -> true).orElse(false);
+    final Provider<Boolean> isRelease = project.getProviders().provider(() -> Versioning.isRelease(project));
     tasks.withType(Sign.class).configureEach(task -> {
-      final Provider<Boolean> forceSign = project.getProviders().gradleProperty(FORCE_SIGN_PROPERTY).map(x -> true).orElse(false);
-      final Provider<Boolean> isRelease = project.getProviders().provider(() -> Versioning.isRelease(project));
       task.onlyIf(spec -> forceSign.zip(isRelease, (a, b) -> a || b).get());
     });
 
-    final TaskProvider<RequireClean> requireClean = tasks.named(GitPlugin.REQUIRE_CLEAN_TASK, RequireClean.class);
+    final TaskProvider<?> requireClean = tasks.named(GitPlugin.REQUIRE_CLEAN_TASK);
+    final TaskProvider<?> requireTagged = tasks.named(GitPlugin.REQUIRE_TAGGED_TASK);
+    requireTagged.configure(task -> {
+      task.getInputs().property("isRelease", isRelease);
+      task.onlyIf(t -> isRelease.get());
+    });
+
     tasks.withType(AbstractPublishToMaven.class).configureEach(task -> {
       if (!(task instanceof PublishToMavenLocal)) {
-        task.dependsOn(requireClean);
+        task.dependsOn(requireClean, requireTagged);
       }
     });
 

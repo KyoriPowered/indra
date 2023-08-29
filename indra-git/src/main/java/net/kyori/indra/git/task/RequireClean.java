@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,15 +23,10 @@
  */
 package net.kyori.indra.git.task;
 
-import net.kyori.indra.git.internal.IndraGitService;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.Status;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.gradle.api.DefaultTask;
 import org.gradle.api.GradleException;
-import org.gradle.api.file.DirectoryProperty;
-import org.gradle.api.provider.Property;
-import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.language.base.plugins.LifecycleBasePlugin;
 import org.jetbrains.annotations.Nullable;
@@ -44,25 +39,15 @@ import org.jetbrains.annotations.Nullable;
  *
  * @since 2.0.0
  */
-public abstract class RequireClean extends DefaultTask {
-  @Internal
-  public abstract Property<IndraGitService> getGit();
-
-  @Internal
-  protected abstract DirectoryProperty getProjectDirectory();
-
-  @Internal
-  protected abstract Property<String> getProjectDisplayName();
+public abstract class RequireClean extends RepositoryTask {
 
   public RequireClean() {
     this.setGroup(LifecycleBasePlugin.VERIFICATION_GROUP);
-    this.getProjectDirectory().fileValue(this.getProject().getProjectDir());
-    this.getProjectDisplayName().convention(this.getProject().getDisplayName());
   }
 
   @TaskAction
   public void check() {
-    final @Nullable Git git = this.getGit().get().git(this.getProjectDirectory().get().getAsFile(), this.getProjectDisplayName().get());
+    final @Nullable Git git = this.repo();
     if(git == null) return;
 
     try {

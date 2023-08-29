@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -71,11 +71,7 @@ public class IndraGitExtensionImpl implements IndraGitExtension {
     }
   }
 
-  @Override
-  public @Nullable Ref headTag() {
-    final @Nullable Git git = this.git();
-    if(git == null) return null;
-
+  public static @Nullable Ref headTag(final Git git) {
     try {
       final @Nullable Ref head = git.getRepository().findRef(Constants.HEAD);
       if(head == null) return null;
@@ -96,6 +92,13 @@ public class IndraGitExtensionImpl implements IndraGitExtension {
       LOGGER.error("Failed to resolve current HEAD tag:", ex);
     }
     return null;
+  }
+
+  @Override
+  public @Nullable Ref headTag() {
+    final @Nullable Git git = this.git();
+    if (git == null) return null;
+    return headTag(git);
   }
 
   @Override
