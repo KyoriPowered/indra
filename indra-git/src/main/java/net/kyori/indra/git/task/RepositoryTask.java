@@ -38,7 +38,6 @@ import org.jetbrains.annotations.Nullable;
  * @since 4.0.0
  */
 public abstract class RepositoryTask extends DefaultTask {
-  @Internal
   @ServiceReference(IndraGitService.SERVICE_NAME)
   public abstract Property<IndraGitService> getGit();
 
