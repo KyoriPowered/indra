@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2023 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 package net.kyori.indra.git;
 
 import java.io.File;
+import javax.inject.Inject;
 import net.kyori.indra.git.internal.IndraGitExtensionImpl;
 import net.kyori.indra.git.internal.IndraGitService;
 import net.kyori.indra.git.task.RepositoryTask;
@@ -37,17 +38,25 @@ import org.gradle.api.plugins.ExtensionContainer;
 import org.gradle.api.plugins.PluginContainer;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.TaskContainer;
+import org.gradle.build.event.BuildEventsListenerRegistry;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * A plugin that exposes any git repository that might be in a project.
  *
+ * <p>This plugin requires at least Gradle 8.0.</p>
+ *
  * @since 2.0.0
  */
-public class GitPlugin implements ProjectOrSettingsPlugin {
+@ApiStatus.NonExtendable
+public abstract class GitPlugin implements ProjectOrSettingsPlugin {
   private static final String EXTENSION_NAME = "indraGit";
   public static final String REQUIRE_CLEAN_TASK = "requireClean";
   public static final String REQUIRE_TAGGED_TASK = "requireTagged";
+
+  @Inject
+  protected abstract BuildEventsListenerRegistry getListenerRegistry();
 
   @Override
   public void applyToProject(
@@ -69,6 +78,7 @@ public class GitPlugin implements ProjectOrSettingsPlugin {
     tasks.register(REQUIRE_TAGGED_TASK, RequireTagged.class);
     tasks.withType(RepositoryTask.class).configureEach(task -> {
       task.getGit().set(service);
+      task.usesService(service);
     });
   }
 
@@ -92,7 +102,8 @@ public class GitPlugin implements ProjectOrSettingsPlugin {
     final Provider<IndraGitService> service = gradle.getSharedServices().registerIfAbsent(IndraGitService.SERVICE_NAME, IndraGitService.class, params -> {
       params.getParameters().getBaseDirectory().set(rootDir);
     });
-    extensions.create(IndraGitExtension.class, EXTENSION_NAME, IndraGitExtensionImpl.class, projectDir, displayName, service);
+    this.getListenerRegistry().onTaskCompletion(service);
+    extensions.create(IndraGitExtension.class, EXTENSION_NAME, IndraGitExtensionImpl.class, rootDir, projectDir, displayName);
     return service;
   }
 }

@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2023 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,25 +23,13 @@
  */
 package net.kyori.indra.git.internal;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.errors.RepositoryNotFoundException;
-import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.lib.RepositoryBuilder;
 import org.gradle.api.file.DirectoryProperty;
-import org.gradle.api.logging.Logger;
-import org.gradle.api.logging.Logging;
 import org.gradle.api.services.BuildService;
 import org.gradle.api.services.BuildServiceParameters;
+import org.gradle.tooling.events.FinishEvent;
+import org.gradle.tooling.events.OperationCompletionListener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -50,22 +38,25 @@ import org.jetbrains.annotations.Nullable;
  *
  * @since 2.0.0
  */
-public abstract class IndraGitService implements BuildService<IndraGitService.Parameters>, AutoCloseable {
+public abstract class IndraGitService implements BuildService<IndraGitService.Parameters>, AutoCloseable, OperationCompletionListener {
   public static final String SERVICE_NAME = "indraGitService";
-  private static final Logger LOGGER = Logging.getLogger(IndraGitService.class);
 
-  private volatile boolean open = true;
-  private final Map<File, GitWrapper> projectRepos = new ConcurrentHashMap<>();
+  private GitCache.GitProvider inner;
+
 
   public interface Parameters extends BuildServiceParameters {
     /**
-     * The base directory of the project.
+     * The base directory of the build.
      *
      * <p>All git repositories must be contained within this directory.</p>
      *
      * @return the base directory
      */
     DirectoryProperty getBaseDirectory();
+  }
+
+  public IndraGitService() {
+    this.inner = GitCache.getOrCreate(this.getParameters().getBaseDirectory().get().getAsFile());
   }
 
   /**
@@ -79,122 +70,17 @@ public abstract class IndraGitService implements BuildService<IndraGitService.Pa
    * @since 2.0.0
    */
   public @Nullable Git git(final File projectDir, final @NotNull String displayName) {
-    if(!this.open) {
-      throw new IllegalStateException("Tried to access git repository after close");
-    }
-    final @Nullable GitWrapper wrapper = this.projectRepos.get(projectDir);
-    if(wrapper != null) return wrapper.git; // found
-
-    // Attempt to compute a repository based on the project info
-    // Travel up the directory tree to try and locate projects
-    final File rawProjectDir = projectDir;
-    final File rootProjectDir;
-    final File realProjectDir;
-    try {
-      rootProjectDir = this.getParameters().getBaseDirectory().get().getAsFile().getCanonicalFile();
-      realProjectDir = rawProjectDir.getCanonicalFile();
-      if(!realProjectDir.getPath().startsWith(rootProjectDir.getPath())) {
-        throw new IllegalArgumentException("Project directory " + rawProjectDir + " was not within the root project!");
-      }
-
-      File targetDir = realProjectDir;
-      do {
-        if(isGitDir(targetDir)) {
-          LOGGER.debug("indra-git: Examining directory {} for {}", targetDir, displayName);
-          final GitWrapper potentialExisting = this.projectRepos.get(targetDir);
-          if(potentialExisting != null) {
-            LOGGER.info("indra-git: Found existing git repository for {} starting in directory {} via {}", displayName, rawProjectDir, targetDir);
-            // Once values make it into the map, they are the only possibility
-            this.projectRepos.put(rawProjectDir, potentialExisting);
-            return potentialExisting.git;
-          }
-
-          try {
-            final @Nullable File realGit = resolveGit(targetDir);
-            if (realGit == null) continue;
-            final Repository repo = new RepositoryBuilder().setWorkTree(targetDir).setGitDir(realGit).setMustExist(true).build();
-
-            GitWrapper repoWrapper = new GitWrapper(repo);
-            final GitWrapper existing = this.projectRepos.putIfAbsent(targetDir, repoWrapper);
-            if(existing != null) { // only maintain one instance
-              repo.close();
-              repoWrapper = existing;
-            } else {
-              LOGGER.info("indra-git: Located and initialized repository for project {} in {}, with git directory at {}", displayName, targetDir, repo.getDirectory());
-            }
-
-            this.projectRepos.put(rawProjectDir, repoWrapper);
-            return repoWrapper.git;
-          } catch(final RepositoryNotFoundException ex) {
-            LOGGER.debug("indra-git: Unable to open repository found in {} for {}", targetDir, displayName, ex);
-            // continue up the directory tree
-          }
-        } else {
-          LOGGER.debug("indra-git: Skipping directory {} while locating repository for {}", targetDir, displayName);
-        }
-      } while((!rootProjectDir.equals(targetDir)) && (targetDir = targetDir.getParentFile()) != null);
-      // At this point we're not found
-      this.projectRepos.put(rawProjectDir, GitWrapper.NOT_FOUND);
-    } catch(final IOException ex) {
-      LOGGER.warn("indra-git: Failed to open git repository for {}:", displayName, ex);
-    }
-    LOGGER.info("indra-git: No git repository found for {}", displayName);
-    return null;
+    return this.inner.git(projectDir, displayName);
   }
 
-  private static final String GIT_DIR = ".git";
-  private static final String GITDIR_PREFIX = "gitdir:";
-
-  private static boolean isGitDir(final File file) {
-    return new File(file, GIT_DIR).exists(); // can be either directory, or file with gitdir: content
-  }
-
-  private static File resolveGit(File projectDir) throws IOException {
-    // The `.git` folder is not always a folder, sometimes it's also a file
-    // We only support checked-out working trees, so we don't have to consider the bare repository case here
-    // https://git-scm.com/docs/gitrepository-layout
-    if (!projectDir.getName().equals(GIT_DIR)) {
-      return resolveGit(new File(projectDir, ".git"));
-    } else {
-      projectDir = projectDir.getCanonicalFile();
-      if (projectDir.isDirectory()) {
-        return projectDir;
-      } else if (projectDir.isFile()) {
-        try (final BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(projectDir), StandardCharsets.UTF_8))) {
-          String line;
-          while ((line = reader.readLine()) != null) {
-            if (line.startsWith(GITDIR_PREFIX)) {
-              return new File(projectDir.getParentFile(), line.substring(GITDIR_PREFIX.length()).trim());
-            }
-          }
-        }
-      }
-      LOGGER.warn("indra-git: Unable to determine actual git directory from {}", projectDir);
-      return null;
-    }
-  }
 
   @Override
   public void close() {
-    this.open = false;
-    final Set<GitWrapper> repos = new HashSet<>(this.projectRepos.values());
-    this.projectRepos.clear();
-    for(final GitWrapper wrapper : repos) {
-      if(wrapper.repository != null) {
-        wrapper.repository.close();
-      }
-    }
+    GitCache.close(this.inner);
   }
 
-  private static class GitWrapper {
-    static final GitWrapper NOT_FOUND = new GitWrapper(null);
-
-    final @Nullable Git git;
-    final @Nullable Repository repository;
-
-    GitWrapper(final @Nullable Repository repo) {
-      this.repository = repo;
-      this.git = repo == null ? null : Git.wrap(repo);
-    }
+  @Override
+  public void onFinish(final FinishEvent finishEvent) {
+    // no-op
   }
 }

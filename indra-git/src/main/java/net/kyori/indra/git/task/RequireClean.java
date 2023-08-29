@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2023 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -48,11 +48,11 @@ public abstract class RequireClean extends RepositoryTask {
   @TaskAction
   public void check() {
     final @Nullable Git git = this.repo();
-    if(git == null) return;
+    if (git == null) return;
 
     try {
       final Status status = git.status().call();
-      if(!status.isClean()) {
+      if (!status.isClean()) {
         final StringBuilder message = new StringBuilder("Source root must be clean! Make sure your changes are committed. Changed files:");
         for(final String changed : status.getUncommittedChanges()) {
           message.append(System.lineSeparator())
@@ -67,7 +67,7 @@ public abstract class RequireClean extends RepositoryTask {
 
         throw new GradleException(message.toString());
       }
-    } catch(final GitAPIException ex) {
+    } catch (final GitAPIException ex) {
       this.getLogger().error("Failed to query clean status of current project repository", ex);
     }
   }
