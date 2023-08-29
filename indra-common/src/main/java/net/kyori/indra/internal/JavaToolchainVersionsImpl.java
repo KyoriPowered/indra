@@ -39,6 +39,9 @@ public class JavaToolchainVersionsImpl implements JavaToolchainVersions {
   private static final String STRICT_MULTIRELEASE_VERSIONS = "strictMultireleaseVersions";
   private static final String CI = "CI";
 
+  private static final int DEFAULT_TARGET = 8;
+  private static final int DEFAULT_MINIMUM_TOOLCHAIN = 17;
+
   private final Property<Integer> target;
   private final Property<Integer> minimumToolchain;
   private final Property<Boolean> strictVersions;
@@ -48,8 +51,8 @@ public class JavaToolchainVersionsImpl implements JavaToolchainVersions {
 
   @Inject
   public JavaToolchainVersionsImpl(final ObjectFactory objects, final ProviderFactory providers) {
-    this.target = objects.property(Integer.class).convention(8);
-    this.minimumToolchain = objects.property(Integer.class).convention(11);
+    this.target = objects.property(Integer.class).convention(DEFAULT_TARGET);
+    this.minimumToolchain = objects.property(Integer.class).convention(DEFAULT_MINIMUM_TOOLCHAIN);
     this.strictVersions = objects.property(Boolean.class)
       .convention(
         Properties.forUseAtConfigurationTime(providers.gradleProperty(STRICT_MULTIRELEASE_VERSIONS))
