@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ package net.kyori.indra.git;
 import java.io.IOException;
 import net.kyori.indra.test.FunctionalTestDisplayNameGenerator;
 import net.kyori.indra.test.IndraConfigCacheFunctionalTest;
+import net.kyori.indra.test.IndraFunctionalTest;
 import net.kyori.mammoth.test.TestContext;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.gradle.testkit.runner.BuildResult;
@@ -37,7 +38,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class IndraGitPluginFunctionalTest {
 
   // Just test the interactions with Gradle API here, really
-  @IndraConfigCacheFunctionalTest
+  @IndraFunctionalTest // todo: config cache
   void testGitApplication(final TestContext ctx) throws IOException, GitAPIException {
     IndraGitPluginTest.initRepo(ctx.outputDirectory());
     ctx.copyInput("build.gradle");
