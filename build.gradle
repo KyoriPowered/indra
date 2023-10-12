@@ -79,7 +79,7 @@ subprojects {
     }
 
     spotless { spot ->
-      ratchetFrom "origin/main/3.x"
+      ratchetFrom "origin/main/4.x"
 
       java {
         targetExclude 'src/test/resources/**'
