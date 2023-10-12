@@ -45,7 +45,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 2.2.0
  */
 public class IndraSpotlessLicenserPlugin implements ProjectPlugin {
-  private static final String JAVA_LICENSE_HEADER_DELIMITER = "package ";
+  private static final String JAVA_LICENSE_HEADER_DELIMITER = "(package |import |public |private |protected |sealed |class |enum |record |interface )";
 
   private static final String HEADER_FILE_NAME = "license_header.txt";
 
