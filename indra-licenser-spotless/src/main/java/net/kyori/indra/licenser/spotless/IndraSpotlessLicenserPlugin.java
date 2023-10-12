@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -45,7 +45,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 2.2.0
  */
 public class IndraSpotlessLicenserPlugin implements ProjectPlugin {
-  private static final String JAVA_LICENSE_HEADER_DELIMITER = "package ";
+  private static final String JAVA_LICENSE_HEADER_DELIMITER = "(package |import |public |private |protected |sealed |class |enum |record |interface )";
 
   private static final String HEADER_FILE_NAME = "license_header.txt";
 
