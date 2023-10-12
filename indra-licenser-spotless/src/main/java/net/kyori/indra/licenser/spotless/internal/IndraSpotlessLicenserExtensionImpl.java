@@ -160,15 +160,14 @@ public class IndraSpotlessLicenserExtensionImpl implements IndraSpotlessLicenser
     final String lineSeparator = System.lineSeparator();
     // Apply header format to contents
     final String prefix = format.begin() != null ? format.begin() + lineSeparator : "";
-    final String suffix;
+    String suffix;
     if (format.end() != null) {
-      if (newLine) {
-        suffix = lineSeparator + format.end() + lineSeparator + lineSeparator;
-      } else {
-        suffix = lineSeparator + format.end() + lineSeparator;
-      }
+      suffix = lineSeparator + format.end() + lineSeparator;
     } else {
-      suffix = "";
+      suffix = lineSeparator;
+    }
+    if (newLine) {
+      suffix = suffix + lineSeparator;
     }
     return LINE_SPLIT.splitAsStream(header)
       .map(line -> {
