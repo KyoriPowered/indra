@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2023 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,8 +28,8 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Ref;
 import org.gradle.api.java.archives.Manifest;
+import org.gradle.api.provider.Provider;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 /**
  * An extension exposing git information.
@@ -58,7 +58,7 @@ public interface IndraGitExtension {
    * @since 2.0.0
    */
   default boolean isPresent() {
-    return this.git() != null;
+    return this.git().isPresent();
   }
 
   /**
@@ -73,7 +73,7 @@ public interface IndraGitExtension {
    * @return the git repository
    * @since 2.0.0
    */
-  @Nullable Git git();
+  @NotNull Provider<Git> git();
 
   /**
    * Get all tags created on this repository.
@@ -81,7 +81,7 @@ public interface IndraGitExtension {
    * @return the tags on this repository, or an empty list if this project is not in a git repository
    * @since 2.0.0
    */
-  @NotNull List<Ref> tags();
+  @NotNull Provider<? extends List<? extends Ref>> tags();
 
   /**
    * Get the tag pointing to the commit checked out as {@code HEAD}.
@@ -89,7 +89,7 @@ public interface IndraGitExtension {
    * @return the tag at {@code HEAD}, or {@code null} if the project is not in a git repository or is not checked out to a tag
    * @since 2.0.0
    */
-  @Nullable Ref headTag();
+  @NotNull Provider<Ref> headTag();
 
   /**
    * Get a <a href="https://git-scm.com/docs/git-describe">{@code git describe}</a> string for the project's repository.
@@ -99,7 +99,7 @@ public interface IndraGitExtension {
    * @return the describe string, or {@code null} if this project is not in a git repository or if there are no tags in the project's history
    * @since 2.0.0
    */
-  @Nullable String describe();
+  @NotNull Provider<String> describe();
 
   /**
    * Get the name of the current branch.
@@ -107,7 +107,7 @@ public interface IndraGitExtension {
    * @return the name of the active branch, or {@code null} if the project is not in a git repository or is checked out to a detached {@code HEAD}.
    * @since 2.0.0
    */
-  @Nullable String branchName();
+  @NotNull Provider<String> branchName();
 
   /**
    * Get an object pointing to the current branch.
@@ -115,7 +115,7 @@ public interface IndraGitExtension {
    * @return the active branch, or {@code null} if the project is not in a git repository or is checked out to a detached {@code HEAD}.
    * @since 2.0.0
    */
-  @Nullable Ref branch();
+  @NotNull Provider<Ref> branch();
 
   /**
    * Get the ID of the current commit.
@@ -123,7 +123,7 @@ public interface IndraGitExtension {
    * @return the commit id, or {@code null} if the project is not in a git repository or has not had its initial commit
    * @since 2.0.0
    */
-  @Nullable ObjectId commit();
+  @NotNull Provider<ObjectId> commit();
 
   /**
    * Apply metadata about the current git state to the provided manifest.
@@ -144,10 +144,10 @@ public interface IndraGitExtension {
   default void applyVcsInformationToManifest(final Manifest manifest) {
     if(this.isPresent()) {
       // Git-Commit and Git-Branch
-      final @Nullable ObjectId commit = this.commit();
-      final @Nullable String branchName = this.branchName();
-      if(commit != null) manifest.getAttributes().put(MANIFEST_ATTRIBUTE_GIT_COMMIT, commit.name());
-      if(branchName != null) manifest.getAttributes().put(MANIFEST_ATTRIBUTE_GIT_BRANCH, branchName);
+      final Provider<ObjectId> commit = this.commit();
+      final Provider<String> branchName = this.branchName();
+      if(commit.isPresent()) manifest.getAttributes().put(MANIFEST_ATTRIBUTE_GIT_COMMIT, commit.get().name());
+      if(branchName.isPresent()) manifest.getAttributes().put(MANIFEST_ATTRIBUTE_GIT_BRANCH, branchName.get());
     }
   }
 }

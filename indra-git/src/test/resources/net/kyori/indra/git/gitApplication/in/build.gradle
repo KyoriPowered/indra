@@ -2,11 +2,11 @@ plugins {
   id 'net.kyori.indra.git'
 }
 
-def gitAvailable = provider { indraGit.present }
+def git = indraGit.git()
 
 task printGitStatus {
-  inputs.property('gitAvailable', gitAvailable)
+  inputs.property('git', git).optional(true)
   doLast {
-    logger.lifecycle("Git present: ${gitAvailable.get()}")
+    logger.lifecycle("Git present: ${git.isPresent()}")
   }
 }
