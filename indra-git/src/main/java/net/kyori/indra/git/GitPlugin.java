@@ -25,6 +25,7 @@ package net.kyori.indra.git;
 
 import java.io.File;
 import javax.inject.Inject;
+import net.kyori.indra.git.internal.GitCache;
 import net.kyori.indra.git.internal.IndraGitExtensionImpl;
 import net.kyori.indra.git.internal.IndraGitService;
 import net.kyori.indra.git.task.RepositoryTask;
@@ -103,6 +104,7 @@ public abstract class GitPlugin implements ProjectOrSettingsPlugin {
       params.getParameters().getBaseDirectory().set(rootDir);
     });
     this.getListenerRegistry().onTaskCompletion(service);
+    GitCache.getOrCreate(rootDir);
     extensions.create(IndraGitExtension.class, EXTENSION_NAME, IndraGitExtensionImpl.class, rootDir, projectDir, displayName);
     return service;
   }

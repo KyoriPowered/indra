@@ -72,7 +72,7 @@ public class IndraGitExtensionImpl implements IndraGitExtension {
 
   @VisibleForTesting
   public @Nullable Git git() {
-    return GitCache.getOrCreate(this.rootDir).git(this.projectDir, this.displayName);
+    return GitCache.get(this.rootDir).git(this.projectDir, this.displayName);
   }
 
   @Override
