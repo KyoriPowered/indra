@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collections;
+import net.kyori.indra.git.internal.GitCache;
+import net.kyori.indra.git.internal.IndraGitExtensionImpl;
 import net.kyori.indra.test.IndraTesting;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -35,12 +37,13 @@ import org.eclipse.jgit.lib.PersonIdent;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.gradle.api.Project;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class IndraGitPluginTest {
@@ -50,6 +53,19 @@ class IndraGitPluginTest {
 
   @TempDir
   private Path projectDir;
+
+  private GitCache.GitProvider prov;
+
+  @BeforeEach
+  void setupGitCache() {
+    this.prov = GitCache.getOrCreate(this.projectDir.toFile());
+  }
+
+  @AfterEach
+  void tearDownGitCache() {
+    GitCache.close(this.prov);
+    this.prov = null;
+  }
 
   @Test
   void testPluginSimplyApplies() {
@@ -98,12 +114,14 @@ class IndraGitPluginTest {
 
     IndraTesting.exec(mainProject, "git", "init");
     IndraTesting.exec(submodule, "git", "init");
-    Git.open(submodule.toFile()).commit()
-    .setAllowEmpty(true)
-    .setMessage("initial commit")
-    .setAuthor(COMMITTER)
-    .setCommitter(COMMITTER)
-    .call();
+    try (final Git git = Git.open(submodule.toFile())) {
+      git.commit()
+        .setAllowEmpty(true)
+        .setMessage("initial commit")
+        .setAuthor(COMMITTER)
+        .setCommitter(COMMITTER)
+        .call();
+    }
 
     IndraTesting.exec(mainProject, "git", "-c", "protocol.file.allow=always", "submodule", "add", "../submodule", "child");
 
@@ -116,8 +134,8 @@ class IndraGitPluginTest {
 
   @Test
   void testHeadTagNullWhenNotCheckedOutToTag() throws IOException, GitAPIException {
-    final IndraGitExtension extension = this.createExtensionAndRepo();
-    assertNull(extension.headTag());
+    final IndraGitExtensionImpl extension = this.createExtensionAndRepo();
+    assertFalse(extension.headTag().isPresent());
 
     Files.write(this.projectDir.resolve("test.properties"), Collections.singletonList("boink"), StandardCharsets.UTF_8);
 
@@ -142,12 +160,12 @@ class IndraGitPluginTest {
       .setCommitter(COMMITTER)
       .call();
 
-    assertNull(extension.headTag());
+    assertFalse(extension.headTag().isPresent());
   }
 
   @Test
   void testHeadTag() throws IOException, GitAPIException {
-    final IndraGitExtension extension = this.createExtensionAndRepo();
+    final IndraGitExtensionImpl extension = this.createExtensionAndRepo();
 
     Files.write(this.projectDir.resolve("test.properties"), Collections.singletonList("boink"), StandardCharsets.UTF_8);
 
@@ -162,12 +180,12 @@ class IndraGitPluginTest {
       .setAnnotated(false)
       .call();
 
-    assertEquals("v1", Repository.shortenRefName(extension.headTag().getName()));
+    assertEquals("v1", Repository.shortenRefName(extension.headTag().get().getName()));
   }
 
   @Test
   void testAnnotatedHeadTag() throws IOException, GitAPIException {
-    final IndraGitExtension extension = this.createExtensionAndRepo();
+    final IndraGitExtensionImpl extension = this.createExtensionAndRepo();
     Files.write(this.projectDir.resolve("test.properties"), Collections.singletonList("boink"), StandardCharsets.UTF_8);
 
     extension.git().commit()
@@ -183,18 +201,18 @@ class IndraGitPluginTest {
       .setAnnotated(true)
       .call();
 
-    assertEquals("v1", Repository.shortenRefName(extension.headTag().getName()));
+    assertEquals("v1", Repository.shortenRefName(extension.headTag().get().getName()));
   }
 
   @Test
   void testBranchOnInitialCommit() throws IOException, GitAPIException {
     final IndraGitExtension extension = this.createExtensionAndRepo();
-    assertEquals(DEFAULT_BRANCH, extension.branchName());
+    assertEquals(DEFAULT_BRANCH, extension.branchName().get());
   }
 
   @Test
   void testBranch() throws IOException, GitAPIException {
-    final IndraGitExtension extension = this.createExtensionAndRepo();
+    final IndraGitExtensionImpl extension = this.createExtensionAndRepo();
     Files.write(this.projectDir.resolve("test.properties"), Collections.singletonList("boink"), StandardCharsets.UTF_8);
 
     extension.git().commit()
@@ -203,12 +221,12 @@ class IndraGitPluginTest {
       .setCommitter(COMMITTER)
       .call();
 
-    assertEquals(DEFAULT_BRANCH, extension.branchName());
+    assertEquals(DEFAULT_BRANCH, extension.branchName().get());
   }
 
   @Test
   void testBranchOnDetachedHead() throws IOException, GitAPIException {
-    final IndraGitExtension extension = this.createExtensionAndRepo();
+    final IndraGitExtensionImpl extension = this.createExtensionAndRepo();
     Files.write(this.projectDir.resolve("test.properties"), Collections.singletonList("boink"), StandardCharsets.UTF_8);
 
     final RevCommit commit = extension.git().commit()
@@ -218,12 +236,12 @@ class IndraGitPluginTest {
       .call();
 
     extension.git().checkout().setName(commit.name()).call();
-    assertNull(extension.branchName());
+    assertFalse(extension.branchName().isPresent());
   }
 
   @Test
   void testCommit() throws IOException, GitAPIException {
-    final IndraGitExtension extension = this.createExtensionAndRepo();
+    final IndraGitExtensionImpl extension = this.createExtensionAndRepo();
     Files.write(this.projectDir.resolve("test.properties"), Collections.singletonList("boink"), StandardCharsets.UTF_8);
 
     final RevCommit commit = extension.git().commit()
@@ -232,7 +250,7 @@ class IndraGitPluginTest {
       .setCommitter(COMMITTER)
       .call();
 
-    assertEquals(commit.getName(), extension.commit().getName());
+    assertEquals(commit.getName(), extension.commit().get().getName());
   }
 
   private Project createProject() {
@@ -241,11 +259,11 @@ class IndraGitPluginTest {
     return project;
   }
 
-  private IndraGitExtension createExtension() {
-    return this.createProject().getExtensions().getByType(IndraGitExtension.class);
+  private IndraGitExtensionImpl createExtension() {
+    return (IndraGitExtensionImpl) this.createProject().getExtensions().getByType(IndraGitExtension.class);
   }
 
-  private IndraGitExtension createExtensionAndRepo() throws IOException, GitAPIException {
+  private IndraGitExtensionImpl createExtensionAndRepo() throws IOException, GitAPIException {
     initRepo(this.projectDir);
     return this.createExtension();
   }
