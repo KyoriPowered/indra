@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2023 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -37,9 +37,10 @@ import org.junit.jupiter.api.Tag;
  * A base annotation for both operations that use the configuration cache and those that don't.
  */
 @GradleFunctionalTest
-@LegacyGradleVersion
-@TestVariant(gradleVersion = "8.4")
-@TestVariantResource(value = "/injected-gradle-versions", optional = true)
+@TestVariant(gradleVersion = "7.6.4", maximumRuntimeVersion = 20)
+@TestVariant(gradleVersion = "8.9", maximumRuntimeVersion = 16)
+@TestVariant(gradleVersion = "8.10", minimumRuntimeVersion = 17)
+@TestVariantResource(value = "/injected-gradle-versions", optional = true, minimumRuntimeVersion = 17)
 @Tag("functional")
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
