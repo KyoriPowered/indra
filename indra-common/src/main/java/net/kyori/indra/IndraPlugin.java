@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2023 KyoriPowered
+ * Copyright (c) 2020-2024 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -90,10 +90,10 @@ public class IndraPlugin implements ProjectPlugin {
   @Override
   public void apply(final @NotNull Project project, final @NotNull PluginContainer plugins, final @NotNull ExtensionContainer extensions, final @NotNull TaskContainer tasks) {
     plugins.apply(JavaLibraryPlugin.class);
-    if (GradleVersion.current().compareTo(GradleVersion.version("7.0")) >= 0) {
+    if (GradleVersion.current().compareTo(GradleVersion.version("7.0")) >= 0 && !project.getExtensions().getExtraProperties().has("net.kyori.indra.testing")) {
       // Fix a lot of JVM library artifact inconsistencies
       // Gradle <7.0 doesn't provide the necessary attributes for this to work effectively
-      plugins.apply("org.gradlex.java-ecosystem-capabilities");
+      plugins.apply("org.gradlex.jvm-dependency-conflict-resolution");
     }
 
     final IndraExtensionImpl indra = (IndraExtensionImpl) Indra.extension(extensions);
