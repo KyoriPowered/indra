@@ -45,7 +45,9 @@ public class IndraTesting {
     if(consumer != null) {
       consumer.accept(builder);
     }
-    return builder.build();
+    final Project ret = builder.build();
+    ret.getExtensions().getExtraProperties().set("net.kyori.indra.testing", true);
+    return ret;
   }
 
   public static String exec(final Path workingDir, final String... cli) throws IOException {

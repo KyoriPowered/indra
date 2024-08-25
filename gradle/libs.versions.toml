@@ -31,8 +31,8 @@ mammoth = { module = "net.kyori:mammoth", version.ref = "mammoth" }
 
 asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
 cadixLicenser = "gradle.plugin.org.cadixdev.gradle:licenser:0.6.1"
-# https://github.com/gradlex-org/java-ecosystem-capabilities
-javaEcosystemCapabilities = { module = "org.gradlex:java-ecosystem-capabilities", version = "2.1.2" }
+# https://github.com/gradlex-org/jvm-dependency-conflict-resolution/
+jvmDependencyConflictResolution = { module = "org.gradlex:jvm-dependency-conflict-resolution", version = "2.1.2" }
 kotlinPlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 
 # git

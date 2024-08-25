@@ -19,7 +19,7 @@ dependencies {
   compileOnlyApi libs.immutables.builder
   compileOnlyApi libs.jetbrainsAnnotations
   api project(":indra-git")
-  implementation libs.javaEcosystemCapabilities
+  implementation libs.jvmDependencyConflictResolution
   implementation libs.asm
   api libs.mammoth
   testImplementation project(":indra-testlib")
