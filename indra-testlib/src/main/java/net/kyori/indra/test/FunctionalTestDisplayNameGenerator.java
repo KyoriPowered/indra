@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -24,6 +24,7 @@
 package net.kyori.indra.test;
 
 import java.lang.reflect.Method;
+import java.util.List;
 import org.junit.jupiter.api.DisplayNameGenerator;
 
 /**
@@ -35,7 +36,7 @@ import org.junit.jupiter.api.DisplayNameGenerator;
  */
 public final class FunctionalTestDisplayNameGenerator extends DisplayNameGenerator.Standard {
   @Override
-  public String generateDisplayNameForMethod(final Class<?> testClass, final Method testMethod) {
+  public String generateDisplayNameForMethod(final List<Class<?>> enclosing, final Class<?> testClass, final Method testMethod) {
     final String name = testMethod.getName();
     if (name.startsWith("test") && name.length() > 5) {
       return Character.toLowerCase(name.charAt(4)) + name.substring(5);
