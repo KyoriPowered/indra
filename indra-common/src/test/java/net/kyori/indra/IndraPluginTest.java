@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,6 +39,33 @@ class IndraPluginTest {
   void testPluginSimplyApplies() {
     final Project project = IndraTesting.project();
     project.getPluginManager().apply(PLUGIN);
+  }
+
+  @Test
+  void testCodebergRepository() {
+    final Project project = IndraTesting.project();
+    project.getPluginManager().apply(PLUGIN);
+    final IndraExtension extension = Indra.extension(project.getExtensions());
+    extension.codeberg("kyori", "indra", to -> {
+      to.ci(true);
+      to.scm(true);
+      to.issues(true);
+      to.publishing(true);
+    });
+
+    // CI
+    assertEquals("Forgejo Actions", extension.ci().get().system());
+    assertEquals("https://codeberg.org/kyori/indra/actions", extension.ci().get().url());
+
+    // SCM
+    assertEquals("scm:git:https://codeberg.org/kyori/indra.git", extension.scm().get().connection());
+    assertEquals("scm:git:ssh://git@codeberg.org/kyori/indra.git", extension.scm().get().developerConnection());
+    assertEquals("https://codeberg.org/kyori/indra", extension.scm().get().url());
+
+    // Issues
+    assertEquals("Forgejo", extension.issues().get().system());
+    assertEquals("https://codeberg.org/kyori/indra/issues", extension.issues().get().url());
+
   }
 
   @Test

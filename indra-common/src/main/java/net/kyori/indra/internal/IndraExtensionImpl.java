@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2023 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -26,6 +26,7 @@ package net.kyori.indra.internal;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Collections;
@@ -181,6 +182,35 @@ public class IndraExtensionImpl implements IndraExtension {
     if (options.publishing()) {
       // TODO: needs project ID, which is separate from user/repo and uses HTTP header-based auth
       throw new GradleException("Publishing cannot yet be automatically configured for GitLab projects");
+    }
+  }
+
+  @Override
+  public void forgejo(final URI baseUrl, final @NotNull String user, final @NotNull String repo, final @Nullable Action<ApplyTo> applicable) {
+    final ApplyTo options = Configurable.configureIfNonNull(ApplyTo.defaults(), applicable);
+
+
+    if (options.ci()) {
+      this.ci(ci -> ci
+        .system("Forgejo Actions")
+        .url(baseUrl.resolve("%s/%s/actions".formatted(user, repo)).toString())
+      );
+    }
+    if (options.issues()) {
+      this.issues(issues -> issues
+        .system("Forgejo")
+        .url(baseUrl.resolve("%s/%s/issues".formatted(user, repo)).toString())
+      );
+    }
+    if (options.scm()) {
+      this.scm(scm -> scm
+        .connection("scm:git:" + baseUrl.resolve("/%s/%s.git".formatted(user, repo)))
+        .developerConnection("scm:git:ssh://git@%s/%s/%s.git".formatted(baseUrl.getHost(), user, repo))
+        .url(baseUrl.resolve("%s/%s".formatted(user, repo)).toString())
+      );
+    }
+    if (options.publishing()) {
+      this.publishReleasesTo("forgejoPackages", baseUrl.resolve("/api/packages/%s/maven".formatted(user)).toString());
     }
   }
 
