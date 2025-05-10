@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,6 +23,7 @@
  */
 package net.kyori.indra;
 
+import java.net.URI;
 import net.kyori.indra.api.model.ApplyTo;
 import net.kyori.indra.api.model.ContinuousIntegration;
 import net.kyori.indra.api.model.Issues;
@@ -43,6 +44,8 @@ import static java.util.Objects.requireNonNull;
  * @since 2.0.0
  */
 public interface IndraExtension {
+  URI CODEBERG_BASE_URL = URI.create("https://codeberg.org");
+
   /**
    * Options controlling JVM toolchain versions.
    *
@@ -147,6 +150,20 @@ public interface IndraExtension {
   }
 
   void gitlab(final @NotNull String user, final @NotNull String repo, final @Nullable Action<ApplyTo> applicable);
+
+  default void codeberg(final @NotNull String user, final @NotNull String repo) {
+    this.codeberg(user, repo, null);
+  }
+
+  default void codeberg(final @NotNull String user, final @NotNull String repo, final @Nullable Action<ApplyTo> applicable) {
+    this.forgejo(CODEBERG_BASE_URL, user, repo, applicable);
+  }
+
+  default void forgejo(final URI instanceBase, final @NotNull String user, final @NotNull String repo) {
+    this.forgejo(instanceBase, user, repo, null);
+  }
+
+  void forgejo(final URI instanceBase, final @NotNull String user, final @NotNull String repo, final @Nullable Action<ApplyTo> applicable);
 
   // Publishing repositories
 
