@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,13 +35,25 @@ public interface SonatypeRepositories {
   String EXTENSION_NAME = "sonatype";
 
   /**
+   * Add the Sonatype snapshot repository to this project.
+   *
+   * <p>The URL for this repository is {@literal https://central.sonatype.com/repository/maven-snapshots/}.</p>
+   *
+   * @return the created repository
+   * @since 3.2.0
+   */
+  MavenArtifactRepository snapshots();
+
+  /**
    * Add the Sonatype OSS snapshot repository to this project.
    *
    * <p>The URL for this repository is {@literal https://oss.sonatype.org/content/repositories/snapshots/}.</p>
    *
    * @return the created repository
    * @since 2.1.0
+   * @deprecated replaced by {@link #snapshots()} due to the new Central publishing system
    */
+  @Deprecated
   MavenArtifactRepository ossSnapshots();
 
   /**
@@ -51,7 +63,9 @@ public interface SonatypeRepositories {
    *
    * @return the created repository
    * @since 2.1.0
+   * @deprecated replaced by {@link #snapshots()} due to the new Central publishing system
    */
+  @Deprecated
   default MavenArtifactRepository s01Snapshots() {
     return this.snapshotsOn(1);
   }
@@ -66,6 +80,8 @@ public interface SonatypeRepositories {
    * @param host the host number
    * @return the created repository
    * @since 2.1.0
+   * @deprecated replaced by {@link #snapshots()} due to the new Central publishing system
    */
+  @Deprecated
   MavenArtifactRepository snapshotsOn(int host);
 }
