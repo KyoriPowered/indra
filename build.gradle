@@ -92,6 +92,6 @@ subprojects {
       }
     }
 
-    publishSnapshotsTo("stellardrift", "https://repo.stellardrift.ca/repository/snapshots/")
+    publishSnapshotsTo("papermc", "https://repo.papermc.io/repository/maven-snapshots/")
   }
 }
