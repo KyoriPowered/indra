@@ -43,45 +43,4 @@ public interface SonatypeRepositories {
    * @since 3.2.0
    */
   MavenArtifactRepository snapshots();
-
-  /**
-   * Add the Sonatype OSS snapshot repository to this project.
-   *
-   * <p>The URL for this repository is {@literal https://oss.sonatype.org/content/repositories/snapshots/}.</p>
-   *
-   * @return the created repository
-   * @since 2.1.0
-   * @deprecated replaced by {@link #snapshots()} due to the new Central publishing system
-   */
-  @Deprecated
-  MavenArtifactRepository ossSnapshots();
-
-  /**
-   * Add the new Sonatype OSS snapshot repository to this project.
-   *
-   * <p>The URL for this repository is {@literal https://s01.oss.sonatype.org/content/repositories/snapshots/}.</p>
-   *
-   * @return the created repository
-   * @since 2.1.0
-   * @deprecated replaced by {@link #snapshots()} due to the new Central publishing system
-   */
-  @Deprecated
-  default MavenArtifactRepository s01Snapshots() {
-    return this.snapshotsOn(1);
-  }
-
-  /**
-   * Add a specific numbered Sonatype OSS snapshots host to this project.
-   *
-   * <p>The URL for this repository is {@code https://s<host>.oss.sonatype.org/content/repositories/snapshots/}.</p>
-   *
-   * <p>As of this writing, only one host exists -- {@code s01}.</p>
-   *
-   * @param host the host number
-   * @return the created repository
-   * @since 2.1.0
-   * @deprecated replaced by {@link #snapshots()} due to the new Central publishing system
-   */
-  @Deprecated
-  MavenArtifactRepository snapshotsOn(int host);
 }

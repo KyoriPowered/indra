@@ -47,24 +47,6 @@ public class SonatypeRepositoriesImpl implements SonatypeRepositories {
     });
   }
 
-  @Override
-  public MavenArtifactRepository ossSnapshots() {
-    return this.repositories.maven(repo -> {
-      repo.setName("sonatypeSnapshots");
-      repo.setUrl("https://oss.sonatype.org/content/repositories/snapshots/");
-      repo.mavenContent(MavenRepositoryContentDescriptor::snapshotsOnly);
-    });
-  }
-
-  @Override
-  public MavenArtifactRepository snapshotsOn(final int host) {
-    return this.repositories.maven(repo -> {
-      repo.setName("sonatypeSnapshots");
-      repo.setUrl(formatOssHost(host));
-      repo.mavenContent(MavenRepositoryContentDescriptor::snapshotsOnly);
-    });
-  }
-
   static String formatOssHost(final int host) {
     if (host < 1) {
       throw new IllegalArgumentException("Only hosts numbered >= 1 are supported, but " + host + " was provided");

@@ -29,13 +29,5 @@ package net.kyori.indra.sonatype;
  * @since 2.0.0
  */
 public interface IndraSonatypePublishingExtension {
-  /**
-   * Use an alternate host for the Sonatype OSSRH.
-   *
-   * @param name the prefix to use -- for example, to use {@code s01.oss.sonatype.org}, the name should be {@code s01}
-   * @since 2.0.0
-   * @deprecated No longer relevant with the new Central publishing system
-   */
-  @Deprecated
-  void useAlternateSonatypeOSSHost(final String name);
+
 }
