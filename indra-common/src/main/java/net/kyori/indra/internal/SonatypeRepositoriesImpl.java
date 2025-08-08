@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -39,19 +39,10 @@ public class SonatypeRepositoriesImpl implements SonatypeRepositories {
   }
 
   @Override
-  public MavenArtifactRepository ossSnapshots() {
+  public MavenArtifactRepository snapshots() {
     return this.repositories.maven(repo -> {
       repo.setName("sonatypeSnapshots");
-      repo.setUrl("https://oss.sonatype.org/content/repositories/snapshots/");
-      repo.mavenContent(MavenRepositoryContentDescriptor::snapshotsOnly);
-    });
-  }
-
-  @Override
-  public MavenArtifactRepository snapshotsOn(final int host) {
-    return this.repositories.maven(repo -> {
-      repo.setName("sonatypeSnapshots");
-      repo.setUrl(formatOssHost(host));
+      repo.setUrl("https://central.sonatype.com/repository/maven-snapshots/");
       repo.mavenContent(MavenRepositoryContentDescriptor::snapshotsOnly);
     });
   }

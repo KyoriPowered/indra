@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,6 +25,7 @@ package net.kyori.indra.sonatype;
 
 import io.github.gradlenexus.publishplugin.NexusPublishExtension;
 import io.github.gradlenexus.publishplugin.NexusPublishPlugin;
+import java.net.URI;
 import java.time.Duration;
 import net.kyori.indra.IndraPlugin;
 import net.kyori.indra.IndraPublishingPlugin;
@@ -52,7 +53,10 @@ public class IndraSonatypePublishingPlugin implements ProjectPlugin {
     plugins.apply(NexusPublishPlugin.class);
 
     extensions.configure(NexusPublishExtension.class, extension -> {
-      extension.getRepositories().sonatype();
+      extension.getRepositories().sonatype(repo -> {
+        repo.getNexusUrl().set(URI.create("https://ossrh-staging-api.central.sonatype.com/service/local/"));
+        repo.getSnapshotRepositoryUrl().set(URI.create("https://central.sonatype.com/repository/maven-snapshots/"));
+      });
 
       // Bump out timeouts for days when OSSRH is slow
       extension.getClientTimeout().set(Duration.ofMinutes(5));

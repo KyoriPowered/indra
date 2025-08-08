@@ -6,7 +6,7 @@ group = "com.example"
 version = "1.0.0-SNAPSHOT"
 
 repositories {
-  sonatype.ossSnapshots()
+  sonatype.snapshots()
 }
 
 sourceSets {

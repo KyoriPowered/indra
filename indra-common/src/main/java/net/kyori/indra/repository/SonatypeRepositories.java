@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -35,37 +35,12 @@ public interface SonatypeRepositories {
   String EXTENSION_NAME = "sonatype";
 
   /**
-   * Add the Sonatype OSS snapshot repository to this project.
+   * Add the Sonatype snapshot repository to this project.
    *
-   * <p>The URL for this repository is {@literal https://oss.sonatype.org/content/repositories/snapshots/}.</p>
-   *
-   * @return the created repository
-   * @since 2.1.0
-   */
-  MavenArtifactRepository ossSnapshots();
-
-  /**
-   * Add the new Sonatype OSS snapshot repository to this project.
-   *
-   * <p>The URL for this repository is {@literal https://s01.oss.sonatype.org/content/repositories/snapshots/}.</p>
+   * <p>The URL for this repository is {@literal https://central.sonatype.com/repository/maven-snapshots/}.</p>
    *
    * @return the created repository
-   * @since 2.1.0
+   * @since 3.2.0
    */
-  default MavenArtifactRepository s01Snapshots() {
-    return this.snapshotsOn(1);
-  }
-
-  /**
-   * Add a specific numbered Sonatype OSS snapshots host to this project.
-   *
-   * <p>The URL for this repository is {@code https://s<host>.oss.sonatype.org/content/repositories/snapshots/}.</p>
-   *
-   * <p>As of this writing, only one host exists -- {@code s01}.</p>
-   *
-   * @param host the host number
-   * @return the created repository
-   * @since 2.1.0
-   */
-  MavenArtifactRepository snapshotsOn(int host);
+  MavenArtifactRepository snapshots();
 }

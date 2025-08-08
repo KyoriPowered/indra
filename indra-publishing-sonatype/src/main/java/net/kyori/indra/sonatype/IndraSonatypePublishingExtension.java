@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,11 +29,5 @@ package net.kyori.indra.sonatype;
  * @since 2.0.0
  */
 public interface IndraSonatypePublishingExtension {
-  /**
-   * Use an alternate host for the Sonatype OSSRH.
-   *
-   * @param name the prefix to use -- for example, to use {@code s01.oss.sonatype.org}, the name should be {@code s01}
-   * @since 2.0.0
-   */
-  void useAlternateSonatypeOSSHost(final String name);
+
 }

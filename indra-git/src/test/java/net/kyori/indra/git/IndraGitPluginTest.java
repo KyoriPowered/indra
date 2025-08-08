@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -120,6 +120,7 @@ class IndraGitPluginTest {
         .setMessage("initial commit")
         .setAuthor(COMMITTER)
         .setCommitter(COMMITTER)
+        .setSign(false)
         .call();
     }
 
@@ -143,6 +144,7 @@ class IndraGitPluginTest {
       .setAll(true)
       .setMessage("Initial commit")
       .setCommitter(COMMITTER)
+      .setSign(false)
       .call();
 
     extension.git().tag()
@@ -158,6 +160,7 @@ class IndraGitPluginTest {
       .setAll(true)
       .setMessage("stage 2")
       .setCommitter(COMMITTER)
+      .setSign(false)
       .call();
 
     assertFalse(extension.headTag().isPresent());
@@ -173,6 +176,7 @@ class IndraGitPluginTest {
       .setAll(true)
       .setMessage("Initial commit")
       .setCommitter(COMMITTER)
+      .setSign(false)
       .call();
 
     extension.git().tag()
@@ -192,6 +196,7 @@ class IndraGitPluginTest {
       .setAll(true)
       .setMessage("Initial commit")
       .setCommitter(COMMITTER)
+      .setSign(false)
       .call();
 
     extension.git().tag()
@@ -219,6 +224,7 @@ class IndraGitPluginTest {
       .setAll(true)
       .setMessage("Initial commit")
       .setCommitter(COMMITTER)
+      .setSign(false)
       .call();
 
     assertEquals(DEFAULT_BRANCH, extension.branchName().get());
@@ -233,6 +239,7 @@ class IndraGitPluginTest {
       .setAll(true)
       .setMessage("Initial commit")
       .setCommitter(COMMITTER)
+      .setSign(false)
       .call();
 
     extension.git().checkout().setName(commit.name()).call();
@@ -248,6 +255,7 @@ class IndraGitPluginTest {
       .setAll(true)
       .setMessage("Initial commit")
       .setCommitter(COMMITTER)
+      .setSign(false)
       .call();
 
     assertEquals(commit.getName(), extension.commit().get().getName());

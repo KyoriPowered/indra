@@ -1,9 +1,11 @@
 pluginManagement {
   repositories {
-    mavenCentral()
+    mavenCentral {
+      mavenContent { releasesOnly() }
+    }
     maven {
-      url = "https://s01.oss.sonatype.org/content/repositories/snapshots/"
-      name = "s01Snapshots"
+      url = "https://central.sonatype.com/repository/maven-snapshots/"
+      name = "sonatypeSnapshots"
       mavenContent { snapshotsOnly() }
     }
     gradlePluginPortal()
