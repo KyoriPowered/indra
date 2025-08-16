@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -25,10 +25,9 @@ package net.kyori.indra.git.internal;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
-import java.util.List;
 import javax.inject.Inject;
 import net.kyori.indra.git.IndraGitExtension;
+import net.kyori.indra.git.QueryBranch;
 import net.kyori.indra.git.RepositoryValueSource;
 import net.kyori.mammoth.Configurable;
 import org.eclipse.jgit.api.Git;
@@ -86,23 +85,6 @@ public class IndraGitExtensionImpl implements IndraGitExtension {
     });
   }
 
-  public static abstract class QueryTags extends RepositoryValueSource.Parameterless<List<? extends Ref>> {
-    @Override
-    protected @Nullable List<? extends Ref> obtain(final @NotNull Git repository) {
-      try {
-        return repository.tagList().call();
-      } catch (final GitAPIException ex) {
-        LOGGER.error("Failed to query git for a list of tags:", ex);
-        return Collections.emptyList();
-      }
-    }
-  }
-
-  @Override
-  public @NotNull Provider<? extends List<? extends Ref>> tags() {
-    return this.repositoryValue(QueryTags.class).orElse(Collections.emptyList());
-  }
-
   public static @Nullable Ref headTag(final Git git) {
     try {
       final @Nullable Ref head = git.getRepository().findRef(Constants.HEAD);
@@ -124,18 +106,6 @@ public class IndraGitExtensionImpl implements IndraGitExtension {
       LOGGER.error("Failed to resolve current HEAD tag:", ex);
     }
     return null;
-  }
-
-  public static abstract class QueryHeadTag extends RepositoryValueSource.Parameterless<Ref> {
-    @Override
-    protected @Nullable Ref obtain(final @NotNull Git repository) {
-      return IndraGitExtensionImpl.headTag(repository);
-    }
-  }
-
-  @Override
-  public @NotNull Provider<Ref> headTag() {
-    return this.repositoryValue(QueryHeadTag.class);
   }
 
   public static abstract class QueryDescribe extends RepositoryValueSource.Parameterless<String> {
@@ -160,27 +130,7 @@ public class IndraGitExtensionImpl implements IndraGitExtension {
 
   @Override
   public @NotNull Provider<String> branchName() {
-    return this.branch().map(branch -> Repository.shortenRefName(branch.getName()));
-  }
-
-  public static abstract class QueryBranch extends RepositoryValueSource.Parameterless<Ref> {
-    @Override
-    protected @Nullable Ref obtain(final @NotNull Git repository) {
-      try {
-        final @Nullable Ref ref = repository.getRepository().exactRef(Constants.HEAD);
-        if (ref == null || !ref.isSymbolic()) return null; // no HEAD, or detached HEAD
-
-        return ref.getTarget();
-      } catch(final IOException ex) {
-        LOGGER.error("Failed to query current branch name from git:", ex);
-        return null;
-      }
-    }
-  }
-
-  @Override
-  public @NotNull Provider<Ref> branch() {
-    return this.repositoryValue(QueryBranch.class);
+    return this.repositoryValue(QueryBranch.Name.class).map(Repository::shortenRefName);
   }
 
   public static abstract class QueryCommit extends RepositoryValueSource.Parameterless<ObjectId> {

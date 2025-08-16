@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -23,9 +23,7 @@
  */
 package net.kyori.indra.git;
 
-import java.util.List;
 import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.Ref;
 import org.gradle.api.Action;
 import org.gradle.api.java.archives.Manifest;
 import org.gradle.api.provider.Provider;
@@ -92,22 +90,6 @@ public interface IndraGitExtension {
   <V, P extends RepositoryValueSource.Parameters, S extends RepositoryValueSource<V, P>> Provider<V> repositoryValue(final Class<S> valueSource, final Action<? super ValueSourceSpec<P>> configureAction);
 
   /**
-   * Get all tags created on this repository.
-   *
-   * @return the tags on this repository, or an empty list if this project is not in a git repository
-   * @since 2.0.0
-   */
-  @NotNull Provider<? extends List<? extends Ref>> tags();
-
-  /**
-   * Get the tag pointing to the commit checked out as {@code HEAD}.
-   *
-   * @return the tag at {@code HEAD}, or {@code null} if the project is not in a git repository or is not checked out to a tag
-   * @since 2.0.0
-   */
-  @NotNull Provider<Ref> headTag();
-
-  /**
    * Get a <a href="https://git-scm.com/docs/git-describe">{@code git describe}</a> string for the project's repository.
    *
    * <p>The result will be equivalent to the result of executing {@code git describe --tags --long}</p>
@@ -124,14 +106,6 @@ public interface IndraGitExtension {
    * @since 2.0.0
    */
   @NotNull Provider<String> branchName();
-
-  /**
-   * Get an object pointing to the current branch.
-   *
-   * @return the active branch, or {@code null} if the project is not in a git repository or is checked out to a detached {@code HEAD}.
-   * @since 2.0.0
-   */
-  @NotNull Provider<Ref> branch();
 
   /**
    * Get the ID of the current commit.
