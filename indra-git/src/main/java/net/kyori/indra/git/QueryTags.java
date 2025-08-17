@@ -37,7 +37,7 @@ import org.jetbrains.annotations.NotNull;
  * A {@link MappedRepositoryValueSource} that queries the git repository for a list of tags.
  * Returns an empty list if the repository is not present or if an error occurs while querying.
  *
- * @param <V> value type
+ * @param <V> the value type
  */
 public abstract class QueryTags<V> extends MappedRepositoryValueSource.Parameterless<List<? extends Ref>, V> {
   private static final Logger LOGGER = Logging.getLogger(QueryTags.class);
@@ -52,6 +52,9 @@ public abstract class QueryTags<V> extends MappedRepositoryValueSource.Parameter
     }
   }
 
+  /**
+   * Queries the {@link Ref#getName() names} of the tags.
+   */
   public abstract static class Names extends QueryTags<List<String>> {
     @Override
     protected @NotNull List<String> mapValue(final @NotNull Git git, final @NotNull List<? extends Ref> value) {

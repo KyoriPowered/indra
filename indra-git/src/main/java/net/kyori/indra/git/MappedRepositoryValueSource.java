@@ -30,9 +30,10 @@ import org.jetbrains.annotations.Nullable;
 /**
  * A {@link RepositoryValueSource} that maps an intermediary value type to a final value type.
  *
- * @param <I> intermediary (non-serializable/config-cacheable) value type
- * @param <V> mapped value type
- * @param <P> parameters type
+ * @param <I> the intermediary (non-serializable/config-cacheable) value type
+ * @param <V> the mapped value type
+ * @param <P> the parameters type
+ * @since 4.0.0
  */
 public abstract class MappedRepositoryValueSource<I, V, P extends RepositoryValueSource.Parameters> extends RepositoryValueSource<V, P> {
   @Override
@@ -44,10 +45,29 @@ public abstract class MappedRepositoryValueSource<I, V, P extends RepositoryValu
     return this.mapValue(repository, rawValue);
   }
 
+  /**
+   * Obtains the raw value from the repository.
+   *
+   * @param repository the git repository
+   * @return the raw value, or {@code null}
+   */
   protected abstract @Nullable I getRawValue(final @NotNull Git repository);
 
+  /**
+   * Maps the raw value to the final value type.
+   *
+   * @param git the git repository
+   * @param value the raw value
+   * @return the mapped value, or {@code null}
+   */
   protected abstract @Nullable V mapValue(final @NotNull Git git, final @NotNull I value);
 
+  /**
+   * A {@link MappedRepositoryValueSource} that does not require any additional parameters.
+   *
+   * @param <I> the intermediary (non-serializable/config-cacheable) value type
+   * @param <V> the mapped value type
+   */
   public abstract static class Parameterless<I, V> extends MappedRepositoryValueSource<I, V, Parameters> {
   }
 }

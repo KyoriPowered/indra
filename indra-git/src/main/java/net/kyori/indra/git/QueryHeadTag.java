@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
  * A {@link MappedRepositoryValueSource} that obtains values from the tag pointing to the commit checked out as {@code HEAD},
  * or {@code null} if the project is not in a git repository or is not checked out to a tag
  *
- * @param <V> value type
+ * @param <V> the value type
  */
 public abstract class QueryHeadTag<V> extends MappedRepositoryValueSource.Parameterless<Ref, V> {
   @Override
@@ -41,6 +41,9 @@ public abstract class QueryHeadTag<V> extends MappedRepositoryValueSource.Parame
     return IndraGitExtensionImpl.headTag(repository);
   }
 
+  /**
+   * Queries the {@link Ref#getName() name} of the head tag ref.
+   */
   public abstract static class Name extends QueryHeadTag<String> {
     @Override
     protected @NotNull String mapValue(final @NotNull Git git, final @NotNull Ref ref) {

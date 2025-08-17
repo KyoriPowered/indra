@@ -36,7 +36,7 @@ import org.jetbrains.annotations.Nullable;
  * A {@link MappedRepositoryValueSource} that obtains values from the current branch,
  * or {@code null} if the project is not in a git repository or is checked out to a detached {@code HEAD}.
  *
- * @param <V> value type
+ * @param <V> the value type
  */
 public abstract class QueryBranch<V> extends MappedRepositoryValueSource.Parameterless<Ref, V> {
   private static final Logger LOGGER = Logging.getLogger(QueryBranch.class);
@@ -54,6 +54,9 @@ public abstract class QueryBranch<V> extends MappedRepositoryValueSource.Paramet
     }
   }
 
+  /**
+   * Queries the {@link Ref#getName() name} of the current branch ref.
+   */
   public abstract static class Name extends QueryBranch<String> {
     @Override
     protected @NotNull String mapValue(final @NotNull Git git, final @NotNull Ref ref) {

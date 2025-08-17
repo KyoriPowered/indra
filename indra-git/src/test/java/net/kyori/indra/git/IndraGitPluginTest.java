@@ -51,7 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class IndraGitPluginTest {
   private static final String PLUGIN = "net.kyori.indra.git";
   private static final String DEFAULT_BRANCH = "trunk";
-  private static final PersonIdent COMMITTER = new PersonIdent("CI", "noreply@kyori.net");
+  public static final PersonIdent COMMITTER = new PersonIdent("CI", "noreply@kyori.net");
 
   @TempDir
   private Path projectDir;

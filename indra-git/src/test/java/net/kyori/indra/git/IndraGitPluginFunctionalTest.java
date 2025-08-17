@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2024 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,6 +27,7 @@ import java.io.IOException;
 import net.kyori.indra.test.FunctionalTestDisplayNameGenerator;
 import net.kyori.indra.test.IndraConfigCacheFunctionalTest;
 import net.kyori.mammoth.test.TestContext;
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -50,6 +51,27 @@ class IndraGitPluginFunctionalTest {
     assertTrue(result.getOutput().contains("Configuration cache entry stored"), "No config cache");
 
     final BuildResult second = ctx.build("printGitStatus");
+    assertTrue(second.getOutput().contains("Configuration cache entry reused"), "No config cache reuse");
+  }
+
+  @IndraConfigCacheFunctionalTest
+  void valueSources(final TestContext ctx) throws IOException, GitAPIException {
+    try (final Git git = IndraGitPluginTest.initRepo(ctx.outputDirectory())) {
+      git.commit()
+        .setAllowEmpty(true)
+        .setMessage("initial commit")
+        .setAuthor(IndraGitPluginTest.COMMITTER)
+        .setCommitter(IndraGitPluginTest.COMMITTER)
+        .setSign(false)
+        .call();
+    }
+    ctx.copyInput("build.gradle");
+    ctx.copyInput("settings.gradle");
+
+    final BuildResult result = ctx.build("jar");
+    assertTrue(result.getOutput().contains("Configuration cache entry stored"), "No config cache");
+
+    final BuildResult second = ctx.build("jar");
     assertTrue(second.getOutput().contains("Configuration cache entry reused"), "No config cache reuse");
   }
 
