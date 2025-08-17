@@ -23,7 +23,6 @@
  */
 package net.kyori.indra.internal;
 
-import java.util.Locale;
 import javax.inject.Inject;
 import net.kyori.indra.repository.SonatypeRepositories;
 import org.gradle.api.artifacts.dsl.RepositoryHandler;
@@ -45,12 +44,5 @@ public class SonatypeRepositoriesImpl implements SonatypeRepositories {
       repo.setUrl("https://central.sonatype.com/repository/maven-snapshots/");
       repo.mavenContent(MavenRepositoryContentDescriptor::snapshotsOnly);
     });
-  }
-
-  static String formatOssHost(final int host) {
-    if (host < 1) {
-      throw new IllegalArgumentException("Only hosts numbered >= 1 are supported, but " + host + " was provided");
-    }
-    return String.format(Locale.ROOT, "https://s%02d.oss.sonatype.org/content/repositories/snapshots/", host);
   }
 }
