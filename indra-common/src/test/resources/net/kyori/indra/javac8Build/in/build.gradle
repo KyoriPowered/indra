@@ -2,8 +2,8 @@ plugins {
   id 'net.kyori.indra'
 }
 
-group 'com.example'
-version '1.0.0-SNAPSHOT'
+group = 'com.example'
+version = '1.0.0-SNAPSHOT'
 
 repositories {
   sonatype.snapshots()
