@@ -25,9 +25,11 @@ package net.kyori.indra.git.internal;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.List;
 import javax.inject.Inject;
 import net.kyori.indra.git.IndraGitExtension;
 import net.kyori.indra.git.QueryBranch;
+import net.kyori.indra.git.QueryTags;
 import net.kyori.indra.git.RepositoryValueSource;
 import net.kyori.mammoth.Configurable;
 import org.eclipse.jgit.api.Git;
@@ -126,6 +128,12 @@ public class IndraGitExtensionImpl implements IndraGitExtension {
   @Override
   public @NotNull Provider<String> describe() {
     return this.repositoryValue(QueryDescribe.class);
+  }
+
+  @Override
+  public @NotNull Provider<List<String>> tagNames() {
+    return this.repositoryValue(QueryTags.Names.class)
+      .map(list -> list.stream().map(Repository::shortenRefName).toList());
   }
 
   @Override

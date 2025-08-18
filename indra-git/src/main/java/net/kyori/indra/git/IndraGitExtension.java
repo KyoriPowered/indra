@@ -23,6 +23,7 @@
  */
 package net.kyori.indra.git;
 
+import java.util.List;
 import org.eclipse.jgit.lib.ObjectId;
 import org.gradle.api.Action;
 import org.gradle.api.java.archives.Manifest;
@@ -98,6 +99,14 @@ public interface IndraGitExtension {
    * @since 2.0.0
    */
   @NotNull Provider<String> describe();
+
+  /**
+   * Get the names of all tags in the repository.
+   *
+   * @return tag names, or an empty list if the project is not in a git repository or has no tags
+   * @since 4.0.0
+   */
+  @NotNull Provider<List<String>> tagNames();
 
   /**
    * Get the name of the current branch.
