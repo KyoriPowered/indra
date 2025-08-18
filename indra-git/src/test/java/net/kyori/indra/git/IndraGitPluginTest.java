@@ -27,7 +27,9 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 import net.kyori.indra.git.internal.GitCache;
 import net.kyori.indra.git.internal.IndraGitExtensionImpl;
 import net.kyori.indra.test.IndraTesting;
@@ -49,7 +51,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class IndraGitPluginTest {
   private static final String PLUGIN = "net.kyori.indra.git";
   private static final String DEFAULT_BRANCH = "trunk";
-  private static final PersonIdent COMMITTER = new PersonIdent("CI", "noreply@kyori.net");
+  public static final PersonIdent COMMITTER = new PersonIdent("CI", "noreply@kyori.net");
 
   @TempDir
   private Path projectDir;
@@ -136,7 +138,7 @@ class IndraGitPluginTest {
   @Test
   void testHeadTagNullWhenNotCheckedOutToTag() throws IOException, GitAPIException {
     final IndraGitExtensionImpl extension = this.createExtensionAndRepo();
-    assertFalse(extension.headTag().isPresent());
+    assertFalse(extension.repositoryValue(QueryHeadTag.Name.class).isPresent());
 
     Files.write(this.projectDir.resolve("test.properties"), Collections.singletonList("boink"), StandardCharsets.UTF_8);
 
@@ -163,7 +165,7 @@ class IndraGitPluginTest {
       .setSign(false)
       .call();
 
-    assertFalse(extension.headTag().isPresent());
+    assertFalse(extension.repositoryValue(QueryHeadTag.Name.class).isPresent());
   }
 
   @Test
@@ -184,7 +186,37 @@ class IndraGitPluginTest {
       .setAnnotated(false)
       .call();
 
-    assertEquals("v1", Repository.shortenRefName(extension.headTag().get().getName()));
+    assertEquals("v1", Repository.shortenRefName(extension.repositoryValue(QueryHeadTag.Name.class).get()));
+  }
+
+  @Test
+  void testTags() throws IOException, GitAPIException {
+    final IndraGitExtensionImpl extension = this.createExtensionAndRepo();
+
+    Files.write(this.projectDir.resolve("test.properties"), Collections.singletonList("boink"), StandardCharsets.UTF_8);
+
+    extension.git().commit()
+      .setAll(true)
+      .setMessage("Initial commit")
+      .setCommitter(COMMITTER)
+      .setSign(false)
+      .call();
+
+    final List<String> tags = new ArrayList<>();
+    for (int i = 0; i < 5; i++) {
+      final String tagName = "v" + (i + 1);
+      extension.git().tag()
+        .setName(tagName)
+        .setAnnotated(false)
+        .call();
+      tags.add(tagName);
+    }
+    assertEquals(
+      tags,
+      extension.repositoryValue(QueryTags.Names.class).get().stream()
+        .map(Repository::shortenRefName)
+        .toList()
+    );
   }
 
   @Test
@@ -206,7 +238,7 @@ class IndraGitPluginTest {
       .setAnnotated(true)
       .call();
 
-    assertEquals("v1", Repository.shortenRefName(extension.headTag().get().getName()));
+    assertEquals("v1", Repository.shortenRefName(extension.repositoryValue(QueryHeadTag.Name.class).get()));
   }
 
   @Test

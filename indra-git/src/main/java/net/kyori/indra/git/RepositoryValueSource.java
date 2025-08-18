@@ -42,7 +42,7 @@ import org.jetbrains.annotations.Nullable;
  * <p>Implementations must be abstract, and only implement {@link #obtain(Git)}.</p>
  *
  * @param <V> the value type
- * @param <P> the parameter type
+ * @param <P> the parameters type
  * @since 4.0.0
  */
 public abstract class RepositoryValueSource<V, P extends RepositoryValueSource.Parameters> implements ValueSource<V, P> {

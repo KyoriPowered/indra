@@ -2,7 +2,7 @@ plugins {
   id 'net.kyori.indra.git'
 }
 
-task printGitStatus(type: net.kyori.indra.git.task.RepositoryTask) {
+tasks.register('printGitStatus', net.kyori.indra.git.task.RepositoryTask) {
   doLast {
     logger.lifecycle("Git present: ${repo() != null}")
   }

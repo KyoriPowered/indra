@@ -1,0 +1,11 @@
+plugins {
+  id 'net.kyori.indra.git'
+  id 'java'
+}
+
+println(indraGit.branchName().get())
+println(indraGit.commit().get().name())
+
+tasks.jar {
+  indraGit.applyVcsInformationToManifest(manifest)
+}

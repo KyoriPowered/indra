@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2025 KyoriPowered
+ * Copyright (c) 2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,30 +21,33 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-package net.kyori.indra.test;
+package net.kyori.indra.git;
 
-import java.lang.annotation.Documented;
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
-import net.kyori.mammoth.test.GradleFunctionalTest;
-import net.kyori.mammoth.test.TestVariant;
-import net.kyori.mammoth.test.TestVariantResource;
-import org.junit.jupiter.api.Tag;
+import net.kyori.indra.git.internal.IndraGitExtensionImpl;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.lib.Ref;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 /**
- * A base annotation for both operations that use the configuration cache and those that don't.
+ * A {@link MappedRepositoryValueSource} that obtains values from the tag pointing to the commit checked out as {@code HEAD},
+ * or {@code null} if the project is not in a git repository or is not checked out to a tag
+ *
+ * @param <V> the value type
  */
-@GradleFunctionalTest
-@TestVariant(gradleVersion = "7.6.4", maximumRuntimeVersion = 20)
-@TestVariant(gradleVersion = "8.9", maximumRuntimeVersion = 16)
-@TestVariant(gradleVersion = "8.14.3", minimumRuntimeVersion = 17)
-@TestVariant(gradleVersion = "9.0.0", minimumRuntimeVersion = 21)
-@TestVariantResource(value = "/injected-gradle-versions", optional = true, minimumRuntimeVersion = 17)
-@Tag("functional")
-@Documented
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.ANNOTATION_TYPE})
-public @interface IndraFunctionalTestBase {
+public abstract class QueryHeadTag<V> extends MappedRepositoryValueSource.Parameterless<Ref, V> {
+  @Override
+  protected @Nullable Ref getRawValue(final @NotNull Git repository) {
+    return IndraGitExtensionImpl.headTag(repository);
+  }
+
+  /**
+   * Queries the {@link Ref#getName() name} of the head tag ref.
+   */
+  public abstract static class Name extends QueryHeadTag<String> {
+    @Override
+    protected @NotNull String mapValue(final @NotNull Git git, final @NotNull Ref ref) {
+      return ref.getName();
+    }
+  }
 }
