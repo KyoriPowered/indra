@@ -23,7 +23,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "indra"
 
-def requiredRuntime = 11
+def requiredRuntime = 17
 if (JavaVersion.current() < JavaVersion.toVersion(requiredRuntime)) {
   throw new GradleException("""\
   You are running a Java version that is too old to build Indra.

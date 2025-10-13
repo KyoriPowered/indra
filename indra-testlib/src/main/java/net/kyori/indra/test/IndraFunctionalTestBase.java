@@ -39,8 +39,8 @@ import org.junit.jupiter.api.Tag;
 @GradleFunctionalTest
 @TestVariant(gradleVersion = "7.6.4", maximumRuntimeVersion = 20)
 @TestVariant(gradleVersion = "8.9", maximumRuntimeVersion = 16)
-@TestVariant(gradleVersion = "8.14.3", minimumRuntimeVersion = 17)
-@TestVariant(gradleVersion = "9.0.0", minimumRuntimeVersion = 21)
+@TestVariant(gradleVersion = "8.14.3", minimumRuntimeVersion = 17, maximumRuntimeVersion = 24)
+@TestVariant(gradleVersion = "9.1.0", minimumRuntimeVersion = 17)
 @TestVariantResource(value = "/injected-gradle-versions", optional = true, minimumRuntimeVersion = 17)
 @Tag("functional")
 @Documented
