@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2023 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -66,6 +66,11 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
     plugins.apply(MavenPublishPlugin.class);
     plugins.apply(SigningPlugin.class);
     plugins.apply(GitPlugin.class);
+
+    final Provider<Boolean> isGhActions = project.getProviders().environmentVariable("GITHUB_ACTIONS").map(Boolean::valueOf).orElse(false);
+    if (isGhActions.get()) {
+      plugins.apply("dev.sigstore.sign");
+    }
 
     final IndraExtensionImpl indra = (IndraExtensionImpl) Indra.extension(extensions);
 

@@ -21,6 +21,7 @@ dependencies {
   api project(":indra-git")
   implementation libs.jvmDependencyConflictResolution
   implementation libs.asm
+  implementation libs.sigstoreSign
   api libs.mammoth
   testImplementation project(":indra-testlib")
 

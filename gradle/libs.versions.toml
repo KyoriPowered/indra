@@ -12,6 +12,7 @@ jgit = "7.3.0.+"
 junit = "6.0.0"
 kotlin = "1.9.25"
 mammoth = "1.5.0"
+sigstore = "2.0.0-rc1"
 spotless = "8.0.0"
 
 [libraries]
@@ -33,6 +34,7 @@ asm = { module = "org.ow2.asm:asm", version.ref = "asm" }
 # https://github.com/gradlex-org/jvm-dependency-conflict-resolution/
 jvmDependencyConflictResolution = { module = "org.gradlex:jvm-dependency-conflict-resolution", version = "2.1.2" }
 kotlinPlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+sigstoreSign = { module = "dev.sigstore:sigstore-gradle-sign-plugin", version.ref = "sigstore" }
 
 # git
 
@@ -59,4 +61,4 @@ indra = { id = "net.kyori.indra", version.ref = "indra" }
 indra-spotlessLicenser = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
 indra-pluginPublish = { id = "net.kyori.indra.publishing.gradle-plugin", version.ref = "indra" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
-sigstore = { id = "dev.sigstore.sign", version = "2.0.0-rc1" }
+sigstore = { id = "dev.sigstore.sign", version.ref = "sigstore" }
