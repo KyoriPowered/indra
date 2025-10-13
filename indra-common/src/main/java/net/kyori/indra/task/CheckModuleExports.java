@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -130,7 +130,7 @@ public abstract class CheckModuleExports extends DefaultTask {
   private Set<String> checkExports(final Set<String> exported, final Set<String> known, final Set<String> excludedPrefixes) {
     final Set<String> problems = new HashSet<>(known);
     problems.removeAll(exported);
-    for (final Iterator<String> it = known.iterator(); it.hasNext();) {
+    for (final Iterator<String> it = problems.iterator(); it.hasNext();) {
       final String check = it.next();
       for (final String prefix : excludedPrefixes) {
         if (check.startsWith(prefix)) {
