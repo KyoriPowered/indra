@@ -56,7 +56,7 @@ subprojects {
     mitLicense()
     javaVersions {
       target 17
-      testWith(17, 21)
+      testWith(17, 21, 25)
     }
 
     signWithKeyFromPrefixedProperties("kyori")
