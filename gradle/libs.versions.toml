@@ -60,3 +60,4 @@ indra = { id = "net.kyori.indra", version.ref = "indra" }
 indra-spotlessLicenser = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
 indra-pluginPublish = { id = "net.kyori.indra.publishing.gradle-plugin", version.ref = "indra" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
+sigstore = { id = "dev.sigstore.sign", version = "2.0.0-rc1" }

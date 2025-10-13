@@ -4,6 +4,7 @@ plugins {
   alias(libs.plugins.indra.pluginPublish) apply false
   alias(libs.plugins.gradlePluginPublish) apply false
   alias(libs.plugins.eclipseApt) apply false
+  alias(libs.plugins.sigstore) apply false
   alias(libs.plugins.spotless)
   id "eclipse"
 }
@@ -18,6 +19,9 @@ subprojects {
   apply plugin: "net.kyori.indra.licenser.spotless"
   apply plugin: "com.diffplug.eclipse.apt"
   apply plugin: "com.diffplug.spotless"
+  if ("true" == System.getenv("GITHUB_ACTIONS")) {
+    apply plugin: "dev.sigstore.sign"
+  }
   
   dependencies {
     testImplementation platform(libs.junit.bom)
