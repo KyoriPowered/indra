@@ -63,7 +63,7 @@ import static java.util.Objects.requireNonNull;
 public class IndraExtensionImpl implements IndraExtension {
 
   private static final Logger LOGGER = Logging.getLogger(IndraExtensionImpl.class);
-  private static final String DEFAULT_CHECKSTYLE_VERSION = "10.12.3";
+  private static final String DEFAULT_CHECKSTYLE_VERSION = "12.0.1";
 
   private final Property<ContinuousIntegration> ci;
   private final Property<Issues> issues;
