@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2025 KyoriPowered
+ * Copyright (c) 2020-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -260,6 +260,7 @@ public class IndraExtensionImpl implements IndraExtension {
     }
 
     this.signWithKeyFromProperties(
+      prefix + "SigningKeyId",
       prefix + "SigningKey",
       prefix + "SigningPassword"
     );
@@ -267,6 +268,12 @@ public class IndraExtensionImpl implements IndraExtension {
 
   @Override
   public void signWithKeyFromProperties(final String keyFileOrContentsProperty, final String keyPasswordProperty) {
+    signWithKeyFromProperties(null, keyFileOrContentsProperty, keyPasswordProperty);
+  }
+
+  @Override
+  public void signWithKeyFromProperties(final @Nullable String keyIdProperty, final String keyFileOrContentsProperty, final String keyPasswordProperty) {
+    final Provider<String> keyId = (keyIdProperty == null) ? this.providers.provider(() -> null) : this.providers.gradleProperty(keyIdProperty);
     final Provider<String> keyFileOrContents = this.providers.gradleProperty(keyFileOrContentsProperty);
     final Provider<String> keyPassword = this.providers.gradleProperty(keyPasswordProperty);
     if (!keyFileOrContents.isPresent()) {
@@ -277,16 +284,20 @@ public class IndraExtensionImpl implements IndraExtension {
       LOGGER.info("Skipping configuring file-based signing because property '{}' had no value", keyPasswordProperty);
       return;
     }
+    if (!keyId.isPresent() && keyIdProperty != null) {
+      LOGGER.info("Skipping configuring file-based signing because property '{}' had no value", keyIdProperty);
+      return;
+    }
 
     this.alternateSigningConfigured = true;
     if (this.signingExtension != null) {
-      this.configureSigningExtension(this.signingExtension, keyFileOrContents.get(), keyPassword.get());
+      this.configureSigningExtension(this.signingExtension, keyId.get(), keyFileOrContents.get(), keyPassword.get());
     } else {
-      this.signingAction = ext -> this.configureSigningExtension(ext, keyFileOrContents.get(), keyPassword.get());
+      this.signingAction = ext -> this.configureSigningExtension(ext, keyId.get(), keyFileOrContents.get(), keyPassword.get());
     }
   }
 
-  private void configureSigningExtension(final SigningExtension extension, final String keyFileOrContents, final String keyPassword) {
+  private void configureSigningExtension(final SigningExtension extension, final @Nullable String keyId, final String keyFileOrContents, final String keyPassword) {
     final File keyFile = this.layout.getProjectDirectory().file(keyFileOrContents).getAsFile();
     if (keyFile.exists()) {
       final StringBuilder contents = new StringBuilder();
@@ -299,9 +310,9 @@ public class IndraExtensionImpl implements IndraExtension {
       } catch (final IOException ex) {
         throw new GradleException("Failed to read signing key file", ex);
       }
-      extension.useInMemoryPgpKeys(contents.toString(), keyPassword);
+      extension.useInMemoryPgpKeys(keyId, contents.toString(), keyPassword);
     } else {
-      extension.useInMemoryPgpKeys(keyFileOrContents, keyPassword);
+      extension.useInMemoryPgpKeys(keyId, keyFileOrContents, keyPassword);
     }
   }
 
