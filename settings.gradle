@@ -37,6 +37,7 @@ if (JavaVersion.current() < JavaVersion.toVersion(requiredRuntime)) {
   "indra-common",
   "indra-git",
   "indra-publishing-gradle-plugin",
+  "indra-publishing-central",
   "indra-publishing-sonatype",
   "indra-licenser-spotless",
   "indra-testlib",

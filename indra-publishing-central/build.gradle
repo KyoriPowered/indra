@@ -1,0 +1,23 @@
+dependencies {
+  implementation project(":indra-common")
+  implementation libs.centralPortalPublishing
+  testImplementation gradleTestKit()
+}
+
+indra {
+  javaVersions {
+    target 21
+    minimumToolchain 21
+    testWith().set([21, 25])
+  }
+}
+
+indraPluginPublishing {
+  plugin(
+    "indra.publishing.central",
+    "net.kyori.indra.central.IndraCentralPublishingPlugin",
+    "Indra Maven Central Publishing",
+    "Reasonable Maven Central Portal publishing configuration",
+    ["boilerplate", "publishing", "maven-central", "sonatype"]
+  )
+}
