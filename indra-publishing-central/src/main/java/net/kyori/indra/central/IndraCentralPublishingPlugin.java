@@ -26,7 +26,6 @@ package net.kyori.indra.central;
 import dev.lukebemish.centralportalpublishing.CentralPortalProjectExtension;
 import dev.lukebemish.centralportalpublishing.CentralPortalPublishingPlugin;
 import dev.lukebemish.centralportalpublishing.CentralPortalRepositoryHandlerExtension;
-import net.kyori.indra.IndraPublishingPlugin;
 import org.gradle.api.IsolatedAction;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -38,10 +37,11 @@ import org.gradle.api.publish.PublishingExtension;
 /**
  * A settings plugin for configuring publication to Maven Central through the Central Portal.
  *
- * <p>All projects applying {@link IndraPublishingPlugin} automatically contribute their publications to the
- * {@code release} bundle defined on the root project.</p>
+ * <p>All projects applying the {@code net.kyori.indra.publishing} plugin automatically contribute their publications
+ * to the {@code release} bundle defined on the root project.</p>
  */
 public final class IndraCentralPublishingPlugin implements Plugin<Settings> {
+  private static final String INDRA_PUBLISHING_PLUGIN_ID = "net.kyori.indra.publishing";
   private static final String BUNDLE_NAME = "release";
   private static final String ROOT_PROJECT_PATH = ":";
 
@@ -64,7 +64,7 @@ public final class IndraCentralPublishingPlugin implements Plugin<Settings> {
         });
       }
 
-      project.getPlugins().withType(IndraPublishingPlugin.class, plugin -> {
+      project.getPluginManager().withPlugin(INDRA_PUBLISHING_PLUGIN_ID, plugin -> {
         project.getPluginManager().apply(CentralPortalPublishingPlugin.class);
         final PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
         final ExtensionContainer repositoryExtensions = ((ExtensionAware) publishing.getRepositories()).getExtensions();
