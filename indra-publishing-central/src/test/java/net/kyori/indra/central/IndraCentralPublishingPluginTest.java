@@ -33,6 +33,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import static org.gradle.testkit.runner.TaskOutcome.UP_TO_DATE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class IndraCentralPublishingPluginTest {
   // IndraPublishingPlugin currently copies coordinates from the root project, which is not compatible with project
@@ -107,7 +108,7 @@ class IndraCentralPublishingPluginTest {
       tasks.register('assertCentralPortalNotConfigured')
       """);
 
-    final BuildResult result = GradleRunner.create()
+    final GradleRunner runner = GradleRunner.create()
       .withProjectDir(projectDirectory.toFile())
       .withPluginClasspath()
       .withArguments(
@@ -115,10 +116,12 @@ class IndraCentralPublishingPluginTest {
         ":other:assertCentralPortalNotConfigured",
         "--configuration-cache",
         "-Dorg.gradle.unsafe.isolated-projects=true"
-      )
-      .build();
+      );
+    final BuildResult result = runner.build();
+    final BuildResult reused = runner.build();
 
     assertEquals(UP_TO_DATE, result.task(":assertCentralPortalConfigured").getOutcome());
     assertEquals(UP_TO_DATE, result.task(":other:assertCentralPortalNotConfigured").getOutcome());
+    assertTrue(reused.getOutput().contains("Configuration cache entry reused."));
   }
 }
