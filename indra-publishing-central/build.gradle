@@ -1,0 +1,32 @@
+// Expose the publishing plugin to TestKit without adding it to this plugin's published runtime dependencies.
+configurations {
+  indraPluginTestClasspath
+}
+
+dependencies {
+  implementation libs.centralPortalPublishing
+  testImplementation gradleTestKit()
+  indraPluginTestClasspath project(":indra-common")
+}
+
+tasks.named("pluginUnderTestMetadata") {
+  pluginClasspath.from(configurations.indraPluginTestClasspath)
+}
+
+indra {
+  javaVersions {
+    target 21
+    minimumToolchain 21
+    testWith().set([21, 25])
+  }
+}
+
+indraPluginPublishing {
+  plugin(
+    "indra.publishing.central",
+    "net.kyori.indra.central.IndraCentralPublishingPlugin",
+    "Indra Maven Central Publishing",
+    "Reasonable Maven Central Portal publishing configuration",
+    ["boilerplate", "publishing", "maven-central", "sonatype"]
+  )
+}

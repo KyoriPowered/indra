@@ -42,8 +42,9 @@ jgit = { module = "org.eclipse.jgit:org.eclipse.jgit", version.ref = "jgit" }
 
 gradlePluginPublish = { module = "com.gradle.publish:plugin-publish-plugin", version.ref = "gradlePluginPublish" }
 
-# publishing-sonatype
+# publishing-central and publishing-sonatype
 
+centralPortalPublishing = { module = "dev.lukebemish:central-portal-publishing", version = "0.1.9" }
 nexusPublishPlugin = { module = "io.github.gradle-nexus:publish-plugin", version = "2.0.0" }
 
 # spotless-licenser
