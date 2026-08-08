@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -36,15 +36,20 @@ import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.options.Option;
+import org.gradle.work.DisableCachingByDefault;
 
 /**
  * Copy project javadoc into the `adventure-javadoc` directory tree
  *
  * @since 2.1.0
  */
+@DisableCachingByDefault(because = "Caching a copied Javadoc directory is unlikely to be beneficial.")
 public abstract class CopyJavadoc extends DefaultTask {
+  @PathSensitive(PathSensitivity.RELATIVE)
   @InputFiles
   public abstract ConfigurableFileCollection getJavadocFiles();
 

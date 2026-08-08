@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -40,12 +40,15 @@ import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.jvm.toolchain.JavaLanguageVersion;
 import org.gradle.jvm.toolchain.JavaLauncher;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.process.CommandLineArgumentProvider;
 import org.gradle.process.ExecOperations;
+import org.gradle.work.DisableCachingByDefault;
 
 import static java.util.Objects.requireNonNull;
 
@@ -54,6 +57,7 @@ import static java.util.Objects.requireNonNull;
  *
  * @since 2.1.0
  */
+@DisableCachingByDefault(because = "This task executes the jdeps tool without producing an output.")
 public abstract class JDeps extends DefaultTask {
   private final List<CommandLineArgumentProvider> argumentProviders = new ArrayList<>();
 
@@ -63,6 +67,7 @@ public abstract class JDeps extends DefaultTask {
    * @return a file collection representing the module path to pass to the tool
    * @since 2.1.0
    */
+  @PathSensitive(PathSensitivity.RELATIVE)
   @InputFiles
   public abstract ConfigurableFileCollection getModulePath();
 
@@ -82,6 +87,7 @@ public abstract class JDeps extends DefaultTask {
    * @since 2.1.0
    */
   @Optional
+  @PathSensitive(PathSensitivity.RELATIVE)
   @InputFiles
   public abstract ConfigurableFileCollection getProcessClasses();
 

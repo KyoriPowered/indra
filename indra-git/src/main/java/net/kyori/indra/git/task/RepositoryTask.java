@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2023-2024 KyoriPowered
+ * Copyright (c) 2023-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -29,6 +29,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.file.DirectoryProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.UntrackedTask;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,6 +40,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @since 4.0.0
  */
+@UntrackedTask(because = "The task validates mutable Git repository state that is not modeled as Gradle task inputs.")
 public abstract class RepositoryTask extends DefaultTask {
   @ApiStatus.Internal
   @Internal

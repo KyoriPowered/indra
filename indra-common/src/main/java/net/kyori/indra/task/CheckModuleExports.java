@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2025 KyoriPowered
+ * Copyright (c) 2020-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,7 +41,10 @@ import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.SetProperty;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.InputFile;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.work.DisableCachingByDefault;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.VisibleForTesting;
@@ -55,6 +58,7 @@ import org.objectweb.asm.Opcodes;
  *
  * @since 2.1.0
  */
+@DisableCachingByDefault(because = "This task validates a module descriptor without producing an output.")
 public abstract class CheckModuleExports extends DefaultTask {
   private static final String MULTIRELEASE_PATH_PREFIX = "META-INF/versions/";
 
@@ -63,6 +67,7 @@ public abstract class CheckModuleExports extends DefaultTask {
    *
    * @return the checked module
    */
+  @PathSensitive(PathSensitivity.NAME_ONLY)
   @InputFile
   public abstract RegularFileProperty getCheckedModule();
 

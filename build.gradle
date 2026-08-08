@@ -13,6 +13,8 @@ group = "net.kyori"
 version = "4.1.0-SNAPSHOT"
 description = "KyoriPowered organizational build standards and utilities"
 
+def libs = extensions.getByName("libs")
+
 subprojects {
   apply plugin: "java-gradle-plugin"
   apply plugin: "net.kyori.indra"
