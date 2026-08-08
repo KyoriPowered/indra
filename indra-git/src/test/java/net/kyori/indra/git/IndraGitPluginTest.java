@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2025 KyoriPowered
+ * Copyright (c) 2020-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -133,6 +133,33 @@ class IndraGitPluginTest {
     inSubmodule.getPluginManager().apply(PLUGIN);
 
     assertTrue(inSubmodule.getExtensions().getByType(IndraGitExtension.class).isPresent());
+  }
+
+  @Test
+  void testRepositoryDetectedInLinkedWorktree() throws IOException, GitAPIException {
+    final Path mainProject = this.projectDir.resolve("main");
+    final Path worktree = this.projectDir.resolve("worktree");
+    Files.createDirectories(mainProject);
+
+    IndraTesting.exec(mainProject, "git", "init", "-b", DEFAULT_BRANCH);
+    try (final Git git = Git.open(mainProject.toFile())) {
+      git.commit()
+        .setAllowEmpty(true)
+        .setMessage("initial commit")
+        .setAuthor(COMMITTER)
+        .setCommitter(COMMITTER)
+        .setSign(false)
+        .call();
+    }
+
+    IndraTesting.exec(mainProject, "git", "worktree", "add", "-b", "worktree-branch", worktree.toString());
+
+    final Project inWorktree = IndraTesting.project(b -> b.withProjectDir(worktree.toFile()));
+    inWorktree.getPluginManager().apply(PLUGIN);
+
+    final IndraGitExtension extension = inWorktree.getExtensions().getByType(IndraGitExtension.class);
+    assertTrue(extension.isPresent());
+    assertEquals("worktree-branch", extension.branchName().get());
   }
 
   @Test

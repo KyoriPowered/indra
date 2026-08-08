@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2024 KyoriPowered
+ * Copyright (c) 2024-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -30,6 +30,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -174,7 +175,8 @@ public class GitCache {
             String line;
             while ((line = reader.readLine()) != null) {
               if (line.startsWith(GITDIR_PREFIX)) {
-                return new File(projectDir.getParentFile(), line.substring(GITDIR_PREFIX.length()).trim());
+                final Path gitDir = projectDir.toPath().resolveSibling(line.substring(GITDIR_PREFIX.length()).trim());
+                return gitDir.toFile();
               }
             }
           }
