@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2022 KyoriPowered
+ * Copyright (c) 2020-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -41,14 +41,18 @@ import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.javadoc.Javadoc;
+import org.gradle.work.DisableCachingByDefault;
 
 /**
  * Generate an options file containing {@code -linkoffline} info for passing into {@link Javadoc} tasks.
  *
  * @since 2.1.0
  */
+@DisableCachingByDefault(because = "The output is cheaper to generate than to retrieve from a build cache.")
 public abstract class GenerateOfflineLinks extends DefaultTask {
   private static final String LINK_OFFLINE_OPTION = "-linkoffline";
 
@@ -70,6 +74,7 @@ public abstract class GenerateOfflineLinks extends DefaultTask {
   @Nested
   public abstract Property<ProjectDocumentationUrlProvider> getUrlProvider();
 
+  @PathSensitive(PathSensitivity.ABSOLUTE)
   @InputFiles
   protected abstract ConfigurableFileCollection getLinkableArtifactFiles();
 

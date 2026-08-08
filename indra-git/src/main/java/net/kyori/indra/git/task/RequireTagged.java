@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2023 KyoriPowered
+ * Copyright (c) 2023-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -28,6 +28,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.Ref;
 import org.gradle.api.GradleException;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.UntrackedTask;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -35,6 +36,7 @@ import org.jetbrains.annotations.Nullable;
  *
  * @since 4.0.0
  */
+@UntrackedTask(because = "The task validates mutable Git repository state that is not modeled as Gradle task inputs.")
 public abstract class RequireTagged extends RepositoryTask {
   /**
    * Perform the task action.
