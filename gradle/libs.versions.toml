@@ -3,8 +3,8 @@ version = "1.0"
 
 [versions]
 asm = "9.10.1"
-goomph = "4.4.0"
-gradlePluginPublish = "2.0.0"
+goomph = "4.4.1"
+gradlePluginPublish = "2.1.1"
 immutables = "2.12.2"
 indra = "4.0.0"
 jetbrainsAnnotations = "26.0.2-1"
@@ -12,7 +12,7 @@ jgit = "7.7.1.+"
 junit = "6.1.3"
 kotlin = "2.2.20"
 mammoth = "1.5.0"
-spotless = "8.0.0"
+spotless = "8.9.0"
 
 [libraries]
 junit-bom = { module = "org.junit:junit-bom", version.ref = "junit" }
@@ -60,4 +60,4 @@ indra = { id = "net.kyori.indra", version.ref = "indra" }
 indra-spotlessLicenser = { id = "net.kyori.indra.licenser.spotless", version.ref = "indra" }
 indra-pluginPublish = { id = "net.kyori.indra.publishing.gradle-plugin", version.ref = "indra" }
 spotless = { id = "com.diffplug.spotless", version.ref = "spotless" }
-sigstore = { id = "dev.sigstore.sign", version = "2.0.0-rc1" }
+sigstore = { id = "dev.sigstore.sign", version = "2.2.0" }
