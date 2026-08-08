@@ -136,6 +136,33 @@ class IndraGitPluginTest {
   }
 
   @Test
+  void testRepositoryDetectedInLinkedWorktree() throws IOException, GitAPIException {
+    final Path mainProject = this.projectDir.resolve("main");
+    final Path worktree = this.projectDir.resolve("worktree");
+    Files.createDirectories(mainProject);
+
+    IndraTesting.exec(mainProject, "git", "init", "-b", DEFAULT_BRANCH);
+    try (final Git git = Git.open(mainProject.toFile())) {
+      git.commit()
+        .setAllowEmpty(true)
+        .setMessage("initial commit")
+        .setAuthor(COMMITTER)
+        .setCommitter(COMMITTER)
+        .setSign(false)
+        .call();
+    }
+
+    IndraTesting.exec(mainProject, "git", "worktree", "add", "-b", "worktree-branch", worktree.toString());
+
+    final Project inWorktree = IndraTesting.project(b -> b.withProjectDir(worktree.toFile()));
+    inWorktree.getPluginManager().apply(PLUGIN);
+
+    final IndraGitExtension extension = inWorktree.getExtensions().getByType(IndraGitExtension.class);
+    assertTrue(extension.isPresent());
+    assertEquals("worktree-branch", extension.branchName().get());
+  }
+
+  @Test
   void testHeadTagNullWhenNotCheckedOutToTag() throws IOException, GitAPIException {
     final IndraGitExtensionImpl extension = this.createExtensionAndRepo();
     assertFalse(extension.repositoryValue(QueryHeadTag.Name.class).isPresent());
