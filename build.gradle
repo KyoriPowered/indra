@@ -10,7 +10,7 @@ plugins {
 }
 
 group = "net.kyori"
-version = "4.1.0"
+version = "4.1.1-SNAPSHOT"
 description = "KyoriPowered organizational build standards and utilities"
 
 def libs = extensions.getByName("libs")
