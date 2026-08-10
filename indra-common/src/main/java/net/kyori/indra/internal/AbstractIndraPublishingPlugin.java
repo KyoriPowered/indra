@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2023 KyoriPowered
+ * Copyright (c) 2020-2025 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -94,7 +94,7 @@ public abstract class AbstractIndraPublishingPlugin implements ProjectPlugin {
 
         pom.licenses(licenses -> {
           licenses.license(license -> {
-            license.getName().set(indra.license().map(License::name));
+            license.getName().set(indra.license().map(License::spdx));
             license.getUrl().set(indra.license().map(License::url));
           });
         });
