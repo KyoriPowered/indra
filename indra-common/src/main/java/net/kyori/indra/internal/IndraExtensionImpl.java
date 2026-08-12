@@ -268,12 +268,16 @@ public class IndraExtensionImpl implements IndraExtension {
 
   @Override
   public void signWithKeyFromProperties(final String keyFileOrContentsProperty, final String keyPasswordProperty) {
-    signWithKeyFromProperties(null, keyFileOrContentsProperty, keyPasswordProperty);
+    this.configureSigningFromProperties(null, keyFileOrContentsProperty, keyPasswordProperty);
   }
 
   @Override
-  public void signWithKeyFromProperties(final @Nullable String keyIdProperty, final String keyFileOrContentsProperty, final String keyPasswordProperty) {
-    final Provider<String> keyId = (keyIdProperty == null) ? this.providers.provider(() -> null) : this.providers.gradleProperty(keyIdProperty);
+  public void signWithKeyFromProperties(final String keyIdProperty, final String keyFileOrContentsProperty, final String keyPasswordProperty) {
+    this.configureSigningFromProperties(requireNonNull(keyIdProperty, "keyIdProperty"), keyFileOrContentsProperty, keyPasswordProperty);
+  }
+
+  private void configureSigningFromProperties(final @Nullable String keyIdProperty, final String keyFileOrContentsProperty, final String keyPasswordProperty) {
+    final Provider<String> keyId = keyIdProperty == null ? null : this.providers.gradleProperty(keyIdProperty);
     final Provider<String> keyFileOrContents = this.providers.gradleProperty(keyFileOrContentsProperty);
     final Provider<String> keyPassword = this.providers.gradleProperty(keyPasswordProperty);
     if (!keyFileOrContents.isPresent()) {
@@ -284,16 +288,20 @@ public class IndraExtensionImpl implements IndraExtension {
       LOGGER.info("Skipping configuring file-based signing because property '{}' had no value", keyPasswordProperty);
       return;
     }
-    if (!keyId.isPresent() && keyIdProperty != null) {
-      LOGGER.info("Skipping configuring file-based signing because property '{}' had no value", keyIdProperty);
-      return;
+    if (keyId != null && !keyId.isPresent()) {
+      LOGGER.info("File-based signing will not be configured to sign with a sub-key because property '{}' had no value", keyIdProperty);
     }
+
+    final Action<SigningExtension> signingAction = ext -> this.configureSigningExtension(ext,
+      keyId == null ? null : keyId.getOrNull(),
+      keyFileOrContents.get(),
+      keyPassword.get());
 
     this.alternateSigningConfigured = true;
     if (this.signingExtension != null) {
-      this.configureSigningExtension(this.signingExtension, keyId.get(), keyFileOrContents.get(), keyPassword.get());
+      signingAction.execute(this.signingExtension);
     } else {
-      this.signingAction = ext -> this.configureSigningExtension(ext, keyId.get(), keyFileOrContents.get(), keyPassword.get());
+      this.signingAction = signingAction;
     }
   }
 
