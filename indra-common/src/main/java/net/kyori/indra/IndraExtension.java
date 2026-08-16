@@ -1,7 +1,7 @@
 /*
  * This file is part of indra, licensed under the MIT License.
  *
- * Copyright (c) 2020-2025 KyoriPowered
+ * Copyright (c) 2020-2026 KyoriPowered
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -243,12 +243,12 @@ public interface IndraExtension {
   }
 
   /**
-   * Configure signing to source key and password for signing from two gradle properties with the provided prefix.
+   * Configure signing to source key, password, and optionally key id for signing from Gradle properties with the provided prefix.
    *
-   * <p>This is equivalent to invoking {@link #signWithKeyFromProperties(String, String)} with {@code ${prefix}SigningKey} and {@code ${prefix}SigningPassword} as arguments.</p>
-   *
-   * @param prefix the prefix for the two properties.
-   * @see #signWithKeyFromProperties(String, String)
+   * <p>This is equivalent to invoking {@link #signWithKeyFromProperties(String, String, String)} with {@code ${prefix}SigningKeyId}, {@code ${prefix}SigningKey}, and {@code ${prefix}SigningPassword} as arguments.</p>
+   **
+   * @param prefix the prefix for the properties.
+   * @see #signWithKeyFromProperties(String, String, String)
    * @since 3.1.0
    */
   void signWithKeyFromPrefixedProperties(final String prefix);
@@ -263,4 +263,16 @@ public interface IndraExtension {
    * @since 3.1.0
    */
   void signWithKeyFromProperties(final String keyFileOrContentsProperty, final String keyPasswordProperty);
+
+  /**
+   * Configure signing to source key, password, and optionally key id for signing from Gradle properties.
+   *
+   * <p>If the key and password properties are set, this overrides Indra's default behaviour, which is to use the GPG agent for signing.</p>
+   *
+   * @param keyIdProperty a property containing the id of the key to use for signing
+   * @param keyFileOrContentsProperty a property containing either a path to a key file, or the ascii-armored key blob
+   * @param keyPasswordProperty a password containing the literal password for the provided key
+   * @since 4.1.0
+   */
+  void signWithKeyFromProperties(final String keyIdProperty, final String keyFileOrContentsProperty, final String keyPasswordProperty);
 }
