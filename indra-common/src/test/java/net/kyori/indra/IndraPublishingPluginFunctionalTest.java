@@ -60,7 +60,7 @@ public class IndraPublishingPluginFunctionalTest {
     assertEquals(TaskOutcome.SUCCESS, result.task(":signJar").getOutcome());
     assertSignatureOf("EB716BFC33B790AB",
       ctx.outputDirectory().resolve(publicKeyFileName),
-      ctx.outputDirectory().resolve("build/libs/keyAndPasswordSigning-1.0.0-SNAPSHOT.jar"));
+      ctx.outputDirectory().resolve("build/libs/keyandpasswordsigning-1.0.0-SNAPSHOT.jar"));
   }
 
   @IndraConfigCacheFunctionalTest
@@ -80,7 +80,7 @@ public class IndraPublishingPluginFunctionalTest {
     assertEquals(TaskOutcome.SUCCESS, result.task(":signJar").getOutcome());
     assertSignatureOf("38D0BE1A808D8604",
       ctx.outputDirectory().resolve(publicKeyFileName),
-      ctx.outputDirectory().resolve("build/libs/keyIdAndPasswordSigning-1.0.0-SNAPSHOT.jar"));
+      ctx.outputDirectory().resolve("build/libs/keyidandpasswordsigning-1.0.0-SNAPSHOT.jar"));
   }
 
   private static void assertSignatureOf(final String keyId, final Path keyRingFilePath, final Path artifactFilePath) throws IOException, InterruptedException {
