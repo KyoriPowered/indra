@@ -56,7 +56,9 @@ class IndraCentralPublishingPluginTest {
       version = '1.0.0'
       description = 'test'
       apply plugin: 'net.kyori.indra.publishing'
-      assert publishing.repositories.names.contains('centralPortalRelease')
+      afterEvaluate {
+        assert publishing.repositories.names.contains('centralPortalRelease')
+      }
       tasks.register('assertCentralPortalConfigured')
       """);
     Files.createDirectory(projectDirectory.resolve("other"));
@@ -64,7 +66,9 @@ class IndraCentralPublishingPluginTest {
       plugins {
         id 'maven-publish'
       }
-      assert !publishing.repositories.names.contains('centralPortalRelease')
+      afterEvaluate {
+        assert !publishing.repositories.names.contains('centralPortalRelease')
+      }
       tasks.register('assertCentralPortalNotConfigured')
       """);
 
@@ -95,7 +99,9 @@ class IndraCentralPublishingPluginTest {
       version = '1.0.0'
       description = 'test'
       apply plugin: 'net.kyori.indra.publishing'
-      assert publishing.repositories.names.contains('centralPortalRelease')
+      afterEvaluate {
+        assert publishing.repositories.names.contains('centralPortalRelease')
+      }
       assert tasks.named('publishReleaseCentralPortalBundle').get().publishingType.get() == 'AUTOMATIC'
       tasks.register('assertCentralPortalConfigured')
       """);
@@ -104,7 +110,9 @@ class IndraCentralPublishingPluginTest {
       plugins {
         id 'maven-publish'
       }
-      assert !publishing.repositories.names.contains('centralPortalRelease')
+      afterEvaluate {
+        assert !publishing.repositories.names.contains('centralPortalRelease')
+      }
       tasks.register('assertCentralPortalNotConfigured')
       """);
 
