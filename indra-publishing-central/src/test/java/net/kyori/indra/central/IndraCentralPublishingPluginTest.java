@@ -45,7 +45,7 @@ class IndraCentralPublishingPluginTest {
         id 'net.kyori.indra.publishing.central'
       }
       rootProject.name = 'central-test'
-      include 'sub', 'other'
+      include 'sub', 'other', 'disabled'
       """);
     Files.writeString(projectDirectory.resolve("build.gradle"), """
       assert tasks.named('publishReleaseCentralPortalBundle').get().publishingType.get() == 'AUTOMATIC'
@@ -56,7 +56,9 @@ class IndraCentralPublishingPluginTest {
       version = '1.0.0'
       description = 'test'
       apply plugin: 'net.kyori.indra.publishing'
-      assert publishing.repositories.names.contains('centralPortalRelease')
+      afterEvaluate {
+        assert publishing.repositories.names.contains('centralPortalRelease')
+      }
       tasks.register('assertCentralPortalConfigured')
       """);
     Files.createDirectory(projectDirectory.resolve("other"));
@@ -64,7 +66,21 @@ class IndraCentralPublishingPluginTest {
       plugins {
         id 'maven-publish'
       }
-      assert !publishing.repositories.names.contains('centralPortalRelease')
+      afterEvaluate {
+        assert !publishing.repositories.names.contains('centralPortalRelease')
+      }
+      tasks.register('assertCentralPortalNotConfigured')
+      """);
+    Files.createDirectory(projectDirectory.resolve("disabled"));
+    Files.writeString(projectDirectory.resolve("disabled/build.gradle"), """
+      group = 'test'
+      version = '1.0.0'
+      description = 'test'
+      apply plugin: 'net.kyori.indra.publishing'
+      indraCentralPublishing.enabled = false
+      afterEvaluate {
+        assert !publishing.repositories.names.contains('centralPortalRelease')
+      }
       tasks.register('assertCentralPortalNotConfigured')
       """);
 
@@ -73,7 +89,8 @@ class IndraCentralPublishingPluginTest {
       .withPluginClasspath()
       .withArguments(
         ":sub:assertCentralPortalConfigured",
-        ":other:assertCentralPortalNotConfigured"
+        ":other:assertCentralPortalNotConfigured",
+        ":disabled:assertCentralPortalNotConfigured"
       )
       .build();
 
@@ -95,7 +112,9 @@ class IndraCentralPublishingPluginTest {
       version = '1.0.0'
       description = 'test'
       apply plugin: 'net.kyori.indra.publishing'
-      assert publishing.repositories.names.contains('centralPortalRelease')
+      afterEvaluate {
+        assert publishing.repositories.names.contains('centralPortalRelease')
+      }
       assert tasks.named('publishReleaseCentralPortalBundle').get().publishingType.get() == 'AUTOMATIC'
       tasks.register('assertCentralPortalConfigured')
       """);
@@ -104,7 +123,9 @@ class IndraCentralPublishingPluginTest {
       plugins {
         id 'maven-publish'
       }
-      assert !publishing.repositories.names.contains('centralPortalRelease')
+      afterEvaluate {
+        assert !publishing.repositories.names.contains('centralPortalRelease')
+      }
       tasks.register('assertCentralPortalNotConfigured')
       """);
 

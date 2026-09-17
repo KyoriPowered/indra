@@ -26,6 +26,7 @@ package net.kyori.indra.central;
 import dev.lukebemish.centralportalpublishing.CentralPortalProjectExtension;
 import dev.lukebemish.centralportalpublishing.CentralPortalPublishingPlugin;
 import dev.lukebemish.centralportalpublishing.CentralPortalRepositoryHandlerExtension;
+import net.kyori.indra.Indra;
 import org.gradle.api.IsolatedAction;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -42,6 +43,7 @@ import org.gradle.api.publish.PublishingExtension;
  */
 public final class IndraCentralPublishingPlugin implements Plugin<Settings> {
   private static final String INDRA_PUBLISHING_PLUGIN_ID = "net.kyori.indra.publishing";
+  private static final String EXTENSION_NAME = "indraCentralPublishing";
   private static final String BUNDLE_NAME = "release";
   private static final String ROOT_PROJECT_PATH = ":";
 
@@ -66,10 +68,23 @@ public final class IndraCentralPublishingPlugin implements Plugin<Settings> {
 
       project.getPluginManager().withPlugin(INDRA_PUBLISHING_PLUGIN_ID, plugin -> {
         project.getPluginManager().apply(CentralPortalPublishingPlugin.class);
-        final PublishingExtension publishing = project.getExtensions().getByType(PublishingExtension.class);
-        final ExtensionContainer repositoryExtensions = ((ExtensionAware) publishing.getRepositories()).getExtensions();
-        repositoryExtensions.getByType(CentralPortalRepositoryHandlerExtension.class).portalBundle(ROOT_PROJECT_PATH, BUNDLE_NAME);
+        final IndraCentralPublishingExtension ext = createExtension(project);
+        project.afterEvaluate(p -> {
+          if (!ext.getEnabled().get()) {
+            return;
+          }
+          final PublishingExtension publishing = p.getExtensions().getByType(PublishingExtension.class);
+          final ExtensionContainer repositoryExtensions = ((ExtensionAware) publishing.getRepositories()).getExtensions();
+          repositoryExtensions.getByType(CentralPortalRepositoryHandlerExtension.class).portalBundle(ROOT_PROJECT_PATH, BUNDLE_NAME);
+          Indra.extension(p.getExtensions()).publishSnapshotsTo("sonatype", "https://central.sonatype.com/repository/maven-snapshots/");
+        });
       });
     }
+  }
+
+  private static IndraCentralPublishingExtension createExtension(final Project project) {
+    final IndraCentralPublishingExtension ext = project.getExtensions().create(EXTENSION_NAME, IndraCentralPublishingExtension.class);
+    ext.getEnabled().convention(true);
+    return ext;
   }
 }
